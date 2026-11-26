@@ -303,20 +303,22 @@ body.no-flash #machine.lv99build,body.no-flash #machine.lv99shake,body.no-flash 
 /* EMOTE RUSH: a 3D cover-flow reel of the channel's emotes with marquee bulbs and a gold frame, then the chat race */
 #rushbox{position:absolute;inset:0;z-index:9;border-radius:inherit;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse 70% 90% at 50% var(--cy),#2c0f52 0,#12052a 50%,#04010a 100%);opacity:0;transition:opacity .35s}
 #rushbox.up{opacity:1}
-#rushbox .rrays{position:absolute;left:50%;top:var(--cy);width:240%;aspect-ratio:1;translate:-50% -50%;background:repeating-conic-gradient(from 0deg,rgba(255,200,80,.10) 0 6deg,transparent 6deg 18deg);animation:rSpin 18s linear infinite;mask:radial-gradient(circle,#000 6%,transparent 42%)}
-#rushbox.landed .rrays{animation-duration:5s;background:repeating-conic-gradient(from 0deg,rgba(255,210,58,.28) 0 6deg,transparent 6deg 18deg)}
-#rushbox .rstreak{position:absolute;inset:0;width:100%;height:100%;z-index:1;mix-blend-mode:screen}
+#rushbox .rrays{position:absolute;left:50%;top:var(--cy);width:240%;aspect-ratio:1;translate:-50% -50%;background:radial-gradient(circle,rgba(30,10,60,0) 6%,rgba(24,8,50,.92) 26%,#12052a 34%,#04010a 44%),repeating-conic-gradient(from 0deg,rgba(255,200,80,.10) 0 6deg,transparent 6deg 18deg);animation:rSpin 18s linear infinite;will-change:transform}   /* the fade is painted in: a live mask cost an extra drawing pass every frame */
+#rushbox.landed .rrays{animation-duration:5s;background:radial-gradient(circle,rgba(30,10,60,0) 6%,rgba(24,8,50,.92) 26%,#12052a 34%,#04010a 44%),repeating-conic-gradient(from 0deg,rgba(255,210,58,.28) 0 6deg,transparent 6deg 18deg)}
+#rushbox .rstreak{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+#rushbox .rcanvas{position:absolute;inset:0;width:100%;height:100%;z-index:2}   /* the spinning reel is drawn here: one cheap redraw per frame */
+#rushbox .rtile.final{display:block;opacity:1;z-index:120}
 #rushbox .rfloor{position:absolute;left:0;right:0;top:calc(var(--cy) + var(--fr) / 2 + 2px);bottom:0;background:linear-gradient(#1a0a34,#05020c 70%);border-top:1px solid rgba(255,210,58,.35);z-index:1}
 #rushbox .rrail{position:absolute;left:0;right:0;height:3px;z-index:3;background:repeating-linear-gradient(90deg,#ffd23a 0 26px,rgba(255,210,58,.12) 26px 70px,#ff3ad0 70px 84px,rgba(255,58,208,.1) 84px 140px);box-shadow:0 0 10px rgba(255,180,40,.8)}
 #rushbox .rrail.top{top:calc(var(--cy) - var(--fr) / 2 - 2px)}
 #rushbox .rrail.bot{top:calc(var(--cy) + var(--fr) / 2 + 13px)}
 #rushbox .rstage{position:absolute;inset:0;z-index:2}
-#rushbox .rtile{position:absolute;left:50%;top:var(--cy);width:var(--rt);height:var(--rt);opacity:0;will-change:transform}
-#rushbox .rtile .tin{position:relative;width:100%;height:100%;box-sizing:border-box;border-radius:16%;background:linear-gradient(155deg,#3a1c6a 0%,#1a0a36 55%,#0e0420 100%);border:2px solid rgba(190,140,255,.55);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -6px 14px rgba(0,0,0,.5),0 8px 18px rgba(0,0,0,.65);-webkit-box-reflect:below 4px linear-gradient(transparent 62%,rgba(255,255,255,.22));overflow:hidden}
+#rushbox .rtile{position:absolute;left:50%;top:var(--cy);width:var(--rt);height:var(--rt);opacity:0;display:none;will-change:transform,opacity}   /* only the ~9 tiles near the frame are shown (and drawn) at a time */
+#rushbox .rtile .tin{position:relative;width:100%;height:100%;box-sizing:border-box;border-radius:16%;background:linear-gradient(155deg,#3a1c6a 0%,#1a0a36 55%,#0e0420 100%);border:2px solid rgba(190,140,255,.55);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 -6px 14px rgba(0,0,0,.5),0 8px 18px rgba(0,0,0,.65);overflow:hidden}   /* no live reflection: it was redrawn every frame */
 #rushbox .rtile .tin::after{content:"";position:absolute;left:-30%;top:-60%;width:160%;height:80%;background:linear-gradient(rgba(255,255,255,.16),transparent);transform:rotate(-12deg);pointer-events:none}
 #rushbox .rtile.mid .tin{border-color:#ffe27a;background:linear-gradient(155deg,#5a3410 0%,#2a1206 60%,#140602 100%);box-shadow:inset 0 2px 0 rgba(255,255,255,.3),0 0 22px rgba(255,210,58,.65),0 8px 18px rgba(0,0,0,.65)}
-#rushbox .rtile img{position:relative;width:80%;height:80%;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6))}
-#rushbox .emj{position:relative;font-size:calc(var(--rt) * .6);line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.6))}
+#rushbox .rtile img{position:relative;width:80%;height:80%;object-fit:contain}
+#rushbox .emj{position:relative;font-size:calc(var(--rt) * .6);line-height:1;text-shadow:0 3px 4px rgba(0,0,0,.6)}
 #rushbox .rtile.won .tin{animation:rPop .7s cubic-bezier(.2,1.6,.4,1) both;border-color:#fff6c0;box-shadow:0 0 30px #ffd23a,0 0 70px rgba(255,210,58,.8)}
 #rushbox .rvig{position:absolute;inset:0;z-index:140;background:linear-gradient(90deg,#04010a 0,rgba(4,1,10,0) 24%,rgba(4,1,10,0) 76%,#04010a 100%)}
 #rushbox .rframe{position:absolute;left:50%;top:var(--cy);width:var(--fr);height:var(--fr);translate:-50% -50%;box-sizing:border-box;border-radius:17%;border:3px solid #ffd23a;box-shadow:0 0 14px #ffb000,0 0 36px rgba(255,170,0,.45),inset 0 0 14px rgba(255,210,58,.45);z-index:150}
@@ -2878,7 +2880,7 @@ function handleChat(name, msg, plat, uid, emo){
   noteId(name, plat, uid);
   if (window.__ES.gone) return;   // desktop app closed: the OBS source takes no more spins
   noteChatter(name, plat); chatSinceCmds++;
-  if (RUSH) RUSH.chat(name, msg, plat, emo);   // emote rush: is this one of the first three to use the emote?
+  if (RUSH) RUSH.chat(name, msg, plat, emo);   // emote rush: is this one of the first five to use the emote?
   { const sp = spinEmoteMsg(msg, plat, emo); if (sp) msg = sp; }   // the channel's spin emote works like !spin
   if (FIRE_ON && /^!(spin|slots)\b/i.test(msg.trim())){   // fireplace mode: the machine is switched off
     const k = name.toLowerCase(); if (Date.now() - (fireSaid[k] || 0) > 30000){ fireSaid[k] = Date.now(); say(plat, 'always', '@' + name + ' the machine is off while the fireplace is lit. Pull up a chair and try again soon!'); }
@@ -3458,7 +3460,7 @@ function badgeBonus(job){
    Then the first RUSH_WINNERS different people to type that emote in the chat the spin came from (Twitch OR Kick, never both) each win RUSH_PRIZE_MIN-RUSH_PRIZE_MAX points.
    They get RUSH_TIME seconds, plus the stream delay so viewers get the full time after the stream catches up. Nobody in time: no prizes.
    The player who spun always gets their bet back, so the spin breaks even for them. */
-const RUSH_TIME = 30, RUSH_WINNERS = 3, RUSH_PRIZE_MIN = 1000, RUSH_PRIZE_MAX = 5000;
+const RUSH_TIME = 30, RUSH_WINNERS = 5, RUSH_PRIZE_MIN = 1000, RUSH_PRIZE_MAX = 5000;
 let RUSH = null;
 /* EMOTE RUSH emotes come from the platform the spin happened on: Twitch tier 1 sub emotes, or Kick subscriber emotes.
    The machine's own platform uses the emotes already loaded; the other platform's are fetched in the background when chat connects. */
@@ -3508,41 +3510,75 @@ function emoteRushRun(job, plat, pool){
     const L = lap.length, LAPS = Math.max(2, Math.ceil(70 / L)), OFF = 3;
     let seq = lap.slice(L - OFF); for (let k = 0; k < LAPS; k++) seq = seq.concat(lap); seq = seq.concat(lap.slice(0, 6));
     const WIN_AT = OFF + L * LAPS - 1, START = OFF;
-    const streaks = document.createElement('canvas'); streaks.className = 'rstreak'; streaks.width = Math.round(BW); streaks.height = Math.round(BH);
-    const sg = streaks.getContext('2d'), SN = Array.from({length:46}, () => ({x:Math.random() * BW, y:Math.random() * AREA, l:20 + Math.random() * 70, c:['#ffd23a', '#ff3ad0', '#3af0ff', '#ffffff'][Math.floor(Math.random() * 4)]}));
+    /* SMOOTH REEL: the spinning tiles, the speed streaks and the moving rails are all drawn on ONE canvas. Each tile look is drawn
+       once into a sprite and reused, so a frame is a handful of image copies (no page elements re-drawn while they move). */
+    const DPR = Math.min(2, window.devicePixelRatio || 1);
+    const cv = document.createElement('canvas'); cv.className = 'rcanvas'; cv.width = Math.round(BW * DPR); cv.height = Math.round(BH * DPR);
+    const g = cv.getContext('2d');
+    const SN = Array.from({length:46}, () => ({x:Math.random() * BW, y:Math.random() * AREA, l:20 + Math.random() * 70, c:['#ffd23a', '#ff3ad0', '#3af0ff', '#ffffff'][Math.floor(Math.random() * 4)]}));
+    const SPR = Math.ceil(tile * MID), PAD = Math.ceil(SPR * .3);
+    const rr = (c, x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
+    const sprite = mid => {   // one tile look (normal or the gold middle one), drawn once
+      const c = document.createElement('canvas'), n = SPR + PAD * 2; c.width = Math.ceil(n * DPR); c.height = Math.ceil(n * DPR);
+      const x = c.getContext('2d'); x.scale(DPR, DPR); const r = SPR * .16, o = PAD;
+      x.save(); x.shadowColor = 'rgba(0,0,0,.65)'; x.shadowBlur = 18; x.shadowOffsetY = 8; x.fillStyle = '#12052a'; rr(x, o, o, SPR, SPR, r); x.fill(); x.restore();
+      if (mid){ x.save(); x.shadowColor = 'rgba(255,210,58,.75)'; x.shadowBlur = 24; x.fillStyle = '#2a1206'; rr(x, o, o, SPR, SPR, r); x.fill(); x.restore(); }
+      const gr = x.createLinearGradient(o + SPR * .29, o, o + SPR * .71, o + SPR);
+      (mid ? [[0, '#5a3410'], [.6, '#2a1206'], [1, '#140602']] : [[0, '#3a1c6a'], [.55, '#1a0a36'], [1, '#0e0420']]).forEach(([a, b]) => gr.addColorStop(a, b));
+      x.save(); rr(x, o, o, SPR, SPR, r); x.clip(); x.fillStyle = gr; x.fillRect(o, o, SPR, SPR);
+      const sh = x.createLinearGradient(0, o + SPR * .8, 0, o + SPR); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.5)'); x.fillStyle = sh; x.fillRect(o, o, SPR, SPR);
+      x.fillStyle = mid ? 'rgba(255,255,255,.3)' : 'rgba(255,255,255,.18)'; x.fillRect(o, o, SPR, 2);
+      x.translate(o + SPR / 2, o + SPR / 2); x.rotate(-12 * Math.PI / 180); const gl = x.createLinearGradient(0, -SPR * .9, 0, -SPR * .1); gl.addColorStop(0, 'rgba(255,255,255,.16)'); gl.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gl; x.fillRect(-SPR * .8, -SPR * .9, SPR * 1.6, SPR * .8);
+      x.restore();
+      x.lineWidth = 2; x.strokeStyle = mid ? '#ffe27a' : 'rgba(190,140,255,.55)'; rr(x, o + 1, o + 1, SPR - 2, SPR - 2, r); x.stroke();
+      return c;
+    };
+    const S0 = sprite(false), S1 = sprite(true);
+    const RP = 140, railSpr = (() => {   // the dashed neon rail, drawn once and slid along
+      const c = document.createElement('canvas'), w = Math.ceil(BW + RP * 2); c.width = Math.ceil(w * DPR); c.height = Math.ceil(23 * DPR);
+      const x = c.getContext('2d'); x.scale(DPR, DPR); x.shadowColor = 'rgba(255,180,40,.8)'; x.shadowBlur = 10;
+      for (let k = 0; k < w; k += RP) [[0, 26, '#ffd23a'], [26, 70, 'rgba(255,210,58,.12)'], [70, 84, '#ff3ad0'], [84, 140, 'rgba(255,58,208,.1)']].forEach(([a, b, col]) => { x.fillStyle = col; x.fillRect(k + a, 10, b - a, 3); });
+      return c;
+    })();
+    const faces = seq.map(e => { if (e.url){ const im = new Image(); im.decoding = 'async'; im.src = e.url; return im; } return null; });
     const rays = document.createElement('div'); rays.className = 'rrays';
     const floor = document.createElement('div'); floor.className = 'rfloor';
-    const railT = document.createElement('div'); railT.className = 'rrail top';
-    const railB = document.createElement('div'); railB.className = 'rrail bot';
-    const stage = document.createElement('div'); stage.className = 'rstage';
     const frame = document.createElement('div'); frame.className = 'rframe'; frame.innerHTML = '<i class="ra up"></i><i class="ra dn"></i>';
     const label = document.createElement('div'); label.className = 'rlabel';
     const vig = document.createElement('div'); vig.className = 'rvig';
     const flash = document.createElement('div'); flash.className = 'flash';
-    const tiles = seq.map(e => { const t = document.createElement('div'); t.className = 'rtile'; const inn = document.createElement('div'); inn.className = 'tin'; inn.appendChild(face(e)); t.appendChild(inn); stage.appendChild(t); return t; });
-    bb.append(rays, streaks, floor, railT, railB, stage, vig, frame, label, flash); box.appendChild(bb);
+    bb.append(rays, floor, cv, vig, frame, label, flash); box.appendChild(bb);
+    let hideWin = false;
     const flashGo = () => { flash.className = 'flash'; void flash.offsetWidth; flash.className = 'flash go'; };
-    let shown = new Set();
+    const PERS = 6, yT = cy - FR / 2 - 2 - 10, yB = cy + FR / 2 + 13 - 10;
     const render = (pos, v) => {
-      const now = new Set();
-      for (let i = Math.max(0, Math.floor(pos - 4)); i <= Math.min(tiles.length - 1, Math.ceil(pos + 4)); i++){
-        const d = i - pos, ad = Math.abs(d), t = tiles[i];
-        if (ad > 4.3) continue;
-        now.add(i);
-        const sc = MID - Math.min(ad, 3) * .19, ry = Math.max(-2.6, Math.min(2.6, d)) * -26;
-        t.style.transform = 'translate(-50%,-50%) perspective(' + (tile * 6) + 'px) translateX(' + (Math.sign(d) * Math.pow(ad, .8) * step * 1.08) + 'px) translateZ(' + (-ad * tile * .3) + 'px) rotateY(' + ry.toFixed(1) + 'deg) scale(' + sc.toFixed(3) + ')';
-        t.style.opacity = Math.max(0, Math.min(1, 1.35 - Math.max(0, ad - 2.2) * .62)).toFixed(2);
-        t.style.zIndex = 100 - Math.round(ad * 10);
-        t.classList.toggle('mid', ad < .5);
-      }
-      shown.forEach(i => { if (!now.has(i)) tiles[i].style.opacity = 0; }); shown = now;
+      g.setTransform(DPR, 0, 0, DPR, 0, 0); g.clearRect(0, 0, BW, BH);
       const sp = Math.max(0, v);   // tiles a second
-      stage.style.filter = sp > 9 ? 'blur(' + Math.min(2.4, (sp - 9) * .09).toFixed(1) + 'px)' : '';
-      const off = (pos * step * .8) % 4000; railT.style.backgroundPositionX = -off + 'px'; railB.style.backgroundPositionX = -off + 'px';
       /* speed streaks fly past while it's fast */
-      sg.clearRect(0, 0, streaks.width, streaks.height);
       const al = Math.min(.85, Math.max(0, (sp - 4) / 24));
-      if (al > .02){ sg.globalAlpha = al; SN.forEach(q => { q.x -= sp * 1.6 * (q.l / 60); if (q.x + q.l < 0){ q.x = BW + Math.random() * 60; q.y = Math.random() * AREA; } sg.fillStyle = q.c; sg.fillRect(q.x, q.y, q.l * Math.min(3, sp / 12), 2); }); sg.globalAlpha = 1; }
+      if (al > .02){ g.globalAlpha = al; SN.forEach(q => { q.x -= sp * 1.6 * (q.l / 60); if (q.x + q.l < 0){ q.x = BW + Math.random() * 60; q.y = Math.random() * AREA; } g.fillStyle = q.c; g.fillRect(q.x, q.y, q.l * Math.min(3, sp / 12), 2); }); g.globalAlpha = 1; }
+      /* the tiles near the frame, farthest first */
+      const list = [];
+      for (let i = Math.max(0, Math.floor(pos - 4)); i <= Math.min(seq.length - 1, Math.ceil(pos + 4)); i++){ const d = i - pos, ad = Math.abs(d); if (ad <= 4.3 && !(hideWin && i === WIN_AT)) list.push([i, d, ad]); }
+      list.sort((a, b) => b[2] - a[2]);
+      const cx0 = BW / 2;
+      list.forEach(([i, d, ad]) => {
+        const sc = MID - Math.min(ad, 3) * .19, ry = Math.max(-2.6, Math.min(2.6, d)) * -26, pf = PERS / (PERS + ad * .3);
+        const op = Math.max(0, Math.min(1, 1.35 - Math.max(0, ad - 2.2) * .62)); if (op <= .01) return;
+        const cw = Math.cos(ry * Math.PI / 180), bh = tile * sc * pf, bw = bh * cw, cx = cx0 + Math.sign(d) * Math.pow(ad, .8) * step * 1.08 * pf;
+        const kx = bw / SPR, ky = bh / SPR, spr = ad < .5 ? S1 : S0;
+        g.globalAlpha = op;
+        g.drawImage(spr, cx - (SPR / 2 + PAD) * kx, cy - (SPR / 2 + PAD) * ky, (SPR + PAD * 2) * kx, (SPR + PAD * 2) * ky);
+        const e = seq[i], im = faces[i];
+        if (im && im.complete && im.naturalWidth){
+          const f = Math.min(bh * .8 / im.naturalHeight, bh * .8 / im.naturalWidth), iw = im.naturalWidth * f * cw, ih = im.naturalHeight * f;
+          g.drawImage(im, cx - iw / 2, cy - ih / 2, iw, ih);
+        } else if (!e.url){ g.font = Math.round(bh * .6) + 'px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.save(); g.translate(cx, cy); g.scale(cw, 1); g.fillText(e.emoji || e.name, 0, 0); g.restore(); }
+      });
+      g.globalAlpha = 1;
+      /* the rails slide along with the reel */
+      const off = (pos * step * .8) % RP;
+      g.drawImage(railSpr, -off - RP, yT, railSpr.width / DPR, railSpr.height / DPR); g.drawImage(railSpr, -off - RP, yB, railSpr.width / DPR, railSpr.height / DPR);
       const c = seq[Math.max(0, Math.min(seq.length - 1, Math.round(pos)))]; if (label.dataset.n !== c.name){ label.dataset.n = c.name; label.textContent = c.name; }
     };
     render(START, 0);
@@ -3562,14 +3598,16 @@ function emoteRushRun(job, plat, pool){
         const v = (pos - lastP) / Math.max(1, now - lastT) * 1000; lastP = pos; lastT = now;
         render(pos, Math.abs(v));
         const under = Math.round(pos);
-        if (under !== lastI){ lastI = under; try { tone(1500 + (el > TT * .7 ? 400 : 0), 0, .025, 'square', .03); } catch(e){} if (Math.abs(v) < 14){ frame.classList.remove('tick'); void frame.offsetWidth; frame.classList.add('tick'); } }
+        if (under !== lastI){ lastI = under; try { tone(1500 + (el > TT * .7 ? 400 : 0), 0, .025, 'square', .03); } catch(e){} if (Math.abs(v) < 14) frame.animate([{scale:'1.06'}, {scale:'1'}], {duration:120, easing:'ease-out'}); }   // a little tick as each emote passes (no layout work)
         if (el > TT * .55 && !slowSaid){ slowSaid = true; DMD.show(el => [[{t:'SLOWING DOWN...', c:(el % 240) < 120 ? '#ffcc33' : DMD.WH}], [{t:'WHICH ONE WILL IT BE?', c:DMD.BASE}]]); bb.classList.add('slow'); }
         if (el < TT + SET) requestAnimationFrame(run); else { render(WIN_AT, 0); land(); }
       };
       requestAnimationFrame(run);
     }, 1100));
     function land(){
-      const t = tiles[WIN_AT]; t.classList.add('won'); frame.classList.add('won'); bb.classList.add('landed'); label.textContent = code; flashGo(); burst(80);
+      const t = document.createElement('div'); t.className = 'rtile final'; const inn = document.createElement('div'); inn.className = 'tin'; inn.appendChild(face(win)); t.appendChild(inn);
+      t.style.transform = 'translate(-50%,-50%) scale(' + MID + ')'; bb.appendChild(t); hideWin = true; render(WIN_AT, 0);   // the winner leaves the canvas and pops out, animated
+      t.classList.add('won', 'mid'); frame.classList.add('won'); bb.classList.add('landed'); label.textContent = code; flashGo(); burst(80);
       if (VS.flash) mach.animate([{translate:'0 0'}, {translate:'-6px 2px'}, {translate:'6px -2px'}, {translate:'-3px 1px'}, {translate:'0 0'}], {duration:380});
       try { [0, 7, 12, 16, 19, 24].forEach((n, k) => tone(hz(n + 12), k * .06, .25, 'square', .05)); } catch(e){}
       DMD.show(el => [[{t:'IT LANDED ON...', c:DMD.BRIGHT}], [{t:code.toUpperCase() + '!', c:(el % 200) < 100 ? '#ffd23a' : DMD.WH}]], true);
@@ -4653,7 +4691,7 @@ const countPlayers = data => { let n = 0; Object.keys(data).filter(isPlayerKey).
 /* ================= GAME UPDATES (desktop app only, like Gielinor Casino) =================
    GAME_VERSION goes up by 0.1 every time MAKE-UPDATE.bat publishes an update (1.0, 1.1, 1.2 ...). The app compares it
    with version.json at the update address and downloads the newer game file. */
-const GAME_VERSION = '1.4';
+const GAME_VERSION = '1.5';
 (function(){
   const N = window.EmoteNative, U = N && N.update, btn = $('#updBtn'), msg = $('#updMsg');
   const nice = v => 'V' + v;
@@ -5009,7 +5047,7 @@ function renderCmds(){
     ['!commands', 'Posts every viewer command in chat. <b>!cmds</b> and <b>!help</b> work too.'],
     ['!boost', 'Shows whether a multiplier is running and how long is left. <b>!multiplier</b> works too.'],
     ['!tournament', 'Tournament standings while one is running. <b>!tlb</b> works too.'],
-    ['<i>the emote</i>', 'During an <b>EMOTE RUSH</b>, send the emote shown on the machine. It has to be the real emote (typing its name does not count, so non-subs cannot win with sub emotes). Only the chat the spin came from (Twitch or Kick) can play. The first 3 people win 1,000-5,000 points each. You get 30 seconds.'],
+    ['<i>the emote</i>', 'During an <b>EMOTE RUSH</b>, send the emote shown on the machine. It has to be the real emote (typing its name does not count, so non-subs cannot win with sub emotes). Only the chat the spin came from (Twitch or Kick) can play. The first ' + RUSH_WINNERS + ' people win 1,000-5,000 Sparks each. You get 30 seconds.'],
     ['<i>A / B / C or 1 / 2 / 3</i>', 'During your minigame, type the letter or number of the box you want (or <b>!pick B</b>). You get 15 seconds.']
   ];
   const ST = [
