@@ -930,7 +930,6 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
         </select></label>
         <label class="f">Spin cost<input type="number" id="sCost" min="1"></label>
         <label class="f">Cooldown (sec)<input type="number" id="sCd" min="0"></label>
-        <label class="f">Starting balance<input type="number" id="sStart" min="1"></label>
         <label class="f">Volume <span id="volP"></span><input type="range" id="sVol" min="0" max="100" style="width:140px;accent-color:#ff3fd1"></label>
         <button id="testSnd" style="align-self:flex-end">Test sound</button>
       </div>
@@ -938,8 +937,10 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
       <div class="tmrow"><label class="chk"><input type="checkbox" id="tBoardOn"> Post the top 10 leaderboard</label><label class="tmsl">every <b id="tBoardN"></b><input type="range" id="tBoard" min="10" max="180" step="5"></label></div>
       <div class="tmrow"><label class="chk"><input type="checkbox" id="tCmdsOn"> Post the list of commands</label><label class="tmsl">every <b id="tCmdsN"></b><input type="range" id="tCmds" min="10" max="180" step="5"></label></div>
       <div class="small">They go to every chat you're connected to, from your own account. A post is skipped if the chat has been quiet since the last one, so nobody gets spammed.</div>
+      <h3 style="margin-top:12px">GLOBAL LEADERBOARD</h3>
+      <div class="small" id="glbMsg">Every machine is on the global leaderboard at yhandor.com/leaderboard, and Sparks are shared on every channel.</div>
       <h3 style="margin-top:12px" id="ptsTitle">POINTS</h3>
-      <div class="row"><button id="resetBtn">RESET ALL POINTS</button><button id="exportBtn">EXPORT PLAYER DATA</button><button id="importBtn">IMPORT PLAYER DATA</button><input type="file" id="importFile" accept=".json,application/json" hidden></div>
+      <div class="row"><button id="exportBtn">EXPORT PLAYER DATA</button><button id="importBtn">IMPORT PLAYER DATA</button><input type="file" id="importFile" accept=".json,application/json" hidden></div>
       <div class="small" id="dataMsg">Export saves every player's points, levels, XP, badges and stats, plus the jackpot, tournament, counters and your settings, to one file on your PC. Import it on any computer to bring everything back.</div>
 </div></div>
     </div>
@@ -948,7 +949,6 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
       <div class="vbody">
         <nav class="xlist" aria-label="Extras">
           <button class="mbtn xbtn" data-go="vTournament">TOURNAMENT LEADERBOARD<span class="xstat" id="xTourStat"></span></button>
-          <button class="mbtn xbtn" data-go="vCurrency">CURRENCY NAME<span class="xstat" id="xCurStat"></span></button>
           <button class="mbtn xbtn" data-go="vSounds">SPIN SOUNDS<span class="xstat" id="xSndStat"></span></button>
           <button class="mbtn xbtn" data-go="vSupport">BITS / KICKS / SUBS<span class="xstat" id="xSupStat"></span></button>
           <button class="mbtn xbtn" data-go="fireplace">FIREPLACE<span class="xstat">click anywhere to leave</span></button>
@@ -958,19 +958,6 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
     <div class="view" id="vCmds">
       <div class="vhead"><button class="back" data-go="vMain">&#8249; BACK</button><h2>COMMANDS</h2></div>
       <div class="vbody" id="cmdsBody"></div>
-    </div>
-    <div class="view" id="vCurrency">
-      <div class="vhead"><button class="back" data-go="vExtras">&#8249; BACK</button><h2>CURRENCY NAME</h2></div>
-      <div class="vbody"><div>
-        <div class="small" style="margin-bottom:8px">What should the machine call its points? It's used on the displays and in every chat message. Use the plural, like <b>Coins</b>, <b>Tokens</b> or <b>Gold</b> (up to 8 characters).</div>
-        <div class="row">
-          <input type="text" id="curName" maxlength="8" placeholder="points" style="flex:1;min-width:180px" aria-label="Currency name">
-          <button class="go" id="curSave">Save</button>
-          <button id="curReset">Reset to points</button>
-        </div>
-        <div class="curprev" id="curPrev"></div>
-        <div class="small">Chat can check their balance with <b>!points</b> or with the currency's own name, like <b id="curCmd">!coins</b>.</div>
-      </div></div>
     </div>
     <div class="view" id="vSounds">
       <div class="vhead"><button class="back" data-go="vExtras">&#8249; BACK</button><h2>SPIN SOUNDS</h2></div>
@@ -1163,14 +1150,14 @@ const SET_KEY = 'emoteslots:settings';
 let SET = {}; try { SET = JSON.parse(localStorage.getItem(SET_KEY) || '{}') || {}; } catch(e){}
 const saveSet = () => { try { localStorage.setItem(SET_KEY, JSON.stringify(SET)); } catch(e){} };
 const pick0 = (k, d) => (SET[k] === undefined || SET[k] === null) ? d : SET[k];
-let CURRENCY = (P.get('cur') || pick0('currency', 'points')).trim().slice(0, 8).trim() || 'points';
+const CURRENCY = 'Sparks';   // one currency on every machine (shared through yhandor.com), so it can't be renamed
 const CUR = () => CURRENCY, CURU = () => CURRENCY.toUpperCase();
 const S = {
   channel:'', all:[], activeNames:[], jackpot:null,
   users:{}, queue:[], spinning:false,
   ws:null, wantChat:false,
   platform: (P.get('platform') || pick0('platform', 'twitch')) === 'kick' ? 'kick' : 'twitch', kroom: (P.get('kroom') || '').replace(/\D/g, ''),
-  cost: num(P.get('cost'), pick0('cost', 10)), cooldown: num(P.get('cooldown'), pick0('cooldown', 10)), start: num(P.get('start'), pick0('start', 1000))
+  cost: num(P.get('cost'), pick0('cost', 10)), cooldown: num(P.get('cooldown'), pick0('cooldown', 10)), start: 1000
 };
 function num(v, d){ const n = parseInt(v, 10); return isNaN(n) ? d : n; }
 
@@ -1235,7 +1222,7 @@ function makeDisplay(lineEls, box){
   /* turn a line's segments into cells: {g: bitmap, w: columns, c: colour} */
   const cells = (segs, li) => { const out = [];
     (segs || []).forEach(sg => {
-      if (sg.lv){ const gl = lvGlyph(sg.lv); out.push({g:gl.g, w:gl.w, c:lvColor(sg.lv), k:'#000000', icon:true}); return; }
+      if (sg.lv){ const gl = lvGlyph(sg.lv); out.push({g:gl.g, w:gl.w, c:lvColor(sg.lv), k:'#000000', icon:true, glow:sg.lv >= 99}); return; }   // level 99 glows
       if (sg.gap){ out.push({g:'0'.repeat(7 * sg.gap), w:sg.gap, c:'#000'}); return; }
       if (sg.img){ out.push({img:sg.img, w:sg.w || 9}); return; }
       if (sg.icon && PXICON[sg.icon]){ out.push({g:PXICON[sg.icon].g, w:7, c:PXICON[sg.icon].c, k:PXICON[sg.icon].k, icon:true}); }   // badges sit close together; who() adds a small gap before the name
@@ -1265,7 +1252,24 @@ function makeDisplay(lineEls, box){
             for (let k = 0; k < gw; k++){ const v = g[r * gw + k]; if (v !== '1' && v !== '2') continue; if (pass) ctx.fillStyle = c.c; ctx.fillRect(x + k * s + (pass ? 0 : sh), y + rr * s + (pass ? 0 : sh), s, s); } }
           x += (gw + 1) * s; continue;
         }
-        for (let r = 0; r < 7; r++) for (let k = 0; k < gw; k++){ const v = c.g[r * gw + k]; if (v !== '1' && v !== '2') continue; if (pass) ctx.fillStyle = v === '2' ? (c.k || '#ffffff') : c.c; ctx.fillRect(x + k * s + (pass ? 0 : sh), y + r * s + (pass ? 0 : sh), s, s); }
+        const glow = pass && c.glow && !document.body.classList.contains('no-flash');   // max level: a gold glow around the tag that breathes
+        if (glow){ const ph = (Math.sin(performance.now() / 420) + 1) / 2; ctx.save(); ctx.shadowColor = ph > .5 ? '#fff2a8' : '#ffb300'; ctx.shadowBlur = s * (2 + ph * 4); }
+        for (let r = 0; r < 7; r++) for (let k = 0; k < gw; k++){ const v = c.g[r * gw + k]; if (v !== '1' && v !== '2') continue; if (pass) ctx.fillStyle = v === '2' ? (c.k || '#ffffff') : c.c; if (glow && v === '2') ctx.shadowBlur = 0; else if (glow) ctx.shadowBlur = s * (2 + ((Math.sin(performance.now() / 420) + 1) / 2) * 4); ctx.fillRect(x + k * s + (pass ? 0 : sh), y + r * s + (pass ? 0 : sh), s, s); }
+        if (glow){ ctx.restore();
+          /* sparkles: little 4-point stars that pop in and fade around the tag, each in its own spot every twinkle */
+          const now = performance.now(), L = x - 2 * s, T = y - 2 * s, Wd = (gw + 4) * s;
+          for (let i = 0; i < 4; i++){
+            const t = now / 650 + i * .27, cyc = Math.floor(t), f = t - cyc, a = Math.sin(f * Math.PI);
+            if (a < .15) continue;
+            const rnd = n => { const v = Math.sin((cyc * 7.13 + i * 3.7 + n) * 12.9898) * 43758.5453; return v - Math.floor(v); };
+            const edge = rnd(1), px = edge < .5 ? L + rnd(2) * Wd : (rnd(3) < .5 ? L : L + Wd - s), py = edge < .5 ? T + rnd(4) * s : T + rnd(5) * 7 * s;   // top edge or the sides, never below (the next line of text is there)
+            const sx = Math.round(px / s) * s, sy = Math.round(py / s) * s, big = a > .6;
+            ctx.save(); ctx.globalAlpha = Math.min(1, a * 1.2); ctx.fillStyle = '#ffffff'; ctx.shadowColor = '#fff2a8'; ctx.shadowBlur = s * 2;
+            ctx.fillRect(sx, sy, s, s);
+            if (big){ ctx.fillStyle = '#fff2a8'; ctx.fillRect(sx - s, sy, s, s); ctx.fillRect(sx + s, sy, s, s); ctx.fillRect(sx, sy - s, s, s); ctx.fillRect(sx, sy + s, s, s); }
+            ctx.restore();
+          }
+        }
         x += (gw + 1) * s; } }
   }
   function render(lines){
@@ -1312,7 +1316,8 @@ function makeDisplay(lineEls, box){
     if (section && !section.classList.contains('on')) return;
     if (now - lastMeasure > 1000) measure();   // catches zoom changes that don't resize the box
     const lines = typeof src === 'function' ? src(Math.max(0, now - t0)) : src;
-    const key = JSON.stringify(lines) + '|' + sizeKey;
+    let key = JSON.stringify(lines) + '|' + sizeKey;
+    if (key.indexOf('"lv":99') >= 0) key += '|' + Math.floor(now / 70);   // a level 99 tag is showing: keep redrawing so its glow breathes
     if (key !== last){ last = key; render(lines || []); lineEls.forEach((el, i) => { const t = lines && lines.scroll ? (i ? '' : plain(lines.scroll)) : plain((lines || [])[i]); if (el.textContent !== t) el.textContent = t; }); }
   }
   requestAnimationFrame(frame);
@@ -2031,7 +2036,7 @@ function idleDMD(){
       L.even = true; return L;
     }
     if (plan.td && top10().length) return topLines(t - 12600, el);
-    return [[{t:'GOOD LUCK, HAVE FUN!', c:(el % 600) < 300 ? DMD.BRIGHT : DMD.WH}], [{t:'!POINTS FOR BALANCE', c:DMD.BASE}]];
+    return [[{t:'GOOD LUCK, HAVE FUN!', c:(el % 600) < 300 ? DMD.BRIGHT : DMD.WH}], [{t:'!SPARKS FOR BALANCE', c:DMD.BASE}]];
   });
 }
 /* ================= attract mode (idle show) ================= */
@@ -2049,7 +2054,7 @@ function attractDMD(){
     if (k === 3 && TOUR.running) return [[{t:'TOURNAMENT LIVE!', c:on ? DMD.GN : DMD.WH}], [{t:'!TOURNAMENT FOR STANDINGS', c:DMD.BASE}]];
     if (k === 5) return [[{t:'TYPE ', c:DMD.BASE}, {t:'!DAILY', c:on ? DMD.BRIGHT : DMD.WH}, {t:' EVERY DAY', c:DMD.BASE}], [{t:DAILY.toLocaleString('en-US') + ' FREE ' + CURU(), c:on ? DMD.GN : DMD.WH}]];
     if (k === 4 && top) return [[{t:'HIGH SCORE', c:DMD.BRIGHT}], [...who(top.name, top.plat, DMD.BASE), {t:' ' + top.points.toLocaleString('en-US') + ' ' + CURU(), c:DMD.GN}]];
-    return [[{t:'!POINTS', c:DMD.BRIGHT}, {t:' \u00b7 ', c:DMD.BASE}, {t:'!LEADERBOARD', c:DMD.BRIGHT}], [{t:S.cost + ' ' + CURU() + ' A SPIN', c:DMD.BASE}]];
+    return [[{t:'!SPARKS', c:DMD.BRIGHT}, {t:' \u00b7 ', c:DMD.BASE}, {t:'!LEADERBOARD', c:DMD.BRIGHT}], [{t:S.cost + ' ' + CURU() + ' A SPIN', c:DMD.BASE}]];
   });
 }
 /* ================= attract show: the reels perform a random routine every few seconds (silent, no payouts) ================= */
@@ -2703,7 +2708,7 @@ function linkCmd(name, plat, uid, code){
     Object.keys(LINKREQ).forEach(c => { if (LINKREQ[c].key === myKey || Date.now() - LINKREQ[c].t > 300000) delete LINKREQ[c]; });
     let c; do { c = String(1000 + Math.floor(Math.random() * 9000)); } while (LINKREQ[c]);
     LINKREQ[c] = {key:myKey, plat, name, t:Date.now()};
-    return say(plat, 'always', '@' + name + ' to join your ' + here + ' and ' + other + ' points, badges and levels, type !link ' + c + ' in ' + other + ' chat within 5 minutes.');
+    return say(plat, 'always', '@' + name + ' to join your ' + here + ' and ' + other + ' Sparks, badges and levels, type !link ' + c + ' in ' + other + ' chat within 5 minutes.');
   }
   const req = LINKREQ[code];
   if (!req || Date.now() - req.t > 300000){ delete LINKREQ[code]; return say(plat, 'always', '@' + name + ' that link code is wrong or has run out. Type !link in your other chat for a new one.'); }
@@ -2714,27 +2719,50 @@ function linkCmd(name, plat, uid, code){
   if (B){   // add this side's progress onto the first account
     A.points = (A.points || 0) + (B.points || 0); A.xp = (A.xp || 0) + (B.xp || 0);
     A.spins = (A.spins || 0) + (B.spins || 0); A.won = (A.won || 0) + (B.won || 0); A.lost = (A.lost || 0) + (B.lost || 0);
+    A.duelW = (A.duelW || 0) + (B.duelW || 0); A.duelL = (A.duelL || 0) + (B.duelL || 0);   // duel record and biggest win carry over too
+    A.bigX = Math.max(A.bigX || 0, B.bigX || 0); A.bigW = Math.max(A.bigW || 0, B.bigW || 0);
+    ['duelW', 'duelL', 'bigX', 'bigW'].forEach(f => { if (!A[f]) delete A[f]; });
     A.badges = [...new Set([...(A.badges || []), ...(B.badges || [])])]; if (!A.badge && B.badge) A.badge = B.badge; if (!A.rbadge && B.rbadge) A.rbadge = B.rbadge;
     A.first = Math.min(A.first || Infinity, B.first || Infinity); if (A.first === Infinity) delete A.first;
+    { const ap = A.dailyP || (A.daily ? {[A.plat || 'twitch']:A.daily} : {}), bp = B.dailyP || (B.daily ? {[B.plat || 'twitch']:B.daily} : {});   // keep each platform's own daily timer
+      A.dailyP = {}; ['twitch', 'kick'].forEach(k => { const v = Math.max(ap[k] || 0, bp[k] || 0); if (v) A.dailyP[k] = v; }); }
     A.daily = Math.max(A.daily || 0, B.daily || 0); A.last = Math.max(A.last || 0, B.last || 0); A.played = A.played || B.played;
     delete S.users[myKey];
   }
   ID.links[myKey] = req.key; saveIds(); saveUsers(); renderLeaders();
+  spkLinked(req.key, myKey, req.name, name);   // shared Sparks: their two wallets join on yhandor.com too
   const msg = 'your Twitch and Kick are now linked! One balance: ' + (A.points || 0).toLocaleString('en-US') + ' ' + CUR() + ', level ' + lvOf(A.xp) + ', ' + (A.badges || []).length + ' badges.';
   say(plat, 'always', '@' + name + ' ' + msg); say(req.plat, 'always', '@' + req.name + ' ' + msg);
   notice([...who(name, plat, DMD.BRIGHT)], [{t:'ACCOUNTS LINKED!', c:DMD.GN}]);
 }
-/* !daily: free points once every 24 hours per player (also the way back in for anyone who went broke) */
+/* !daily: free points once every 24 hours per player ON EACH PLATFORM (a linked player can claim once in Twitch chat and once in Kick chat).
+   Also the way back in for anyone who went broke. u.dailyP = {twitch: time, kick: time}; the old single u.daily counts for the player's main platform. */
 const DAILY = 1000, DAILY_MS = 24 * 3600 * 1000;
-const dailyLeft = u => Math.max(0, DAILY_MS - (Date.now() - (u.daily || 0)));
+const dailyAt = (u, plat) => (u.dailyP && u.dailyP[plat]) || ((!u.dailyP || u.dailyP[plat] == null) && (u.plat || plat) === plat ? u.daily || 0 : 0);
+const dailyLeft = (u, plat) => Math.max(0, DAILY_MS - (Date.now() - dailyAt(u, plat)));
 const hmTxt = ms => { const m = Math.ceil(ms / 60000), h = Math.floor(m / 60); return h ? h + 'h' + (m % 60 ? ' ' + (m % 60) + 'm' : '') : m + 'm'; };
-function dailyCmd(name, plat){
-  const u = user(name, plat), left = dailyLeft(u);
+function dailyCmd(name, plat, done){
+  const u = user(name, plat);
+  if (!done && SPK_ON && spkKey(u)){
+    const k = name.toLowerCase() + '|d|' + plat; if (spkRetry[k]) return; spkRetry[k] = 1;
+    spkDaily(u, plat).then(r => { delete spkRetry[k];
+      if (r === 'down') return say(plat, 'always', '@' + name + ' Sparks can\u2019t be reached right now. Try !daily again in a minute.');
+      if (r && r.ok){ u.played = true; saveUsers(); renderLeaders();
+        say(plat, 'always', '@' + name + ' claimed the daily +' + DAILY.toLocaleString('en-US') + ' ' + CUR() + '! You now have ' + u.points.toLocaleString('en-US') + '. Come back in 24 hours for more.');
+        notice([...who(name, plat, DMD.BRIGHT)], [{t:'+' + DAILY.toLocaleString('en-US') + ' ' + CURU() + ' DAILY!', c:DMD.GN}]);
+        try { [0, 4, 7, 12].forEach((v, k) => tone(hz(v + 12), k * .08, .2, 'square', .05)); } catch(e){}
+        return; }
+      dailyCmd(name, plat, true);   // not yet: the usual "come back in ..." reply, with the time from yhandor.com
+    });
+    return;
+  }
+  const left = dailyLeft(u, plat);
   if (left > 0){
-    say(plat, 'always', '@' + name + ' you already claimed your daily ' + CUR() + '. Come back in ' + hmTxt(left) + '!');
+    say(plat, 'always', '@' + name + ' you already claimed your daily ' + CUR() + ' in ' + (plat === 'kick' ? 'Kick' : 'Twitch') + ' chat. Come back in ' + hmTxt(left) + '!');
     return notice([...who(name, plat, DMD.BRIGHT)], [{t:'DAILY BACK IN ' + hmTxt(left).toUpperCase(), c:DMD.RED}]);
   }
-  u.points += DAILY; u.daily = Date.now(); u.played = true; saveUsers(); renderLeaders();
+  if (done) return;   // shared Sparks: only yhandor.com hands out the daily
+  spAdd(u, DAILY); u.dailyP = Object.assign({}, u.dailyP); u.dailyP[plat] = Date.now(); u.daily = Date.now(); u.played = true; saveUsers(); renderLeaders();
   say(plat, 'always', '@' + name + ' claimed the daily +' + DAILY.toLocaleString('en-US') + ' ' + CUR() + '! You now have ' + u.points.toLocaleString('en-US') + '. Come back in 24 hours for more.');
   notice([...who(name, plat, DMD.BRIGHT)], [{t:'+' + DAILY.toLocaleString('en-US') + ' ' + CURU() + ' DAILY!', c:DMD.GN}]);
   try { [0, 4, 7, 12].forEach((v, k) => tone(hz(v + 12), k * .08, .2, 'square', .05)); } catch(e){}
@@ -2750,7 +2778,7 @@ function statsReply(name, plat){
   say(plat, 'always', '@' + name + ' STATS: ' + f(u.points) + ' ' + CUR() + ' | Level ' + l + (l < 99 ? ' (' + pct + '% to ' + (l + 1) + ', ' + f(xp) + ' / ' + f(LV_XP[l + 1]) + ' XP)' : ' MAX (' + f(xp) + ' XP)') +
     ' | Badges ' + (u.badges || []).filter(id => BADGES[id]).length + '/' + Object.keys(BADGES).length +   // badges collected out of every badge you can win
     ' | ' + f(u.spins) + ' spins | Won ' + f(u.won) + ' ' + CUR() + ' / Lost ' + f(u.lost) + ' ' + CUR() +
-    (u.duelW || u.duelL ? ' | Duels ' + f(u.duelW) + 'W / ' + f(u.duelL) + 'L' : '') + ' | First played ' + since);
+    (u.bigX ? ' | Biggest win ' + f(u.bigW || 0) + ' (' + f(u.bigX) + 'x bet)' : '') + (u.duelW || u.duelL ? ' | Duels ' + f(u.duelW) + 'W / ' + f(u.duelL) + 'L' : '') + ' | First played ' + since);
 }
 const cmdsAt = {};
 function commandsReply(name, plat){   // every viewer command in one chat message
@@ -2759,7 +2787,7 @@ function commandsReply(name, plat){   // every viewer command in one chat messag
 }
 function cmdsText(){
   const cc = '!' + (CUR().toLowerCase().replace(/[^a-z0-9]/g, '') || 'points');
-  return ('COMMANDS: !spin (or !spin ' + Math.max(S.cost, MAX_BET) + ' to bet more) | ' + (cc !== '!points' ? cc + ' or ' : '') + '!points | !daily | !stats | !level | !leaderboard | !badges | !equip <badge> | !unequip | !duel @name <amount> then !accept / !decline | !link (join Twitch + Kick) | !boost | !tournament | !myid');
+  return ('COMMANDS: !spin (or !spin ' + Math.max(S.cost, MAX_BET) + ' to bet more) | ' + (cc !== '!points' ? cc + ' or ' : '') + '!points | !daily | !stats | !level | !leaderboard | !badges | !equip <badge> | !unequip | !duel @name <amount> then !accept / !decline | !link (join Twitch + Kick) | !boost | !tournament | !global | !myid');
 }
 /* ================= DUELS (all in chat) =================
    !duel @name 500   challenges them for 500. They have 60 seconds to !accept or !decline.
@@ -2793,6 +2821,7 @@ function duelCmd(cmd, arg, name, plat){
   if (!t) return say(plat, 'always', '@' + name + ' ' + tname + " hasn't played in this chat yet. Duels are between players in the same chat.");
   if (DUELS.some(d => d.fromKey === me)) return say(plat, 'always', '@' + name + ' you already have a duel waiting. Type !duel cancel to take it back first.');
   if (now - (duelLast[me] || 0) < DUEL_GAP) return say(plat, 'always', '@' + name + ' catch your breath! You can duel again in ' + Math.ceil((DUEL_GAP - (now - duelLast[me])) / 1000) + 's.');
+  if (spkNeeds(u, 15000) && !spkRetry['d' + me]){ spkRetry['d' + me] = 1; spkClaim([u]).then(g => { delete spkRetry['d' + me]; if (g.ok) return duelCmd(cmd, arg, name, plat); spkRefuse(g, name, plat); }); return; }
   const amt = /all/i.test(m[2]) ? u.points : parseInt(m[2].replace(/,/g, ''), 10);
   if (!(amt >= DUEL_MIN)) return say(plat, 'always', '@' + name + ' the smallest duel is ' + DUEL_MIN + ' ' + cur + '.');
   if (u.points < amt) return say(plat, 'always', '@' + name + ' you only have ' + dfmt(u.points) + ' ' + cur + '.');
@@ -2807,14 +2836,18 @@ const DUEL_LINES = [
   ['{w} parries and lands the final blow on {l}!', '{w} wins the coin toss of destiny against {l}!', '{l} slipped on a banana peel. {w} takes it!', 'Steel clashes... {w} stands victorious over {l}!',
    '{w} outdrew {l} at high noon!', '{l} blinked first. {w} wins!', '{w} rolled a natural 20 against {l}!', 'A crowd gathers... {w} knocks {l} out cold!']
 ][0];
-function duelFight(d){
+function duelFight(d, checked){
   duelDrop(d);
   const a = findUser(d.from, d.plat), b = findUser(d.to, d.plat), cur = CUR();
   if (!a || !b) return;
+  if (!checked && (spkNeeds(a, 15000) || spkNeeds(b, 15000))){   // shared Sparks: both must be free to play here, with their real balances
+    spkClaim([a, b]).then(g => { if (g.ok) return duelFight(d, true); spkRefuse(g, g.who === b ? d.to : d.from, d.plat, 'the duel'); });
+    return;
+  }
   if (a.points < d.amt) return say(d.plat, 'always', '@' + d.to + ' ' + d.from + ' no longer has ' + dfmt(d.amt) + ' ' + cur + ', so the duel is off.');
   if (b.points < d.amt) return say(d.plat, 'always', '@' + d.to + ' you no longer have ' + dfmt(d.amt) + ' ' + cur + ', so the duel is off.');
   const aWins = Math.random() < 0.5, w = aWins ? a : b, l = aWins ? b : a;
-  l.points -= d.amt; w.points += d.amt; w.duelW = (w.duelW || 0) + 1; l.duelL = (l.duelL || 0) + 1; w.played = l.played = true; saveUsers(); renderLeaders();   // settled at once, so a reload can't lose the pot
+  spAdd(l, -d.amt); spAdd(w, d.amt); spkTouch(w); spkTouch(l); w.duelW = (w.duelW || 0) + 1; l.duelL = (l.duelL || 0) + 1; w.played = l.played = true; saveUsers(); renderLeaders();   // settled at once, so a reload can't lose the pot
   say(d.plat, 'always', '\u2694\ufe0f ' + d.from + ' vs ' + d.to + ' for ' + dfmt(d.amt * 2) + ' ' + cur + '... the duel begins!');
   setTimeout(() => {
     const line = DUEL_LINES[Math.floor(Math.random() * DUEL_LINES.length)].replace('{w}', w.name).replace('{l}', l.name);
@@ -2822,12 +2855,31 @@ function duelFight(d){
   }, 3000);
 }
 const MAX_BET = 500;   // biggest bet allowed (unless the spin cost itself is set higher)
-function handleChat(name, msg, plat, uid){
+/* SPIN EMOTES: a message that starts with the channel's spin emote (yhandoSpin on Twitch, yhandorSpin on Kick) counts as !spin.
+   Only the REAL emote counts (subs), the name typed out as text does not. "yhandoSpin 50" bets 50 like "!spin 50". */
+const SPIN_EMOTES = ['yhandospin', 'yhandorspin'];
+function spinEmoteMsg(msg, plat, emo){
+  const t = String(msg || '').trim(); if (!t || machineSaid(plat, t)) return '';
+  let first = '', rest = '';
+  if (plat === 'kick'){ const k = t.match(/^\[emote:\d+:([^\]]+)\]\s*(.*)$/); if (!k) return ''; first = k[1]; rest = k[2]; }
+  else if (plat === 'twitch'){
+    const ch = Array.from(String(msg)); let lead = 0; while (lead < ch.length && /\s/.test(ch[lead])) lead++;
+    const end = (ch.slice(lead).join('').match(/^\S+/) || [''])[0]; if (!end) return '';
+    const x0 = lead, x1 = lead + Array.from(end).length - 1;
+    const real = String(emo || '').split('/').some(part => (part.split(':')[1] || '').split(',').some(r => { const [x, y] = r.split('-').map(Number); return x === x0 && y === x1; }));
+    if (!real) return ''; first = end; rest = ch.slice(x1 + 1).join('').trim();
+  } else return '';
+  if (!SPIN_EMOTES.includes(first.toLowerCase())) return '';
+  const n = (rest.match(/^(\d+)\b/) || [])[1];
+  return '!spin' + (n ? ' ' + n : '');
+}
+function handleChat(name, msg, plat, uid, emo){
   if (window.__esLocked) return;   // no valid license: the machine ignores chat
   noteId(name, plat, uid);
   if (window.__ES.gone) return;   // desktop app closed: the OBS source takes no more spins
   noteChatter(name, plat); chatSinceCmds++;
-  if (RUSH) RUSH.chat(name, msg, plat);   // emote rush: is this one of the first three to type the emote?
+  if (RUSH) RUSH.chat(name, msg, plat, emo);   // emote rush: is this one of the first three to use the emote?
+  { const sp = spinEmoteMsg(msg, plat, emo); if (sp) msg = sp; }   // the channel's spin emote works like !spin
   if (FIRE_ON && /^!(spin|slots)\b/i.test(msg.trim())){   // fireplace mode: the machine is switched off
     const k = name.toLowerCase(); if (Date.now() - (fireSaid[k] || 0) > 30000){ fireSaid[k] = Date.now(); say(plat, 'always', '@' + name + ' the machine is off while the fireplace is lit. Pull up a chair and try again soon!'); }
     return;
@@ -2848,8 +2900,7 @@ function handleChat(name, msg, plat, uid){
     }
     showTourBoard(name, plat); return;
   }
-  const curCmd = '!' + CUR().toLowerCase().replace(/[^a-z0-9]/g, '');
-  if (curCmd.length > 1 && curCmd !== '!points' && msg.trim().toLowerCase().split(/\s+/)[0] === curCmd) msg = '!points';
+  if (/^!(sparks|spark)$/i.test(msg.trim().split(/\s+/)[0])) msg = '!points';
   if (/^!(boost|multiplier|multi)\b/i.test(msg.trim())){ boostStatus(name, plat); return; }
   if (/^!stats\b/i.test(msg.trim())){ statsReply(name, plat); return; }
   { const lm = msg.trim().match(/^!link\b\s*(\d{4})?/i); if (lm){ linkCmd(name, plat, uid, lm[1]); return; } }
@@ -2861,6 +2912,7 @@ function handleChat(name, msg, plat, uid){
   }
   if (/^!(daily|claim)\b/i.test(msg.trim())){ dailyCmd(name, plat); return; }
   if (/^!(commands|cmds|help)\b/i.test(msg.trim())){ commandsReply(name, plat); return; }
+  if (/^!(global|globallb|glb)\b/i.test(msg.trim())){ const k = plat + '|' + name.toLowerCase(), now = Date.now(); if (now - (cmdsAt['g' + k] || 0) > 15000){ cmdsAt['g' + k] = now; say(plat, 'always', '@' + name + ' the global leaderboard (every channel that plays Emote Slots): yhandor.com/leaderboard'); } return; }
   { const dm = msg.trim().match(/^!(duel|accept|decline|deny)\b\s*(.*)$/i); if (dm){ duelCmd(dm[1].toLowerCase(), dm[2].trim(), name, plat); return; } }
   { const bm = msg.trim().match(/^!(badges|badge|equip|unequip)\b\s*(.*)$/i); if (bm){ badgeCmd(bm[1].toLowerCase() === 'badge' ? 'badges' : bm[1].toLowerCase(), bm[2], name, plat); return; } }
   const m = msg.trim().match(/^!(spin|slots|points|bal|balance|leaderboard|lb|top|level|lvl|xp)\b\s*(\d+)?/i);
@@ -2868,13 +2920,19 @@ function handleChat(name, msg, plat, uid){
   const cmd = m[1].toLowerCase(), u = user(name, plat);
   if (cmd === 'leaderboard' || cmd === 'lb' || cmd === 'top'){ showBoard(name, plat); return; }
   if (cmd === 'level' || cmd === 'lvl' || cmd === 'xp'){ const l = lvOf(u.xp), xp = u.xp || 0; say(plat, 'points', '@' + name + ' you are level ' + l + (l < 99 ? ' (' + (LV_XP[l + 1] - xp).toLocaleString('en-US') + ' XP to level ' + (l + 1) + ')' : ' - MAX LEVEL!')); notice([...who(name, plat, DMD.BRIGHT)], [{t:'LEVEL ' + l, c:lvColor(l)}, {t:l < 99 ? '  ' + Math.floor((xp - LV_XP[l]) / (LV_XP[l + 1] - LV_XP[l]) * 100) + '% TO ' + (l + 1) : '  MAX', c:DMD.BASE}]); return; }
+  if (cmd !== 'spin' && cmd !== 'slots' && spkNeeds(u, 15000) && !spkRetry[name.toLowerCase() + 'p']){ spkRetry[name.toLowerCase() + 'p'] = 1; spkSend({peek:[spkKey(u)]}).catch(() => {}).finally(() => { handleChat(name, '!points', plat, uid, ''); delete spkRetry[name.toLowerCase() + 'p']; }); return; }   // fresh balance first
   if (cmd !== 'spin' && cmd !== 'slots'){ say(plat, 'points', '@' + name + ' you have ' + u.points.toLocaleString('en-US') + ' ' + CUR() + ' (level ' + lvOf(u.xp) + ')'); notice([...who(name, plat, DMD.BRIGHT)], [{t:u.points.toLocaleString('en-US') + ' ' + CURU(), c:DMD.GN}]); return; }
   const bet = Math.min(Math.max(S.cost, MAX_BET), Math.max(S.cost, parseInt(m[2] || S.cost, 10)));   // bets over the max are cut down to it
   const now = Date.now();
   if (S.queue.some(j => j.key === name.toLowerCase())) return;
   if (now - u.last < S.cooldown * 1000){ say(plat, 'warn', '@' + name + ' slow down! You can spin again in ' + Math.ceil((S.cooldown * 1000 - (now - u.last)) / 1000) + 's'); notice([...who(name, plat, DMD.BRIGHT)], [{t:'COOLDOWN ' + Math.ceil((S.cooldown * 1000 - (now - u.last)) / 1000) + 'S', c:DMD.RED}]); return; }
-  if (u.points < bet){ const dl = dailyLeft(u); say(plat, 'warn', '@' + name + ' you need ' + bet + ' ' + CUR() + ' to spin (you have ' + u.points.toLocaleString('en-US') + ' ' + CUR() + ')' + (dl ? '. Your !daily is back in ' + hmTxt(dl) : '. Type !daily for ' + DAILY.toLocaleString('en-US') + ' free ' + CUR() + '!')); notice([...who(name, plat, DMD.BRIGHT)], [{t:'NEED ' + bet + ' ' + CURU(), c:DMD.RED}]); return; }
-  u.points -= bet; u.last = now; u.played = true; saveUsers();
+  if (spkNeeds(u, 15000)){   // shared Sparks: lock them to this machine (and get their real balance) before the bet
+    const rk = name.toLowerCase() + '|' + plat; if (spkRetry[rk]) return; spkRetry[rk] = 1;
+    spkClaim([u]).then(g => { delete spkRetry[rk]; if (g.ok) return handleChat(name, '!spin ' + bet, plat, uid, ''); spkRefuse(g, name, plat); });
+    return;
+  }
+  if (u.points < bet){ const dl = dailyLeft(u, plat); say(plat, 'warn', '@' + name + ' you need ' + bet + ' ' + CUR() + ' to spin (you have ' + u.points.toLocaleString('en-US') + ' ' + CUR() + ')' + (dl ? '. Your !daily is back in ' + hmTxt(dl) : '. Type !daily for ' + DAILY.toLocaleString('en-US') + ' free ' + CUR() + '!')); notice([...who(name, plat, DMD.BRIGHT)], [{t:'NEED ' + bet + ' ' + CURU(), c:DMD.RED}]); return; }
+  spAdd(u, -bet); spkTouch(u); u.last = now; u.played = true; saveUsers();
   S.queue.push({key:name.toLowerCase(), name, bet, plat}); if (plat) u.plat = plat;
   renderQueue(); processQueue();
 }
@@ -3042,7 +3100,7 @@ function supportEvent(kind, amount, name, plat, test){
   const bonus = Math.round((c.bonus || 0) * units), spins = Math.min(50, Math.round((c.spins || 0) * units));
   const anon = /^(anonymous|someone)$/i.test(name);
   const u = (anon || test) ? null : user(name, plat);
-  if (u){ if (bonus){ u.points += bonus; u.played = true; } if (plat) u.plat = plat; saveUsers(); }
+  if (u){ if (bonus){ spAdd(u, bonus); u.played = true; } if (plat) u.plat = plat; saveUsers(); }
   const b = addBoostTime((c.time || 0) * per100);
   const parts = [];
   if (b) parts.push(b.started ? 'X' + b.x + ' BOOST' : '+' + minsTxt(b.mins) + ' BOOST');
@@ -3526,7 +3584,7 @@ function emoteRushRun(job, plat, pool){
       ring.innerHTML = '<svg viewBox="0 0 100 100"><circle class="rbg" cx="50" cy="50" r="46"/><circle class="rfg" cx="50" cy="50" r="46" pathLength="100"/></svg><div class="rem"></div><div class="rnum"></div>';
       ring.querySelector('.rem').appendChild(face(win));
       const col = document.createElement('div'); col.className = 'rcol';
-      col.innerHTML = '<div class="rt0 ' + (plat === 'kick' ? 'kk' : 'tw') + '"><span class="rlogo">' + PICON[plat] + '</span>' + PN + ' CHAT ONLY</div><div class="rt1">TYPE IT IN CHAT!</div><div class="rnm"></div><div class="rt2"></div><div class="rwin"></div>';
+      col.innerHTML = '<div class="rt0 ' + (plat === 'kick' ? 'kk' : 'tw') + '"><span class="rlogo">' + PICON[plat] + '</span>' + PN + ' CHAT ONLY</div><div class="rt1">EMOTE IN CHAT!</div><div class="rnm"></div><div class="rt2"></div><div class="rwin"></div>';
       col.querySelector('.rnm').textContent = code;
       col.querySelector('.rt2').textContent = 'First ' + RUSH_WINNERS + ' win ' + RUSH_PRIZE_MIN.toLocaleString('en-US') + '-' + RUSH_PRIZE_MAX.toLocaleString('en-US') + ' ' + CUR() + '!';
       hp.append(ring, col); bb.appendChild(hp);
@@ -3535,16 +3593,32 @@ function emoteRushRun(job, plat, pool){
       fit(); void hp.offsetWidth; hp.classList.add('on');
       const fg = ring.querySelector('.rfg'), nEl = ring.querySelector('.rnum'), wEl = col.querySelector('.rwin');
       const delay = Math.max(0, +RP.delay || 0), plats = [plat];
-      plats.forEach(pl => sayResult(pl, 'always', 'EMOTE RUSH! The first ' + RUSH_WINNERS + ' people to type ' + code + ' in chat win ' + RUSH_PRIZE_MIN.toLocaleString('en-US') + '-' + RUSH_PRIZE_MAX.toLocaleString('en-US') + ' ' + CUR() + ' each! You have ' + RUSH_TIME + ' seconds, GO!'));
+      /* Kick shows an emote in chat only when it's sent in Kick's emote format [emote:ID:name]; the plain name stays text.
+         The emote's Kick ID is in its picture address (files.kick.com/emotes/ID/...). Twitch turns the name into the emote by itself. */
+      const kickId = (String(win.url || '').match(/files\.kick\.com\/emotes\/(\d+)/) || [])[1];
+      const chatCode = pl => pl === 'kick' && kickId ? '[emote:' + kickId + ':' + code + ']' : code;
+      plats.forEach(pl => sayResult(pl, 'always', 'EMOTE RUSH! The first ' + RUSH_WINNERS + ' people to send the ' + chatCode(pl) + ' emote in chat win ' + RUSH_PRIZE_MIN.toLocaleString('en-US') + '-' + RUSH_PRIZE_MAX.toLocaleString('en-US') + ' ' + CUR() + ' each! You have ' + RUSH_TIME + ' seconds, GO!'));
       const got = [];
       let left = RUSH_TIME, closed = false; const tStart = performance.now();
       (function ringRun(){ if (closed) return; const f = Math.max(0, 1 - (performance.now() - tStart) / (RUSH_TIME * 1000)); fg.style.strokeDashoffset = (100 - f * 100).toFixed(2); fg.style.stroke = f > .5 ? '#36ff7a' : f > .25 ? '#ffd23a' : '#ff3a5a'; if (f > 0) requestAnimationFrame(ringRun); })();
       const words = m => String(m).replace(/\[emote:\d+:([^\]]+)\]/g, ' $1 ').split(/\s+/).filter(Boolean);
-      RUSH = {chat(name, msg, p){
-        if (closed || p !== plat || got.length >= RUSH_WINNERS || !words(msg).some(w => w.toLowerCase() === lc)) return;
+      /* Only the REAL emote counts, not its name typed out (non-subs can type the name, but Twitch/Kick won't turn it into the emote):
+         Twitch says which parts of a message are real emotes (the emotes tag); on Kick a real emote arrives as [emote:id:name].
+         Emotes that aren't the platform's own (testing/demo symbols) still match by name. */
+      const realOnly = !!RUSHSET[plat] && /^(twitch|kick)$/i.test(String(win.src || ''));
+      const twEmotes = (m, emo) => { const ch = Array.from(String(m)), out = []; String(emo || '').split('/').forEach(part => { const r = part.split(':')[1]; if (r) r.split(',').forEach(a => { const [x, y] = a.split('-').map(Number); if (y >= x) out.push(ch.slice(x, y + 1).join('')); }); }); return out; };
+      const used = (m, p, emo) => {
+        if (!realOnly) return words(m).some(w => w.toLowerCase() === lc);
+        if (p === 'kick') return [...String(m).matchAll(/\[emote:\d+:([^\]]+)\]/g)].some(x => x[1].toLowerCase() === lc);
+        return twEmotes(m, emo).some(w => w.toLowerCase() === lc);
+      };
+      RUSH = {chat(name, msg, p, emo){
+        if (closed || p !== plat || got.length >= RUSH_WINNERS) return;
+        if (/^\s*emote rush/i.test(msg) || machineSaid(p, msg)) return;   // the machine's own announcement never counts
+        if (!used(msg, p, emo)) return;
         const u = user(name, p); if (got.some(g => g.u === u)) return;   // one prize each (linked Twitch + Kick count as one)
         const amt = Math.round((RUSH_PRIZE_MIN + Math.random() * (RUSH_PRIZE_MAX - RUSH_PRIZE_MIN)) / 10) * 10;
-        u.points += amt; if (p && !u.plat) u.plat = p; got.push({u, name, plat:p, amt}); saveUsers(); renderLeaders();
+        spAdd(u, amt); if (p && !u.plat) u.plat = p; got.push({u, name, plat:p, amt}); saveUsers(); renderLeaders();
         const row = document.createElement('div'); row.innerHTML = '<i>#' + got.length + '</i> <span></span> <b>+' + amt.toLocaleString('en-US') + '</b>'; row.querySelector('span').textContent = name; wEl.appendChild(row);
         hp.classList.add('hasw'); fit();
         DMD.show(el => [[{t:'#' + got.length + ' ', c:'#ffd23a'}, ...who(name, p, DMD.BRIGHT)], [{t:'+' + amt.toLocaleString('en-US') + ' ' + CURU() + '!', c:DMD.GN}]], true);
@@ -3555,7 +3629,7 @@ function emoteRushRun(job, plat, pool){
         if (closed) return;
         nEl.textContent = left > 0 ? left : '0'; ring.classList.toggle('low', left <= 5);
         if (left > 0 && left <= 5) try { tone(left === 1 ? 1400 : 1000, 0, .08, 'square', .05); } catch(e){}
-        if (!got.length) DMD.show([[{icon:plat}, {t:' TYPE ' + code.toUpperCase() + ' IN CHAT!', c:'#ffd23a'}], [{t:left > 0 ? 'FIRST ' + RUSH_WINNERS + ' WIN! ' + left + 'S LEFT' : "TIME'S UP!", c:left <= 5 ? '#ff3a5a' : DMD.BASE}]]);
+        if (!got.length) DMD.show([[{icon:plat}, {t:' EMOTE ' + code.toUpperCase() + ' IN CHAT!', c:'#ffd23a'}], [{t:left > 0 ? 'FIRST ' + RUSH_WINNERS + ' WIN! ' + left + 'S LEFT' : "TIME'S UP!", c:left <= 5 ? '#ff3a5a' : DMD.BASE}]]);
         if (left <= 0){ col.querySelector('.rt1').textContent = "TIME'S UP!"; fit(); T.push(setTimeout(finish, delay * 1000 + 300)); return; }   // keep listening for the stream delay
         left--; T.push(setTimeout(tick, 1000));
       };
@@ -3724,7 +3798,7 @@ function wheelBonus(job, mult){
         const each = Math.round(job.bet * SG.all * mult.x), list = recentChatters();   // everyone active in the last 10 minutes, on Twitch AND Kick
         if (!list.some(c => c.name.toLowerCase() === job.name.toLowerCase() && c.plat === job.plat)) list.push({name:job.name, plat:job.plat});
         const paid = new Set();   // someone with linked Twitch and Kick accounts is paid once
-        list.forEach(c => { const u = user(c.name, c.plat); if (paid.has(u)) return; paid.add(u); u.points += each; if (c.plat && !u.plat) u.plat = c.plat; });
+        list.forEach(c => { const u = user(c.name, c.plat); if (paid.has(u)) return; paid.add(u); spAdd(u, each); if (c.plat && !u.plat) u.plat = c.plat; });
         const plats = [...new Set(list.map(c => c.plat).filter(Boolean))];
         saveUsers(); renderLeaders();
         res = {all:true, prize:SG.all, each, count:paid.size, plats, amount:0};
@@ -3869,7 +3943,7 @@ function giveCmd(cmd, arg, name, plat){
   let amt = parseInt(m[2].replace(/,/g, ''), 10); if (!amt) return say(plat, 'always', '@' + name + ' the amount has to be a number, like !' + cmd + ' ' + m[1] + ' 1000');
   amt = Math.min(10000000, Math.abs(amt)) * (cmd === 'take' || amt < 0 ? -1 : 1);
   const tk = recKey(m[1]), u = S.users[tk] || user(m[1]), before = u.points;
-  u.points = Math.max(0, u.points + amt); u.played = true; saveUsers(); renderLeaders();
+  spAdd(u, amt); u.played = true; saveUsers(); renderLeaders();
   const d = u.points - before, f = v => Math.abs(v).toLocaleString('en-US');
   say(plat, 'always', d >= 0 ? '@' + u.name + ' ' + name + ' gave you +' + f(d) + ' ' + CUR() + '! You now have ' + f(u.points) + '.' : '@' + u.name + ' ' + name + ' took ' + f(d) + ' ' + CUR() + '. You now have ' + f(u.points) + '.');
   notice([...who(u.name, plat, DMD.BRIGHT)], [{t:(d >= 0 ? '+' : '-') + f(d) + ' ' + CURU() + (d >= 0 ? ' GIFT!' : ''), c:d >= 0 ? DMD.GN : DMD.RED}]);
@@ -3987,9 +4061,9 @@ async function processQueue(){
   const jpWon = ev.kind === 'jack' ? jpPay() : 0, win = ev.kind === 'jack' ? jpWon * mult.x : wheel ? wheel.amount : bres ? bres.amount : mres ? mres.amount : rres ? job.bet : Math.round(job.bet * ev.mult * mult.x), u = user(job.name, job.plat);
   if (wheel && wheel.jp){ sndJackpotWin(); jackpotCelebrate(job.name, job.plat, win, mult.x); mach.classList.add('jackpot'); }
   tScore(job, rres ? 0 : win);   // an emote rush only hands the bet back: not a tournament win
-  if (!u.first) u.first = Date.now(); u.spins = (u.spins || 0) + 1; if (win > 0) u.won = (u.won || 0) + win; else u.lost = (u.lost || 0) + job.bet;   // !stats
+  if (!u.first) u.first = Date.now(); u.spins = (u.spins || 0) + 1; if (win > 0){ u.won = (u.won || 0) + win; const bx = Math.floor(win / Math.max(1, job.bet)); if (bx > (u.bigX || 0)) u.bigX = bx; if (win > (u.bigW || 0)) u.bigW = win; } else u.lost = (u.lost || 0) + job.bet;   // !stats (bigX = biggest win as a multiple of the bet, for the global leaderboard)
   const lvBefore = lvOf(u.xp); const xpGain = spinXp(job.bet) + (wheel && wheel.xp || 0) + (mres && mres.xp || 0); u.xp = (u.xp || 0) + xpGain; const lvUp = LV_TEST || (lvOf(u.xp) > lvBefore ? lvOf(u.xp) : 0); LV_TEST = 0;
-  u.points += win; saveUsers(); renderLeaders();
+  spAdd(u, win); spkTouch(u); saveUsers(); renderLeaders();
   if (lvUp) sayResult(job.plat, lvUp >= 99 || lvUp % 10 === 0 ? 'always' : 'wins', lvUp >= 99 ? '*** MAX LEVEL *** @' + job.name + ' just hit LEVEL 99 on the machine! A true legend!' : '@' + job.name + (lvUp % 10 === 0 ? ' MILESTONE! You hit level ' + lvUp + '!' : ' LEVEL UP! You are now level ' + lvUp + '!'));
   if (ev.kind === 'jack') sndJackpotWin(); else if (wheel || bres || mres || rres){} else if (ev.mult) sndWin(ev.mult * mult.x); else sndLose();
   {   // no emote names in chat replies: the other platform can't show them and would print the code
@@ -4152,7 +4226,7 @@ function connectTwitch(ch){
       if (+tg.bits > 0) supportEvent('bits', +tg.bits, dn || m[1], 'twitch');
       markVerified(dn || m[1], 'twitch', /(^|,)partner\//.test(tg.badges || ''));
       markSub(dn || m[1], 'twitch', /(^|,)(subscriber|founder)\//.test(tg.badges || '') || tg.subscriber === '1');
-      handleChat(dn || m[1], m[2], 'twitch', tg['user-id']);
+      handleChat(dn || m[1], m[2], 'twitch', tg['user-id'], tg.emotes || '');   // tg.emotes = which parts of the message Twitch shows as real emotes
     });
   };
   ws.onclose = () => retry('twitch', ws);
@@ -4226,7 +4300,7 @@ function showChat(bad){
 /* ================= chat replies (posted from the streamer's own account) ================= */
 let twCanSay = false, twChan = '', twAuthBad = false;
 const REPLY_KEY = 'emoteslots:reply';
-let RP = {on:false, wins:true, losses:false, points:true, warn:false, boost:true, delay:5, board:30, boardOn:true, cmds:60, cmdsOn:true};
+let RP = {on:false, wins:true, losses:false, points:true, warn:false, boost:true, delay:5, board:30, boardOn:true, cmds:60, cmdsOn:true, global:true};
 try { Object.assign(RP, JSON.parse(localStorage.getItem(REPLY_KEY) || '{}')); } catch(e){}
 if (P.get('reply')){ const r = P.get('reply'); RP = {on:true, wins:r.includes('w'), losses:r.includes('l'), points:r.includes('p'), warn:r.includes('c'), boost:r.includes('b'), delay:Math.max(0, Math.min(30, num(P.get('rd'), 5)))}; }
 if (typeof RP.delay !== 'number') RP.delay = 5;
@@ -4274,10 +4348,13 @@ function sendTwitch(text){
   ws.send('PRIVMSG #' + twChan + ' :' + text.replace(/[\r\n]+/g, ' ')); return true;
 }
 function canSay(plat){ return plat === 'twitch' ? twCanSay : !!(AUTH.kk && AUTH.kk.tok && AUTH.kk.tok.a && AUTH.kk.tok.u); }
+const SENT = [];   // the machine's own recent chat messages, so they never count as a player (e.g. an Emote Rush entry)
+const machineSaid = (plat, msg) => { const t = String(msg).trim().toLowerCase(), now = Date.now(); return SENT.some(x => x.plat === plat && now - x.at < 180000 && x.text === t); };
 async function pumpSay(plat){
   if (sayBusy[plat] || !sayQ[plat].length) return;
   sayBusy[plat] = true;
   const text = sayQ[plat].shift();
+  SENT.push({plat, text:text.trim().toLowerCase(), at:Date.now()}); if (SENT.length > 30) SENT.shift();
   try { if (plat === 'twitch') sendTwitch(text); else await sendKick(text); } catch(e){}
   setTimeout(() => { sayBusy[plat] = false; pumpSay(plat); }, 1300);   // spaced out so the platforms never rate-limit the streamer
 }
@@ -4429,10 +4506,10 @@ function renderObs(){
   q.set('vs', [VS.scale, VS.speed, +VS.glow, +VS.flicker, +VS.flash, +VS.sparks].join('-'));
   q.set('cp', [CP.bg, CP.align, CP.pad, CP.hide].join('-'));
   q.set('attract', ATTRACT_AFTER);
-  if (CUR() !== 'points') q.set('cur', CUR());
+
   if (SPIN_PACK !== 'neon') q.set('sp', SPIN_PACK);
   if (JSON.stringify(SUP) !== JSON.stringify(SUP_DEF)) q.set('sup', JSON.stringify(SUP));
-  q.set('overlay', '1'); q.set('vol', Math.round(volume * 100)); q.set('cost', S.cost); q.set('cooldown', S.cooldown); q.set('start', S.start);
+  q.set('overlay', '1'); q.set('vol', Math.round(volume * 100)); q.set('cost', S.cost); q.set('cooldown', S.cooldown); 
   if (S.activeNames.length){ q.set('emotes', S.activeNames.join(',')); }
   if (RP.on && RP.delay !== 5) q.set('rd', RP.delay);
   if (!RP.boardOn) q.set('lb', 0); else if (RP.board !== 30) q.set('lb', RP.board);
@@ -4449,10 +4526,9 @@ function renderObs(){
 /* ================= wiring ================= */
 $('#sAttract').value = String(ATTRACT_AFTER);
 $('#sAttract').onchange = e => { ATTRACT_AFTER = +e.target.value; try { localStorage.setItem('emoteslots:attract', ATTRACT_AFTER); } catch(err){} if (!ATTRACT_AFTER) stopAttract(); bump(); renderObs(); };
-$('#sCost').value = S.cost; $('#sCd').value = S.cooldown; $('#sStart').value = S.start;
+$('#sCost').value = S.cost; $('#sCd').value = S.cooldown;
 $('#sCost').oninput = e => { S.cost = Math.max(1, num(e.target.value, 10)); SET.cost = S.cost; saveSet(); refresh(); };
 $('#sCd').oninput = e => { S.cooldown = Math.max(0, num(e.target.value, 10)); SET.cooldown = S.cooldown; saveSet(); renderObs(); };
-$('#sStart').oninput = e => { S.start = Math.max(1, num(e.target.value, 1000)); SET.start = S.start; saveSet(); renderObs(); };
 function renderEmoBtns(){
   const tw = AUTH.tw && AUTH.tw.login, kk = AUTH.kk && AUTH.kk.slug;
   const tb = $('#twEmo'), kb = $('#kkEmo');
@@ -4498,24 +4574,7 @@ $('#rDelay').onchange = e => { RP.delay = +e.target.value; saveRP(); renderObs()
   ui(); window.__tmUI = ui;
 })();
 [['rOn', 'on'], ['rWins', 'wins'], ['rLosses', 'losses'], ['rPoints', 'points'], ['rWarn', 'warn'], ['rBoost', 'boost']].forEach(([id, k]) => $('#' + id).onchange = e => { RP[k] = e.target.checked; saveRP(); renderReplyUI(); renderObs(); });
-function renderCurrency(){
-  const xs = document.getElementById('xCurStat'); if (xs) xs.textContent = CUR();
-  $('#curName').value = CUR();
-  const pv = $('#curPrev'); pv.textContent = '';
-  const line = (pre, hi, post) => { const d = document.createElement('div'); d.append(pre); const b = document.createElement('span'); b.className = 'c'; b.textContent = hi; d.append(b, post || ''); pv.appendChild(d); };
-  line('Display: ', S.cost + ' ' + CURU() + ' A SPIN');
-  line('Chat: @PixelPanda you have ', '1,035 ' + CUR());
-  line('Chat: @PixelPanda Pair! 1.5x = ', '+15 ' + CUR(), ' (1,005 total)');
-  $('#curCmd').textContent = '!' + (CUR().toLowerCase().replace(/[^a-z0-9]/g, '') || 'points');
-}
-function setCurrency(name){
-  CURRENCY = (name || '').replace(/\s+/g, ' ').trim().slice(0, 8) || 'points';
-  SET.currency = CURRENCY; saveSet(); renderCurrency(); renderSupport(); resetLabel(); renderObs(); if (!S.spinning && !attracting) idleDMD();
-}
-$('#curSave').onclick = () => { ac(); sndClick(); setCurrency($('#curName').value); };
-$('#curName').onkeydown = e => { if (e.key === 'Enter') $('#curSave').click(); };
-$('#curName').oninput = () => { const keep = CURRENCY; CURRENCY = ($('#curName').value || '').trim() || 'points'; const v = $('#curName').value; renderCurrency(); $('#curName').value = v; CURRENCY = keep; const xs = document.getElementById('xCurStat'); if (xs) xs.textContent = CUR(); };
-$('#curReset').onclick = () => setCurrency('points');
+function renderCurrency(){}   // the currency is always Sparks now
 function renderPacks(){
   const box = $('#packList'); box.textContent = '';
   Object.entries(SPIN_PACKS).forEach(([k, pk]) => {
@@ -4585,12 +4644,7 @@ $('#tClear').onclick = () => {
 $('#rand8').onclick = () => { randomPick(8); refresh(); };
 $('#addAll').onclick = () => { if (!S.all.length) return; const keep = S.activeNames.filter(n => S.all.some(e => e.name === n)); S.activeNames = keep.concat(S.all.map(e => e.name).filter(n => !keep.includes(n))); refresh(); };
 $('#clearSel').onclick = () => { S.activeNames = []; refresh(); };
-const resetLabel = () => { const b = $('#resetBtn'); $('#ptsTitle').textContent = CURU(); if (!b.dataset.armed) b.textContent = 'RESET ALL ' + CURU(); };
-$('#resetBtn').onclick = () => {
-  const b = $('#resetBtn');
-  if (b.dataset.armed){ S.users = {}; saveUsers(); renderLeaders(); delete b.dataset.armed; resetLabel(); notice([{t:'ALL ' + CURU(), c:DMD.BRIGHT}], [{t:'RESET', c:DMD.RED}]); }
-  else { b.dataset.armed = '1'; b.textContent = 'CLICK AGAIN TO CONFIRM'; setTimeout(() => { delete b.dataset.armed; resetLabel(); }, 3000); }
-};
+const resetLabel = () => { $('#ptsTitle').textContent = CURU(); };   // (the reset-all-points button was removed)
 resetLabel();
 /* BACKUP: export everything the machine has saved (except sign-ins) to a file, and restore it from one */
 const BK_SKIP = ['emoteslots:auth'];   // sign-ins stay on the PC they were made on: connect again after a restore
@@ -4599,7 +4653,7 @@ const countPlayers = data => { let n = 0; Object.keys(data).filter(isPlayerKey).
 /* ================= GAME UPDATES (desktop app only, like Gielinor Casino) =================
    GAME_VERSION goes up by 0.1 every time MAKE-UPDATE.bat publishes an update (1.0, 1.1, 1.2 ...). The app compares it
    with version.json at the update address and downloads the newer game file. */
-const GAME_VERSION = '1.1';
+const GAME_VERSION = '1.3';
 (function(){
   const N = window.EmoteNative, U = N && N.update, btn = $('#updBtn'), msg = $('#updMsg');
   const nice = v => 'V' + v;
@@ -4696,6 +4750,157 @@ const LICENSE_REQUIRED = true;   // the release build script switches this on
   run();
   setInterval(run, 15000);   // the OBS source unlocks itself once the key is activated; a revoked key locks at the next check
 })();
+/* ================= GLOBAL LEADERBOARD (yhandor.com/leaderboard) =================
+   Every 10 minutes the main window sends the players whose level, badges, spins or biggest win changed. Only players with a real
+   Twitch/Kick ID are sent (the same person is the same player in every channel). Sparks are kept separately (see SHARED SPARKS). The server checks every
+   number (see yhandor-site/worker.js). Only the real app sends: test copies and files opened in a browser never do. */
+const GLB_URL = 'https://yhandor.com', GLB_KEY = 'es_Qu_bvhmxPnxo5UoQ1nc5jne8Wh-gGtdI', GLB_EVERY = 10 * 60000;
+const GLB_LIVE = location.hostname === '127.0.0.1' && P.get('dev') !== '1';
+let glbLast = 0, glbBusy = false;
+const glbMid = () => { let m = ''; try { m = localStorage.getItem('emoteslots:mid') || ''; if (!/^[a-z0-9]{16,40}$/.test(m)){ m = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join(''); localStorage.setItem('emoteslots:mid', m); } } catch(e){} return m; };
+const glbSig = u => [u.name, u.xp || 0, u.spins || 0, u.bigX || 0, (u.badges || []).length].join('|');
+async function glbSend(force){
+  if (!GLB_LIVE || glbBusy || !window.__ES.lead || window.__ES.gone) return;
+  if (!force && Date.now() - glbLast < GLB_EVERY) return;
+  const ch = [...new Set(chatTargets().map(t => t.ch))].join('/'); if (!ch) return;
+  let sent = {}; try { sent = JSON.parse(localStorage.getItem('emoteslots:gsent') || '{}'); } catch(e){}
+  const list = Object.entries(S.users).filter(([k, u]) => /^(tw|kk):\d+$/.test(k) && (u.spins || 0) > 0 && sent[k] !== glbSig(u)).slice(0, 300);
+  let odone = []; try { odone = JSON.parse(localStorage.getItem('emoteslots:odone') || '[]'); } catch(e){}
+  glbLast = Date.now(); if (!list.length && !odone.length) return;
+  glbBusy = true;
+  try {
+    const body = {mid:glbMid(), ch, ver:GAME_VERSION, ordersDone:odone, players:list.map(([k, u]) => ({pid:k, name:u.name, plat:k.startsWith('kk:') ? 'kick' : 'twitch', xp:u.xp || 0, spins:u.spins || 0, bigx:u.bigX || 0, badges:(u.badges || []).filter(id => BADGES[id])}))};
+    const r = await fetch(GLB_URL + '/api/submit', {method:'POST', headers:{'Content-Type':'application/json', 'X-ES-Key':GLB_KEY}, body:JSON.stringify(body)});
+    const j = await r.json().catch(() => null);
+    if (r.ok && j && j.ok){ list.forEach(([k, u]) => sent[k] = glbSig(u)); try { localStorage.setItem('emoteslots:gsent', JSON.stringify(sent)); } catch(e){}
+      try { const left = (JSON.parse(localStorage.getItem('emoteslots:odone') || '[]')).filter(x => !odone.some(y => y.id === x.id)); localStorage.setItem('emoteslots:odone', JSON.stringify(left)); } catch(e){}
+      glbOrders(j.orders);
+      const m = $('#glbMsg'); if (m) m.dataset.last = 'Last sent ' + new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}) + ': ' + j.saved + ' player' + (j.saved === 1 ? '' : 's') + '.'; glbUI(); }
+  } catch(e){}
+  glbBusy = false;
+}
+/* Sparks Shop buys from yhandor.com/sparks-shop: the Sparks were already taken there (paid), so the machine only gives the badge.
+   Each order is answered once in the next upload (ordersDone); a refusal (already owned, unknown badge) gives the Sparks back. */
+function glbOrders(list){
+  if (!Array.isArray(list) || !list.length) return;
+  let done = [], seen = {};
+  try { done = JSON.parse(localStorage.getItem('emoteslots:odone') || '[]'); seen = JSON.parse(localStorage.getItem('emoteslots:oseen') || '{}'); } catch(e){}
+  list.forEach(o => {
+    if (!o || !o.id || seen[o.id] || o.type !== 'badge' || !o.paid) return;
+    const u = S.users[resolveLink(o.pid)] || S.users[o.pid]; if (!u) return;   // not a player on this machine
+    let ok = false;
+    if (BADGES[o.badge] && !(u.badges || []).includes(o.badge)){ u.badges = u.badges || []; u.badges.push(o.badge); const sl = slotOf(o.badge); if (!u[sl]) u[sl] = o.badge; saveUsers(); ok = true; }   // straight onto their record (a name lookup could miss a linked player)
+    seen[o.id] = Date.now(); done.push({id:o.id, ok});
+    if (ok) say(u.plat || 'twitch', 'always', '@' + u.name + ' your ' + BADGES[o.badge].name + ' badge from the Sparks Shop is here! Type !badges to wear it.');
+  });
+  Object.keys(seen).forEach(id => { if (Date.now() - seen[id] > 30 * 864e5) delete seen[id]; });
+  try { localStorage.setItem('emoteslots:odone', JSON.stringify(done)); localStorage.setItem('emoteslots:oseen', JSON.stringify(seen)); } catch(e){}
+}
+function glbUI(){ const m = $('#glbMsg'); if (!m) return; m.textContent = "Every machine is on the global leaderboard at yhandor.com/leaderboard. Each player's name, level, badges, spins and biggest win are shared every 10 minutes. Sparks are shared too: a player has the same balance on every channel. !global posts the link in chat." + (m.dataset.last ? ' ' + m.dataset.last : ''); }
+/* ================= SHARED SPARKS (yhandor.com holds every player's one balance) =================
+   Sparks follow a player to every channel. This machine keeps a copy so spins never wait, sends what changed every few
+   seconds (ops), and asks yhandor.com before a player's first bet here ("claim"): a player can only bet on one machine at a
+   time, until 1 minute after their last spin there. !daily is granted by yhandor.com (once per platform every 24 hours).
+   Only players with a real Twitch/Kick ID take part; test copies and files opened in a browser keep their own local Sparks. */
+var SPK_URL = GLB_URL, SPK_ON = GLB_LIVE;
+var SPK_EVERY = 5000, SPK_STORE = 'emoteslots:spk';
+var SPK = {q:{}, inf:null, mig:false, touched:{}, busy:null, down:0, lockMs:60000};
+try { const j = JSON.parse(localStorage.getItem(SPK_STORE) || 'null'); if (j){ SPK.q = j.q || {}; SPK.inf = j.inf || null; SPK.mig = !!j.mig; } } catch(e){}
+var spkRetry = {};
+function spkSave(){ try { localStorage.setItem(SPK_STORE, JSON.stringify({q:SPK.q, inf:SPK.inf, mig:SPK.mig})); } catch(e){} }
+function keyOfUser(u){ for (const k in S.users) if (S.users[k] === u) return k; return null; }
+function spkKey(u){ if (!SPK_ON || !u) return null; const k = keyOfUser(u); return k && /^(tw|kk):\d+$/.test(k) ? k : null; }
+function spkNeeds(u, margin){   // true = ask yhandor.com first (their lock here is missing or about to run out)
+  if (!spkKey(u) || Date.now() - (u.spJust || 0) < 3000) return false;   // just claimed: go ahead
+  return !((u.spHeld || 0) - Date.now() > Math.min(margin || 0, SPK.lockMs * 0.4));
+}
+function spAdd(u, d){   // every change to a player's Sparks goes through here
+  d = Math.round(+d || 0); if (!u || !d) return;
+  u.points = Math.max(0, (u.points || 0) + d);
+  const k = spkKey(u); if (k){ SPK.q[k] = (SPK.q[k] || 0) + d; spkSave(); }
+}
+function spkTouch(u){ const k = spkKey(u); if (k) SPK.touched[k] = 1; }   // they just played here: keep them locked to this machine
+const spkId = () => Array.from(crypto.getRandomValues(new Uint8Array(8)), b => b.toString(16).padStart(2, '0')).join('');
+function spkApply(r){   // fresh balances, locks and daily timers from yhandor.com
+  const now = Date.now();
+  Object.entries(r.wallets || {}).forEach(([k, w]) => {
+    const u = S.users[resolveLink(k)] || S.users[k]; if (!u) return;
+    u.points = Math.max(0, w.sparks + (SPK.q[k] || 0));
+    u.spHeld = w.held ? now + w.held : w.ch ? 0 : Math.min(u.spHeld || 0, now); u.spBusy = w.ch ? {ch:w.ch, until:now + w.left} : null; u.spAt = now;
+    u.dailyP = Object.assign({}, u.dailyP); u.dailyP.twitch = w.dtw ? now + w.dtw - DAILY_MS : 0; u.dailyP.kick = w.dkk ? now + w.dkk - DAILY_MS : 0;
+  });
+  saveUsers(); try { renderLeaders(); } catch(e){}
+}
+async function spkPost(body){
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 6000);
+  try {
+    const r = await fetch(SPK_URL + '/api/sparks', {method:'POST', headers:{'Content-Type':'application/json', 'X-ES-Key':GLB_KEY}, body:JSON.stringify(body), signal:ctl.signal});
+    const j = await r.json().catch(() => null); if (!r.ok || !j || !j.ok) throw new Error('sparks ' + r.status);
+    SPK.down = 0; return j;
+  } catch(e){ SPK.down = Date.now(); throw e; } finally { clearTimeout(t); }
+}
+async function spkMigrate(){   // once per machine: each player's Sparks from before they were shared (yhandor.com keeps the higher balance)
+  if (!SPK_ON || SPK.mig) return;
+  const all = Object.entries(S.users).filter(([k]) => /^(tw|kk):\d+$/.test(k));
+  for (let i = 0; i < all.length; i += 300){
+    await spkPost({mid:glbMid(), ch:spkCh(), legacy:all.slice(i, i + 300).map(([k, u]) => ({pid:k, pts:Math.max(0, Math.floor(u.points || 0)), dtw:dailyAt(u, 'twitch'), dkk:dailyAt(u, 'kick')}))});
+  }
+  SPK.mig = true; spkSave();
+}
+const spkCh = () => { try { return [...new Set(chatTargets().map(t => t.ch))].join('/') || S.channel || ''; } catch(e){ return S.channel || ''; } };
+function spkSend(extra){   // one request at a time; everything waiting goes in the next one
+  if (!SPK_ON) return Promise.resolve(null);
+  const run = async () => {
+    if (!SPK.mig) await spkMigrate();
+    if (!SPK.inf && Object.keys(SPK.q).length){ SPK.inf = {id:spkId(), list:Object.entries(SPK.q).filter(([, d]) => d).map(([pid, d]) => ({pid, d}))}; SPK.q = {}; spkSave(); }
+    const claim = [...new Set([...(extra.claim || []), ...Object.keys(SPK.touched)])]; SPK.touched = {};
+    const body = {mid:glbMid(), ch:spkCh(), claim, peek:extra.peek || [], daily:extra.daily || [], links:extra.links || []};
+    if (SPK.inf) body.ops = SPK.inf;
+    let r; try { r = await spkPost(body); } catch(e){ claim.forEach(k => { if (!(extra.claim || []).includes(k)) SPK.touched[k] = 1; }); throw e; }
+    if (SPK.inf && r.done === SPK.inf.id){ SPK.inf = null; spkSave(); }
+    if (r.lockMs) SPK.lockMs = r.lockMs;
+    spkApply(r); return r;
+  };
+  const p = (SPK.busy || Promise.resolve()).catch(() => {}).then(run);
+  const tail = p.catch(() => {}); SPK.busy = tail; tail.then(() => { if (SPK.busy === tail) SPK.busy = null; });
+  return p;
+}
+async function spkClaim(users){   // -> {ok} or {ok:false, who, ch, left} or {ok:false, down:true}
+  const ks = users.map(spkKey);
+  if (!ks.some(Boolean)) return {ok:true};
+  try { const r = await spkSend({claim:ks.filter(Boolean)});
+    for (let i = 0; i < users.length; i++){ if (ks[i] && !r.claims[ks[i]]){ const w = r.wallets[ks[i]] || {}; return {ok:false, who:users[i], ch:w.ch || 'another channel', left:w.left || 60000}; } }
+    users.forEach(u => { if (spkKey(u)) u.spJust = Date.now(); });
+    return {ok:true};
+  } catch(e){   // yhandor.com can't be reached: whoever was playing HERE in the last 10 minutes carries on (it all catches up later)
+    if (users.every(u => !spkKey(u) || (u.spHeld || 0) > Date.now() - 600000)){ users.forEach(u => { const k = spkKey(u); if (k){ SPK.touched[k] = 1; u.spJust = Date.now(); } }); return {ok:true, offline:true}; }
+    return {ok:false, down:true};
+  }
+}
+function spkRefuse(g, name, plat, what){
+  const k = 'refuse|' + name.toLowerCase(), now = Date.now(); if (now - (spkRetry[k] || 0) < 8000) return; spkRetry[k] = now;
+  if (g.down) return say(plat, 'always', '@' + name + ' Sparks can’t be reached right now. Try again in a minute.');
+  const ch = String(g.ch || 'another channel').split('/')[0], secs = Math.max(1, Math.ceil((g.left || 0) / 1000));
+  say(plat, 'always', '@' + name + ' ' + (what ? what + ' is off: ' + name + ' is' : 'you are') + ' playing on ' + ch + '’s machine right now. ' + (what ? '' : 'You can play here ' + secs + 's after your last spin there.'));
+  notice([...who(name, plat, DMD.BRIGHT)], [{t:'PLAYING ON ' + ch.toUpperCase(), c:DMD.RED}]);
+}
+async function spkDaily(u, plat){   // -> {ok} / {ok:false} / 'down'
+  const k = spkKey(u); if (!k) return null;
+  const id = spkId();
+  try { const r = await spkSend({daily:[{id, pid:k, plat}]}); return r.daily[id] || 'down'; } catch(e){ return 'down'; }
+}
+function spkLinked(a, b, an, bn){   // !link joined two records: their wallets join on yhandor.com too
+  if (!SPK_ON || !/^(tw|kk):\d+$/.test(a) || !/^(tw|kk):\d+$/.test(b)) return;
+  if (SPK.q[b]){ SPK.q[a] = (SPK.q[a] || 0) + SPK.q[b]; delete SPK.q[b]; spkSave(); }
+  spkSend({links:[[a, b, an || '', bn || '']], peek:[a]}).catch(() => {});
+}
+setInterval(() => {   // send what changed (and keep players locked to this machine while they play)
+  if (!SPK_ON || !window.__ES.lead || window.__ES.gone) return;
+  if (SPK.inf || Object.keys(SPK.q).length || Object.keys(SPK.touched).length || !SPK.mig) spkSend({}).catch(() => {});
+}, SPK_EVERY);
+setTimeout(() => glbSend(true), 90000);              // a first batch shortly after the machine starts
+setInterval(() => glbSend(false), 60000);
+glbUI();
 $('#exportBtn').onclick = async () => {
   const data = {}; for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k && k.indexOf('emoteslots:') === 0 && !BK_SKIP.includes(k)) data[k] = localStorage.getItem(k); }
   const d = new Date(), stamp = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -4763,7 +4968,7 @@ function renderCmds(){
     ['!spin', 'Spin the machine for ' + f(S.cost) + ' ' + cur + '. <b>!slots</b> works too.'],
     ['!spin <i>50</i>', 'Bet more per spin, up to ' + f(Math.max(S.cost, MAX_BET)) + '. Bigger bets win bigger.'],
     ['!points', 'Shows your balance and level. <b>!bal</b>, <b>!balance</b>' + (cc !== '!points' ? ' and <b>' + cc + '</b>' : '') + ' work too.'],
-    ['!daily', 'Free ' + f(DAILY) + ' ' + cur + ' once every 24 hours. <b>!claim</b> works too.'],
+    ['!daily', 'Free ' + f(DAILY) + ' ' + cur + ' once every 24 hours in each chat, so a player with linked Twitch and Kick accounts can claim in both. <b>!claim</b> works too.'],
     ['!stats', 'Your points, level, XP, first spin, total spins and total won / lost.'],
     ['!level', 'Your level and how much XP to the next one. <b>!lvl</b> and <b>!xp</b> work too.'],
     ['!leaderboard', 'The top players. <b>!lb</b> and <b>!top</b> work too.'],
@@ -4772,10 +4977,11 @@ function renderCmds(){
     ['!unequip', 'Take your badges off. <b>!unequip normal</b> or <b>!unequip rare</b> takes off just one.'],
     ['!link', 'Joins your Twitch and Kick into one: points, XP, badges and stats add up. Type <b>!link</b> in one chat, then <b>!link 1234</b> (the code it gives you) in the other within 5 minutes.'],
     ['!duel @<i>name</i> <i>500</i>', 'Challenge another player for points. They have 60 seconds to type <b>!accept</b> or <b>!decline</b>. Both put in the same amount and a coin flip decides: the winner takes both. <b>!duel @name all</b> bets everything, <b>!duel cancel</b> takes your challenge back. Duels stay in one chat (Twitch vs Twitch, Kick vs Kick).'],
+    ['!global', 'Posts the link to the global leaderboard (<b>yhandor.com/leaderboard</b>), where players from every channel that plays Emote Slots are ranked by level, badges, biggest win and spins.'],
     ['!commands', 'Posts every viewer command in chat. <b>!cmds</b> and <b>!help</b> work too.'],
     ['!boost', 'Shows whether a multiplier is running and how long is left. <b>!multiplier</b> works too.'],
     ['!tournament', 'Tournament standings while one is running. <b>!tlb</b> works too.'],
-    ['<i>the emote</i>', 'During an <b>EMOTE RUSH</b>, type the emote shown on the machine. Only the chat the spin came from (Twitch or Kick) can play. The first 3 people win 1,000-5,000 points each. You get 30 seconds.'],
+    ['<i>the emote</i>', 'During an <b>EMOTE RUSH</b>, send the emote shown on the machine. It has to be the real emote (typing its name does not count, so non-subs cannot win with sub emotes). Only the chat the spin came from (Twitch or Kick) can play. The first 3 people win 1,000-5,000 points each. You get 30 seconds.'],
     ['<i>A / B / C or 1 / 2 / 3</i>', 'During your minigame, type the letter or number of the box you want (or <b>!pick B</b>). You get 15 seconds.']
   ];
   const ST = [
@@ -4968,7 +5174,7 @@ if (window.__ES.on){
   window.__esGone = () => {   // the desktop app was closed: stop taking spins, finish what's queued, then power the machine off
     S.wantChat = false; Object.values(S.socks).forEach(ws => { try { ws.onclose = null; ws.close(); } catch(e){} }); S.socks = {};
     try { if (attracting) stopAttract(); } catch(e){}
-    S.queue.splice(0).forEach(j => { const u = findUser(j.name || '', j.plat); if (u && j.bet && !j.free) u.points += j.bet; }); try { saveUsers(); renderQueue(); } catch(e){}
+    S.queue.splice(0).forEach(j => { const u = findUser(j.name || '', j.plat); if (u && j.bet && !j.free) spAdd(u, j.bet); }); try { saveUsers(); renderQueue(); } catch(e){} spkSend({}).catch(() => {});
     (function off(){ if (S.spinning) return setTimeout(off, 500); clearTimeout(hideT); $('#stack').classList.add('away'); })();
   };
   window.__esLead = on => {
