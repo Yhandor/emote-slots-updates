@@ -2774,6 +2774,7 @@ const statsAt = {};
 function statsReply(name, plat){
   const k = name.toLowerCase(), now = Date.now(); if (now - (statsAt[k] || 0) < 10000) return; statsAt[k] = now;
   const u = findUser(name, plat), f = n => Math.round(n || 0).toLocaleString('en-US');
+  if (u && spkNeeds(u, 15000) && !spkRetry[k + 's']){ spkRetry[k + 's'] = 1; spkSend({peek:[spkKey(u)]}).catch(() => {}).finally(() => { statsAt[k] = 0; statsReply(name, plat); delete spkRetry[k + 's']; }); return; }   // shared Sparks: fresh balance first
   if (!u || (!u.spins && !u.duelW && !u.duelL)){ say(plat, 'always', '@' + name + ' no stats yet - type !spin to play!' + (u ? ' (' + f(u.points) + ' ' + CUR() + ')' : '')); return; }
   const l = lvOf(u.xp), xp = u.xp || 0, pct = l < 99 ? Math.floor((xp - LV_XP[l]) / (LV_XP[l + 1] - LV_XP[l]) * 100) : 100;
   const since = new Date(u.first || now).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
@@ -3703,7 +3704,7 @@ function wheelBonus(job, mult){
     const tw = WHEEL_SEGS.reduce((a, x) => a + x.w, 0); let rr = Math.random() * tw, pickI = 0;
     for (let i = 0; i < N; i++){ rr -= WHEEL_SEGS[i].w; if (rr <= 0){ pickI = i; break; } }
     const SG = WHEEL_SEGS[pickI];
-    const label = sg => sg.jp ? 'JACKPOT' : sg.all ? 'ALL ' + sg.all + 'X' : sg.x + 'X';
+    const label = sg => sg.jp ? 'JACKPOT' : sg.all ? 'ALL ' + sg.all + 'X' : sg.xp ? sg.xp.toLocaleString('en-US') + ' XP' : sg.x + 'X';   // XP spaces have no x
     const T = [], ivs = [];
     const slam = () => {};   // no pop-up text over the wheel: the display tells the story
     const slamOld = (txt, col, hold) => { big.textContent = txt; big.style.fontSize = Math.min(48, Math.floor(W * 1.45 / Math.max(3, txt.length))) + 'px'; big.style.setProperty('--wc', col || '#ffd24a'); big.className = 'wbig'; void big.offsetWidth; big.className = 'wbig ' + (hold ? 'hold' : 'slam'); };
@@ -4691,7 +4692,7 @@ const countPlayers = data => { let n = 0; Object.keys(data).filter(isPlayerKey).
 /* ================= GAME UPDATES (desktop app only, like Gielinor Casino) =================
    GAME_VERSION goes up by 0.1 every time MAKE-UPDATE.bat publishes an update (1.0, 1.1, 1.2 ...). The app compares it
    with version.json at the update address and downloads the newer game file. */
-const GAME_VERSION = '1.5';
+const GAME_VERSION = '1.6';
 (function(){
   const N = window.EmoteNative, U = N && N.update, btn = $('#updBtn'), msg = $('#updMsg');
   const nice = v => 'V' + v;
@@ -4881,7 +4882,8 @@ async function spkMigrate(){   // once per machine: each player's Sparks from be
   if (!SPK_ON || SPK.mig) return;
   const all = Object.entries(S.users).filter(([k]) => /^(tw|kk):\d+$/.test(k));
   for (let i = 0; i < all.length; i += 300){
-    await spkPost({mid:glbMid(), ch:spkCh(), legacy:all.slice(i, i + 300).map(([k, u]) => ({pid:k, pts:Math.max(0, Math.floor(u.points || 0)), dtw:dailyAt(u, 'twitch'), dkk:dailyAt(u, 'kick')}))});
+    const r = await spkPost({mid:glbMid(), ch:spkCh(), legacy:all.slice(i, i + 300).map(([k, u]) => ({pid:k, pts:Math.max(0, Math.floor(u.points || 0)), dtw:dailyAt(u, 'twitch'), dkk:dailyAt(u, 'kick')}))});
+    spkApply(r);   // their real shared balances replace the old local ones right away
   }
   SPK.mig = true; spkSave();
 }
