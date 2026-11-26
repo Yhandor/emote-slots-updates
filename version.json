@@ -1,7 +1,7 @@
 {
-  "version": "1.9",
-  "sha256": "3314397acccdc83e81265483471ee894f32a325d9bf8f35b44f605eb8afdd514",
-  "notes": "1.9",
+  "version": "1.10",
+  "sha256": "b1d12d7645d55b9d195e8b4f3f21c07c90c3e50eaa86b227a4b32356491e29fd",
+  "notes": "2.0 last one tonight",
   "minApp": "1.0.7",
   "appUrl": ""
 }
