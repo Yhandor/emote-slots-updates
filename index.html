@@ -1863,9 +1863,9 @@ const SUB_IMG = new Image(); SUB_IMG.src = 'data:image/svg+xml;utf8,' + encodeUR
 /* LEVELS 1-99 (RuneScape XP curve: 99 is a very long grind, level 92 is halfway). Every spin earns 1 XP per point bet. */
 const XP_PER_POINT = .3, LV_XP = [0, 0];   // spin XP: 0.3 per point bet, 1 to 150 (a 500 bet = 150 XP)
 const spinXp = bet => Math.max(1, Math.min(150, Math.round(bet * XP_PER_POINT)));
-{ let pts = 0; for (let l = 1; l < 99; l++){ pts += Math.floor(l + 300 * Math.pow(2, l / 7)); LV_XP.push(Math.floor(pts / 4)); } }   // LV_XP[n] = XP needed for level n
+{ let pts = 0; for (let l = 1; l < 99; l++){ pts += Math.floor(l + 300 * Math.pow(2, l / 7)); LV_XP.push(Math.floor(pts / 4)); } const k = 1e8 / LV_XP[99]; for (let l = 2; l < 99; l++) LV_XP[l] = Math.round(LV_XP[l] * k); LV_XP[99] = 1e8; }   // LV_XP[n] = XP needed for level n: the RuneScape-style curve stretched so 99 takes 100,000,000 XP (same formula on yhandor.com)
 const lvOf = xp => { let l = 1; while (l < 99 && (xp || 0) >= LV_XP[l + 1]) l++; return l; };
-const lvColor = l => l >= 99 ? '#ffd24a' : l >= 90 ? '#ff3a5a' : l >= 70 ? '#ff9a1a' : l >= 50 ? '#b04aff' : l >= 30 ? '#3af0ff' : l >= 10 ? '#36ff7a' : '#9aa4b0';
+const lvColor = l => l >= 99 ? '#ffd24a' : l >= 90 ? '#f2f6ff' : l >= 80 ? '#6a5cff' : l >= 70 ? '#3af0ff' : l >= 60 ? '#ff5ce0' : l >= 50 ? '#ff2d55' : l >= 40 ? '#ff8a1a' : l >= 30 ? '#a64aff' : l >= 20 ? '#3a8bff' : l >= 10 ? '#4ade4a' : '#9aa4b0';   // rarity tiers: common, uncommon, rare, epic, legendary, mythic, divine, celestial, cosmic, radiant; 99 is gold
 const LV_DIG = {'0':'111101101101111','1':'010110010010111','2':'111001111100111','3':'111001111001111','4':'101101111001001','5':'111100111001111','6':'111100111101111','7':'111001001001001','8':'111101111101111','9':'111101111001111'};
 function lvGlyph(l){   // a filled pixel tag with the level number cut out of it
   const ds = String(l).split(''), w = 2 + ds.length * 4 - 1 + 2 - 1, rows = [];
@@ -4070,16 +4070,16 @@ async function processQueue(){
     if (rres){}   // the emote rush posts its own messages
     else if (wheel && wheel.jp) sayResult(job.plat, 'always', '@' + job.name + ' spun the BONUS WHEEL and it landed on the JACKPOT! +' + win.toLocaleString('en-US') + ' ' + CUR() + '!');
     else if (mres && mres.badge) sayResult(job.plat, 'always', '*** RARE BADGE *** @' + job.name + ' just unlocked the SUPER RARE ' + BADGES[mres.badge].name + ' badge in ' + mres.game + (mres.equipped ? '! It is now in your rare badge slot.' : '!') + ' Only about 1 in 40 minigames drop one. Plus +' + mres.amount.toLocaleString('en-US') + ' ' + CUR() + '! (!badge to see yours)');
-    else if (mres) sayResult(job.plat, 'always', '@' + job.name + (mres.auto ? ' ran out of time, so ' + mres.key + ' was picked:' : ' picked ' + mres.key + ' in ' + mres.game + ' and won') + ' ' + mres.prize.x + 'X' + (mres.prize.type === 'xp' ? ' XP = +' + mres.xp.toLocaleString('en-US') + ' XP!' : ' = +' + mres.amount.toLocaleString('en-US') + ' ' + CUR() + (mres.badge ? ' AND the ' + BADGES[mres.badge].name + ' badge!' : '!')));
-    else if (bres) sayResult(job.plat, 'always', (bres.dup ? '' : '*** NEW BADGE *** ') + '@' + job.name + (bres.dup ? ' hit the BADGE BONUS but already has every badge, so they get +' + bres.amount.toLocaleString('en-US') + ' ' + CUR() + ' instead!' : ' hit the BADGE BONUS and won the ' + bres.name + ' badge!' + (bres.equipped ? ' It is now showing next to your name.' : ' Type !equip ' + bres.name.toLowerCase() + ' to wear it.') + ' (!badge to see yours)'));
+    else if (mres) sayResult(job.plat, 'always', '@' + job.name + (mres.auto ? ' ran out of time, so ' + mres.key + ' was picked:' : ' picked ' + mres.key + ' in ' + mres.game + ' and won') + ' ' + mres.prize.x + 'X' + (mres.prize.type === 'xp' ? ' XP = +' + mres.xp.toLocaleString('en-US') + ' XP!' : ' = +' + mres.amount.toLocaleString('en-US') + ' ' + CUR() + (mres.badge ? ' AND the ' + BADGES[mres.badge].name + ' badge!' : '!') + ' | +' + xpGain.toLocaleString('en-US') + ' XP'));
+    else if (bres) sayResult(job.plat, 'always', (bres.dup ? '' : '*** NEW BADGE *** ') + '@' + job.name + (bres.dup ? ' hit the BADGE BONUS but already has every badge, so they get +' + bres.amount.toLocaleString('en-US') + ' ' + CUR() + ' instead!' : ' hit the BADGE BONUS and won the ' + bres.name + ' badge!' + (bres.equipped ? ' It is now showing next to your name.' : ' Type !equip ' + bres.name.toLowerCase() + ' to wear it.') + ' (!badge to see yours)') + ' | +' + xpGain.toLocaleString('en-US') + ' XP');
     else if (wheel && wheel.xp) sayResult(job.plat, 'wins', '@' + job.name + ' spun the BONUS WHEEL and won ' + wheel.xp.toLocaleString('en-US') + ' XP!');
     else if (wheel && wheel.all){   // announced in every chat that got paid
       const where = (wheel.plats || [job.plat]).length > 1 ? 'Twitch and Kick' : (wheel.plats || [job.plat])[0] === 'kick' ? 'Kick' : 'Twitch';
       (wheel.plats && wheel.plats.length ? wheel.plats : [job.plat]).forEach(pl => sayResult(pl, 'always', (pl === job.plat ? '@' + job.name : job.name) + ' spun the BONUS WHEEL and hit EVERYONE WINS! ' + wheel.count + ' people in ' + where + ' chat get +' + wheel.each.toLocaleString('en-US') + ' ' + CUR() + ' each!'));
     }
-    else if (wheel) sayResult(job.plat, 'wins', '@' + job.name + ' hit the BONUS WHEEL! It landed on ' + wheel.prize + 'x' + (mult.x > 1 ? ' with the X' + mult.x + ' boost' : '') + ' = +' + win.toLocaleString('en-US') + ' ' + CUR() + ' (' + u.points.toLocaleString('en-US') + ' total)');
-    else if (ev.mult) sayResult(job.plat, 'wins', '@' + job.name + ' ' + (ev.kind === 'jack' ? 'JACKPOT! Won the ' + jpWon.toLocaleString('en-US') + ' ' + CUR() + ' jackpot' : (ev.top === 'mythic' ? '*** MYTHIC *** 3 in a row! ' : ev.top === 'legendary' ? '** LEGENDARY ** 3 in a row! ' : ev.label.startsWith('3') ? '3 in a row! ' : 'Pair! ') + ev.mult + 'x') + (mult.x > 1 ? ' with the X' + mult.x + ' boost' : '') + ' = +' + win.toLocaleString('en-US') + ' ' + CUR() + ' (' + u.points.toLocaleString('en-US') + ' total)');
-    else sayResult(job.plat, 'losses', '@' + job.name + ' no luck this time (' + u.points.toLocaleString('en-US') + ' ' + CUR() + ' left)'); }
+    else if (wheel) sayResult(job.plat, 'wins', '@' + job.name + ' hit the BONUS WHEEL! It landed on ' + wheel.prize + 'x' + (mult.x > 1 ? ' with the X' + mult.x + ' boost' : '') + ' = +' + win.toLocaleString('en-US') + ' ' + CUR() + ' (' + u.points.toLocaleString('en-US') + ' total)' + ' | +' + xpGain.toLocaleString('en-US') + ' XP');
+    else if (ev.mult) sayResult(job.plat, 'wins', '@' + job.name + ' ' + (ev.kind === 'jack' ? 'JACKPOT! Won the ' + jpWon.toLocaleString('en-US') + ' ' + CUR() + ' jackpot' : (ev.top === 'mythic' ? '*** MYTHIC *** 3 in a row! ' : ev.top === 'legendary' ? '** LEGENDARY ** 3 in a row! ' : ev.label.startsWith('3') ? '3 in a row! ' : 'Pair! ') + ev.mult + 'x') + (mult.x > 1 ? ' with the X' + mult.x + ' boost' : '') + ' = +' + win.toLocaleString('en-US') + ' ' + CUR() + ' (' + u.points.toLocaleString('en-US') + ' total)' + ' | +' + xpGain.toLocaleString('en-US') + ' XP');
+    else sayResult(job.plat, 'losses', '@' + job.name + ' no luck this time (' + u.points.toLocaleString('en-US') + ' ' + CUR() + ' left)' + ' | +' + xpGain.toLocaleString('en-US') + ' XP'); }
   if (wheel || bres || mres || rres){ /* the wheel / carousel / minigame / emote rush already showed its result */ }
   else if (ev.mult){
     document.documentElement.style.setProperty('--glow', ev.kind === 'jack' ? '#ffd24a' : '#00ff00');
@@ -4653,7 +4653,7 @@ const countPlayers = data => { let n = 0; Object.keys(data).filter(isPlayerKey).
 /* ================= GAME UPDATES (desktop app only, like Gielinor Casino) =================
    GAME_VERSION goes up by 0.1 every time MAKE-UPDATE.bat publishes an update (1.0, 1.1, 1.2 ...). The app compares it
    with version.json at the update address and downloads the newer game file. */
-const GAME_VERSION = '1.3';
+const GAME_VERSION = '1.4';
 (function(){
   const N = window.EmoteNative, U = N && N.update, btn = $('#updBtn'), msg = $('#updMsg');
   const nice = v => 'V' + v;
@@ -4769,7 +4769,7 @@ async function glbSend(force){
   glbLast = Date.now(); if (!list.length && !odone.length) return;
   glbBusy = true;
   try {
-    const body = {mid:glbMid(), ch, ver:GAME_VERSION, ordersDone:odone, players:list.map(([k, u]) => ({pid:k, name:u.name, plat:k.startsWith('kk:') ? 'kick' : 'twitch', xp:u.xp || 0, spins:u.spins || 0, bigx:u.bigX || 0, badges:(u.badges || []).filter(id => BADGES[id])}))};
+    const ct = chatTargets(), body = {mid:glbMid(), ch, tw:(ct.find(t => t.plat === 'twitch') || {}).ch || '', kk:(ct.find(t => t.plat === 'kick') || {}).ch || '', ver:GAME_VERSION, ordersDone:odone, players:list.map(([k, u]) => ({pid:k, name:u.name, plat:k.startsWith('kk:') ? 'kick' : 'twitch', xp:u.xp || 0, spins:u.spins || 0, bigx:u.bigX || 0, badges:(u.badges || []).filter(id => BADGES[id])}))};
     const r = await fetch(GLB_URL + '/api/submit', {method:'POST', headers:{'Content-Type':'application/json', 'X-ES-Key':GLB_KEY}, body:JSON.stringify(body)});
     const j = await r.json().catch(() => null);
     if (r.ok && j && j.ok){ list.forEach(([k, u]) => sent[k] = glbSig(u)); try { localStorage.setItem('emoteslots:gsent', JSON.stringify(sent)); } catch(e){}
@@ -4894,6 +4894,34 @@ function spkLinked(a, b, an, bn){   // !link joined two records: their wallets j
   if (SPK.q[b]){ SPK.q[a] = (SPK.q[a] || 0) + SPK.q[b]; delete SPK.q[b]; spkSave(); }
   spkSend({links:[[a, b, an || '', bn || '']], peek:[a]}).catch(() => {});
 }
+/* BADGE PICKS from the Player Area on yhandor.com: every minute, the badges players chose to wear since the last check.
+   badge = the normal slot, rbadge = the rare slot. null = not changed on the site, '' = take it off.
+   A badge is only put on if this machine knows they own it (badges are earned per machine). */
+async function glbPicks(){
+  if (!SPK_ON || !window.__ES.lead || window.__ES.gone) return;
+  let since = 0; try { since = +localStorage.getItem('emoteslots:picksAt') || 0; } catch(e){}
+  try {
+    const r = await fetch(SPK_URL + '/api/picks?since=' + since, {headers:{'X-ES-Key':GLB_KEY}, cache:'no-store'});
+    const j = await r.json().catch(() => null); if (!r.ok || !j || !j.ok) return;
+    let changed = false;
+    (j.picks || []).forEach(pk => {
+      const seen = new Set();
+      (pk.pids || [pk.pid]).forEach(pid => {
+        const u = S.users[resolveLink(pid)]; if (!u || seen.has(u)) return; seen.add(u);
+        [['badge', pk.badge], ['rbadge', pk.rbadge]].forEach(([slot, id]) => {
+          if (id === null || id === undefined) return;   // not changed on the site
+          if (id === ''){ if (u[slot]){ u[slot] = null; changed = true; } return; }
+          if (BADGES[id] && slotOf(id) === slot && (u.badges || []).includes(id) && u[slot] !== id){ u[slot] = id; changed = true; }
+        });
+      });
+    });
+    const next = j.more && j.picks.length ? j.picks[j.picks.length - 1].updated : j.at;
+    try { localStorage.setItem('emoteslots:picksAt', String(next || since)); } catch(e){}
+    if (changed){ saveUsers(); try { renderLeaders(); } catch(e){} }
+    if (j.more) setTimeout(glbPicks, 2000);
+  } catch(e){}
+}
+setTimeout(glbPicks, 20000); setInterval(glbPicks, 60000);
 setInterval(() => {   // send what changed (and keep players locked to this machine while they play)
   if (!SPK_ON || !window.__ES.lead || window.__ES.gone) return;
   if (SPK.inf || Object.keys(SPK.q).length || Object.keys(SPK.touched).length || !SPK.mig) spkSend({}).catch(() => {});
