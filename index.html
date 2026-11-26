@@ -2630,6 +2630,7 @@ function noteId(name, plat, uid){   // called for every chat message that carrie
     if (old && (!old.plat || old.plat === plat)){ S.users[target] = old; delete S.users[ln]; old.plat = plat; saveUsers(); changed = true; }
   }
   if (S.users[target] && S.users[target].name !== name){ S.users[target].name = name; saveUsers(); }   // they changed their name: same record
+  if (S.users[target]){ const u = S.users[target]; u.nm = u.nm || {}; if (u.nm[ik] !== name){ u.nm[ik] = name; saveUsers(); } }   // their name on each linked account (for the website)
   if (changed) saveIds();
 }
 function loadUsers(){ try { S.users = JSON.parse(localStorage.getItem(key()) || '{}'); } catch(e){ S.users = {}; } loadIds(); splitBadgeSlots(); if (S.users.testviewer){ delete S.users.testviewer; saveUsers(); } }
@@ -4697,7 +4698,7 @@ const countPlayers = data => { let n = 0; Object.keys(data).filter(isPlayerKey).
 /* ================= GAME UPDATES (desktop app only, like Gielinor Casino) =================
    GAME_VERSION goes up by 0.1 every time MAKE-UPDATE.bat publishes an update (1.0, 1.1, 1.2 ...). The app compares it
    with version.json at the update address and downloads the newer game file. */
-const GAME_VERSION = '1.10';
+const GAME_VERSION = '1.11';
 (function(){
   const N = window.EmoteNative, U = N && N.update, btn = $('#updBtn'), msg = $('#updMsg');
   const nice = v => 'V' + v;
@@ -4802,7 +4803,7 @@ const GLB_URL = 'https://yhandor.com', GLB_KEY = 'es_Qu_bvhmxPnxo5UoQ1nc5jne8Wh-
 const GLB_LIVE = location.hostname === '127.0.0.1' && P.get('dev') !== '1';
 let glbLast = 0, glbBusy = false;
 const glbMid = () => { let m = ''; try { m = localStorage.getItem('emoteslots:mid') || ''; if (!/^[a-z0-9]{16,40}$/.test(m)){ m = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join(''); localStorage.setItem('emoteslots:mid', m); } } catch(e){} return m; };
-const glbSig = u => [u.name, u.xp || 0, u.cspins || 0, u.bigX || 0, (u.badges || []).length].join('|');
+const glbSig = u => [u.name, u.xp || 0, u.cspins || 0, u.bigX || 0, (u.badges || []).length, JSON.stringify(u.nm || {})].join('|');
 async function glbSend(force){
   if (!GLB_LIVE || glbBusy || !window.__ES.lead || window.__ES.gone) return;
   if (!force && Date.now() - glbLast < GLB_EVERY) return;
@@ -4813,7 +4814,7 @@ async function glbSend(force){
   glbLast = Date.now();   // sends even with nothing new: it tells yhandor.com this machine is running (for Live Now)
   glbBusy = true;
   try {
-    const ct = chatTargets(), body = {mid:glbMid(), ch, tw:(ct.find(t => t.plat === 'twitch') || {}).ch || '', kk:(ct.find(t => t.plat === 'kick') || {}).ch || '', ver:GAME_VERSION, ordersDone:odone, players:list.map(([k, u]) => ({pid:k, name:u.name, plat:k.startsWith('kk:') ? 'kick' : 'twitch', xp:u.xp || 0, spins:u.cspins || 0, tspins:u.spins || 0, bigx:u.bigX || 0, badges:(u.badges || []).filter(id => BADGES[id])}))};   // spins = on this channel, tspins = everywhere
+    const ct = chatTargets(), body = {mid:glbMid(), ch, tw:(ct.find(t => t.plat === 'twitch') || {}).ch || '', kk:(ct.find(t => t.plat === 'kick') || {}).ch || '', ver:GAME_VERSION, ordersDone:odone, players:list.map(([k, u]) => ({pid:k, name:u.name, plat:k.startsWith('kk:') ? 'kick' : 'twitch', xp:u.xp || 0, spins:u.cspins || 0, tspins:u.spins || 0, names:u.nm || {}, bigx:u.bigX || 0, badges:(u.badges || []).filter(id => BADGES[id])}))};   // spins = on this channel, tspins = everywhere
     const r = await fetch(GLB_URL + '/api/submit', {method:'POST', headers:{'Content-Type':'application/json', 'X-ES-Key':GLB_KEY}, body:JSON.stringify(body)});
     const j = await r.json().catch(() => null);
     if (r.ok && j && j.ok){ list.forEach(([k, u]) => sent[k] = glbSig(u)); try { localStorage.setItem('emoteslots:gsent', JSON.stringify(sent)); } catch(e){}
