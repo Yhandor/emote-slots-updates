@@ -2726,6 +2726,10 @@ function linkCmd(name, plat, uid, code){
     ['duelW', 'duelL', 'bigX', 'bigW'].forEach(f => { if (!A[f]) delete A[f]; });
     A.badges = [...new Set([...(A.badges || []), ...(B.badges || [])])]; if (!A.badge && B.badge) A.badge = B.badge; if (!A.rbadge && B.rbadge) A.rbadge = B.rbadge;
     A.first = Math.min(A.first || Infinity, B.first || Infinity); if (A.first === Infinity) delete A.first;
+    A.cspins = (A.cspins == null ? 0 : A.cspins) + (B.cspins == null ? B.spins || 0 : B.cspins);
+    if (A.pfb || B.pfb){ const a = A.pfb || pfSnap({}), b = B.pfb || pfSnap({});   // the site adds the two profiles together too
+      PF_ADD.forEach(([f]) => a[f] = (a[f] || 0) + (b[f] || 0)); PF_MAX.forEach(([f]) => a[f] = Math.max(a[f] || 0, b[f] || 0));
+      a.b = [...new Set([...(a.b || []), ...(b.b || [])])]; a.first = Math.min(a.first || Infinity, b.first || Infinity); if (a.first === Infinity) a.first = 0; A.pfb = a; }
     { const ap = A.dailyP || (A.daily ? {[A.plat || 'twitch']:A.daily} : {}), bp = B.dailyP || (B.daily ? {[B.plat || 'twitch']:B.daily} : {});   // keep each platform's own daily timer
       A.dailyP = {}; ['twitch', 'kick'].forEach(k => { const v = Math.max(ap[k] || 0, bp[k] || 0); if (v) A.dailyP[k] = v; }); }
     A.daily = Math.max(A.daily || 0, B.daily || 0); A.last = Math.max(A.last || 0, B.last || 0); A.played = A.played || B.played;
@@ -4100,7 +4104,7 @@ async function processQueue(){
   const jpWon = ev.kind === 'jack' ? jpPay() : 0, win = ev.kind === 'jack' ? jpWon * mult.x : wheel ? wheel.amount : bres ? bres.amount : mres ? mres.amount : rres ? job.bet : Math.round(job.bet * ev.mult * mult.x), u = user(job.name, job.plat);
   if (wheel && wheel.jp){ sndJackpotWin(); jackpotCelebrate(job.name, job.plat, win, mult.x); mach.classList.add('jackpot'); }
   tScore(job, rres ? 0 : win);   // an emote rush only hands the bet back: not a tournament win
-  if (!u.first) u.first = Date.now(); u.spins = (u.spins || 0) + 1; if (win > 0){ u.won = (u.won || 0) + win; const bx = Math.floor(win / Math.max(1, job.bet)); if (bx > (u.bigX || 0)) u.bigX = bx; if (win > (u.bigW || 0)) u.bigW = win; } else u.lost = (u.lost || 0) + job.bet;   // !stats (bigX = biggest win as a multiple of the bet, for the global leaderboard)
+  if (!u.first) u.first = Date.now(); u.spins = (u.spins || 0) + 1; u.cspins = (u.cspins == null ? u.spins - 1 : u.cspins) + 1; if (win > 0){ u.won = (u.won || 0) + win; const bx = Math.floor(win / Math.max(1, job.bet)); if (bx > (u.bigX || 0)) u.bigX = bx; if (win > (u.bigW || 0)) u.bigW = win; } else u.lost = (u.lost || 0) + job.bet;   // !stats (bigX = biggest win as a multiple of the bet, for the global leaderboard)
   const lvBefore = lvOf(u.xp); const xpGain = spinXp(job.bet) + (wheel && wheel.xp || 0) + (mres && mres.xp || 0); u.xp = (u.xp || 0) + xpGain; const lvUp = LV_TEST || (lvOf(u.xp) > lvBefore ? lvOf(u.xp) : 0); LV_TEST = 0;
   spAdd(u, win); spkTouch(u); saveUsers(); renderLeaders();
   if (lvUp) sayResult(job.plat, lvUp >= 99 || lvUp % 10 === 0 ? 'always' : 'wins', lvUp >= 99 ? '*** MAX LEVEL *** @' + job.name + ' just hit LEVEL 99 on the machine! A true legend!' : '@' + job.name + (lvUp % 10 === 0 ? ' MILESTONE! You hit level ' + lvUp + '!' : ' LEVEL UP! You are now level ' + lvUp + '!'));
@@ -4692,7 +4696,7 @@ const countPlayers = data => { let n = 0; Object.keys(data).filter(isPlayerKey).
 /* ================= GAME UPDATES (desktop app only, like Gielinor Casino) =================
    GAME_VERSION goes up by 0.1 every time MAKE-UPDATE.bat publishes an update (1.0, 1.1, 1.2 ...). The app compares it
    with version.json at the update address and downloads the newer game file. */
-const GAME_VERSION = '1.6';
+const GAME_VERSION = '1.8';
 (function(){
   const N = window.EmoteNative, U = N && N.update, btn = $('#updBtn'), msg = $('#updMsg');
   const nice = v => 'V' + v;
@@ -4797,7 +4801,7 @@ const GLB_URL = 'https://yhandor.com', GLB_KEY = 'es_Qu_bvhmxPnxo5UoQ1nc5jne8Wh-
 const GLB_LIVE = location.hostname === '127.0.0.1' && P.get('dev') !== '1';
 let glbLast = 0, glbBusy = false;
 const glbMid = () => { let m = ''; try { m = localStorage.getItem('emoteslots:mid') || ''; if (!/^[a-z0-9]{16,40}$/.test(m)){ m = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join(''); localStorage.setItem('emoteslots:mid', m); } } catch(e){} return m; };
-const glbSig = u => [u.name, u.xp || 0, u.spins || 0, u.bigX || 0, (u.badges || []).length].join('|');
+const glbSig = u => [u.name, u.xp || 0, u.cspins == null ? u.spins || 0 : u.cspins, u.bigX || 0, (u.badges || []).length].join('|');
 async function glbSend(force){
   if (!GLB_LIVE || glbBusy || !window.__ES.lead || window.__ES.gone) return;
   if (!force && Date.now() - glbLast < GLB_EVERY) return;
@@ -4808,7 +4812,7 @@ async function glbSend(force){
   glbLast = Date.now(); if (!list.length && !odone.length) return;
   glbBusy = true;
   try {
-    const ct = chatTargets(), body = {mid:glbMid(), ch, tw:(ct.find(t => t.plat === 'twitch') || {}).ch || '', kk:(ct.find(t => t.plat === 'kick') || {}).ch || '', ver:GAME_VERSION, ordersDone:odone, players:list.map(([k, u]) => ({pid:k, name:u.name, plat:k.startsWith('kk:') ? 'kick' : 'twitch', xp:u.xp || 0, spins:u.spins || 0, bigx:u.bigX || 0, badges:(u.badges || []).filter(id => BADGES[id])}))};
+    const ct = chatTargets(), body = {mid:glbMid(), ch, tw:(ct.find(t => t.plat === 'twitch') || {}).ch || '', kk:(ct.find(t => t.plat === 'kick') || {}).ch || '', ver:GAME_VERSION, ordersDone:odone, players:list.map(([k, u]) => ({pid:k, name:u.name, plat:k.startsWith('kk:') ? 'kick' : 'twitch', xp:u.xp || 0, spins:u.cspins == null ? u.spins || 0 : u.cspins, tspins:u.spins || 0, bigx:u.bigX || 0, badges:(u.badges || []).filter(id => BADGES[id])}))};   // spins = on this channel, tspins = everywhere
     const r = await fetch(GLB_URL + '/api/submit', {method:'POST', headers:{'Content-Type':'application/json', 'X-ES-Key':GLB_KEY}, body:JSON.stringify(body)});
     const j = await r.json().catch(() => null);
     if (r.ok && j && j.ok){ list.forEach(([k, u]) => sent[k] = glbSig(u)); try { localStorage.setItem('emoteslots:gsent', JSON.stringify(sent)); } catch(e){}
@@ -4843,10 +4847,32 @@ function glbUI(){ const m = $('#glbMsg'); if (!m) return; m.textContent = "Every
    Only players with a real Twitch/Kick ID take part; test copies and files opened in a browser keep their own local Sparks. */
 var SPK_URL = GLB_URL, SPK_ON = GLB_LIVE;
 var SPK_EVERY = 5000, SPK_STORE = 'emoteslots:spk';
-var SPK = {q:{}, inf:null, mig:false, touched:{}, busy:null, down:0, lockMs:60000};
-try { const j = JSON.parse(localStorage.getItem(SPK_STORE) || 'null'); if (j){ SPK.q = j.q || {}; SPK.inf = j.inf || null; SPK.mig = !!j.mig; } } catch(e){}
+var SPK = {q:{}, inf:null, mig:false, touched:{}, busy:null, down:0, lockMs:60000, pinf:null, pmig:false, pleg:{}};
+try { const j = JSON.parse(localStorage.getItem(SPK_STORE) || 'null'); if (j){ SPK.q = j.q || {}; SPK.inf = j.inf || null; SPK.mig = !!j.mig; SPK.pinf = j.pinf || null; SPK.pmig = !!j.pmig; SPK.pleg = j.pleg || {}; } } catch(e){}
 var spkRetry = {};
-function spkSave(){ try { localStorage.setItem(SPK_STORE, JSON.stringify({q:SPK.q, inf:SPK.inf, mig:SPK.mig})); } catch(e){} }
+function spkSave(){ try { localStorage.setItem(SPK_STORE, JSON.stringify({q:SPK.q, inf:SPK.inf, mig:SPK.mig, pinf:SPK.pinf, pmig:SPK.pmig, pleg:SPK.pleg})); } catch(e){} }
+/* SHARED PROFILES: level/XP, spins, Sparks won and lost, duels, biggest win, badges and first played follow a player to every
+   machine, like Sparks. u.pfb is the profile as yhandor.com last confirmed it; whatever this machine added on top of it is sent
+   as "pops" (added once, by id), and every reply brings the totals back. u.cspins = spins played on THIS channel (for the
+   streamer leaderboard). The first time, each machine sends what it had ("plegacy"): the site keeps the highest numbers. */
+var PF_ADD = [['xp', 'xp'], ['spins', 'spins'], ['won', 'won'], ['lost', 'lost'], ['duelW', 'dw'], ['duelL', 'dl']], PF_MAX = [['bigX', 'bigx'], ['bigW', 'bigw']];
+function pfSnap(u){ const o = {b:(u.badges || []).filter(id => BADGES[id]), first:u.first || 0}; PF_ADD.concat(PF_MAX).forEach(([f]) => o[f] = Math.max(0, Math.round(u[f] || 0))); return o; }
+function pfHasLocal(u){ return (u.spins || 0) > 0 || (u.xp || 0) > 0 || (u.duelW || 0) > 0 || (u.duelL || 0) > 0 || (u.badges || []).length > 0; }
+function pfWire(c){ const o = {badges:c.b, first:c.first}; PF_ADD.concat(PF_MAX).forEach(([f, k]) => o[k] = c[f]); return o; }
+function pfDirty(){ for (const k in S.users){ const u = S.users[k], b = u.pfb; if (!b || !/^(tw|kk):\d+$/.test(k)) continue;
+  if (PF_ADD.concat(PF_MAX).some(([f]) => Math.round(u[f] || 0) > b[f]) || (u.badges || []).some(id => BADGES[id] && !b.b.includes(id))) return true; } return false; }
+function pfApply(k, u, s){   // the shared totals from yhandor.com, plus whatever this machine has not sent yet
+  if (!s){ if (!u.pfb){ if (pfHasLocal(u)) SPK.pleg[k] = 1; else u.pfb = pfSnap(u); } return; }
+  if (!u.pfb){ if (pfHasLocal(u)){ SPK.pleg[k] = 1; return; } u.pfb = pfSnap({}); }
+  const b = u.pfb;
+  PF_ADD.forEach(([f, sk]) => { const v = Math.max(0, Math.round(s[sk] || 0)); u[f] = v + Math.max(0, Math.round(u[f] || 0) - b[f]); b[f] = v; });
+  PF_MAX.forEach(([f, sk]) => { const v = Math.max(0, Math.round(s[sk] || 0)); u[f] = Math.max(Math.round(u[f] || 0), v); b[f] = v; });
+  const sb = (Array.isArray(s.badges) ? s.badges : []).filter(id => BADGES[id]);
+  u.badges = [...new Set([...(u.badges || []), ...sb])]; b.b = sb;
+  if (s.first && (!u.first || s.first < u.first)) u.first = s.first; b.first = s.first || 0;
+  ['duelW', 'duelL', 'bigX', 'bigW'].forEach(f => { if (!u[f]) delete u[f]; });
+  if (!u.badge || !u.badges.includes(u.badge)){ const n = u.badges.find(id => slotOf(id) === 'badge'); if (n && !u.badge) u.badge = n; }
+}
 function keyOfUser(u){ for (const k in S.users) if (S.users[k] === u) return k; return null; }
 function spkKey(u){ if (!SPK_ON || !u) return null; const k = keyOfUser(u); return k && /^(tw|kk):\d+$/.test(k) ? k : null; }
 function spkNeeds(u, margin){   // true = ask yhandor.com first (their lock here is missing or about to run out)
@@ -4867,6 +4893,7 @@ function spkApply(r){   // fresh balances, locks and daily timers from yhandor.c
     u.points = Math.max(0, w.sparks + (SPK.q[k] || 0));
     u.spHeld = w.held ? now + w.held : w.ch ? 0 : Math.min(u.spHeld || 0, now); u.spBusy = w.ch ? {ch:w.ch, until:now + w.left} : null; u.spAt = now;
     u.dailyP = Object.assign({}, u.dailyP); u.dailyP.twitch = w.dtw ? now + w.dtw - DAILY_MS : 0; u.dailyP.kick = w.dkk ? now + w.dkk - DAILY_MS : 0;
+    if ('pf' in w) pfApply(S.users[resolveLink(k)] ? resolveLink(k) : k, u, w.pf);
   });
   saveUsers(); try { renderLeaders(); } catch(e){}
 }
@@ -4893,11 +4920,28 @@ function spkSend(extra){   // one request at a time; everything waiting goes in 
   const run = async () => {
     if (!SPK.mig) await spkMigrate();
     if (!SPK.inf && Object.keys(SPK.q).length){ SPK.inf = {id:spkId(), list:Object.entries(SPK.q).filter(([, d]) => d).map(([pid, d]) => ({pid, d}))}; SPK.q = {}; spkSave(); }
+    if (!SPK.pmig){ for (const k in S.users){ if (!/^(tw|kk):\d+$/.test(k)) continue; const u = S.users[k]; if (u.cspins == null) u.cspins = u.spins || 0; if (!u.pfb) SPK.pleg[k] = 1; } SPK.pmig = true; spkSave(); saveUsers(); }
+    const pleg = Object.keys(SPK.pleg).filter(k => S.users[k]).slice(0, 300), plSnap = {};
+    pleg.forEach(k => { const u = S.users[k]; if (u.cspins == null) u.cspins = u.spins || 0; plSnap[k] = pfSnap(u); });
+    if (!SPK.pinf){ const list = [];
+      for (const k in S.users){ const u = S.users[k], b = u.pfb; if (!b || SPK.pleg[k] || !/^(tw|kk):\d+$/.test(k)) continue;
+        const c = pfSnap(u), e = {pid:k}; let any = false;
+        PF_ADD.forEach(([f, sk]) => { if (c[f] > b[f]){ e[sk] = c[f] - b[f]; any = true; } });
+        PF_MAX.forEach(([f, sk]) => { if (c[f] > b[f]){ e[sk] = c[f]; any = true; } });
+        const nb = c.b.filter(id => !b.b.includes(id)); if (nb.length){ e.badges = nb; any = true; }
+        if (c.first && (!b.first || c.first < b.first)){ e.first = c.first; any = true; }
+        if (any){ list.push(e); PF_ADD.concat(PF_MAX).forEach(([f]) => b[f] = Math.max(b[f], c[f])); b.b = [...new Set([...b.b, ...nb])]; if (e.first) b.first = e.first; }
+        if (list.length >= 300) break; }
+      if (list.length){ SPK.pinf = {id:spkId(), list}; spkSave(); saveUsers(); } }
     const claim = [...new Set([...(extra.claim || []), ...Object.keys(SPK.touched)])]; SPK.touched = {};
     const body = {mid:glbMid(), ch:spkCh(), claim, peek:extra.peek || [], daily:extra.daily || [], links:extra.links || []};
     if (SPK.inf) body.ops = SPK.inf;
+    if (SPK.pinf) body.pops = SPK.pinf;
+    if (pleg.length) body.plegacy = pleg.map(k => Object.assign({pid:k}, pfWire(plSnap[k])));
     let r; try { r = await spkPost(body); } catch(e){ claim.forEach(k => { if (!(extra.claim || []).includes(k)) SPK.touched[k] = 1; }); throw e; }
     if (SPK.inf && r.done === SPK.inf.id){ SPK.inf = null; spkSave(); }
+    if (SPK.pinf && r.pdone === SPK.pinf.id){ SPK.pinf = null; spkSave(); }
+    if (pleg.length && r.pleg){ pleg.forEach(k => { const u = S.users[k]; if (u){ u.pfb = plSnap[k]; delete SPK.pleg[k]; } }); spkSave(); }
     if (r.lockMs) SPK.lockMs = r.lockMs;
     spkApply(r); return r;
   };
@@ -4964,7 +5008,7 @@ async function glbPicks(){
 setTimeout(glbPicks, 20000); setInterval(glbPicks, 60000);
 setInterval(() => {   // send what changed (and keep players locked to this machine while they play)
   if (!SPK_ON || !window.__ES.lead || window.__ES.gone) return;
-  if (SPK.inf || Object.keys(SPK.q).length || Object.keys(SPK.touched).length || !SPK.mig) spkSend({}).catch(() => {});
+  if (SPK.inf || Object.keys(SPK.q).length || Object.keys(SPK.touched).length || !SPK.mig || !SPK.pmig || SPK.pinf || Object.keys(SPK.pleg).length || pfDirty()) spkSend({}).catch(() => {});
 }, SPK_EVERY);
 setTimeout(() => glbSend(true), 90000);              // a first batch shortly after the machine starts
 setInterval(() => glbSend(false), 60000);
