@@ -1,7 +1,7 @@
 {
-  "version": "1.8",
-  "sha256": "67f86850bbc9b4d3813056d17ef5ab021eec5105316580a680a14edfbb0e73e3",
-  "notes": "1.8 should be lmk",
+  "version": "1.9",
+  "sha256": "3314397acccdc83e81265483471ee894f32a325d9bf8f35b44f605eb8afdd514",
+  "notes": "1.9",
   "minApp": "1.0.7",
   "appUrl": ""
 }

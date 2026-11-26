@@ -2777,7 +2777,8 @@ function dailyCmd(name, plat, done){
 const statsAt = {};
 function statsReply(name, plat){
   const k = name.toLowerCase(), now = Date.now(); if (now - (statsAt[k] || 0) < 10000) return; statsAt[k] = now;
-  const u = findUser(name, plat), f = n => Math.round(n || 0).toLocaleString('en-US');
+  let u = findUser(name, plat); const f = n => Math.round(n || 0).toLocaleString('en-US');
+  if (!u && SPK_ON) u = user(name, plat);   // never played on this machine: make their record so their shared profile can load
   if (u && spkNeeds(u, 15000) && !spkRetry[k + 's']){ spkRetry[k + 's'] = 1; spkSend({peek:[spkKey(u)]}).catch(() => {}).finally(() => { statsAt[k] = 0; statsReply(name, plat); delete spkRetry[k + 's']; }); return; }   // shared Sparks: fresh balance first
   if (!u || (!u.spins && !u.duelW && !u.duelL)){ say(plat, 'always', '@' + name + ' no stats yet - type !spin to play!' + (u ? ' (' + f(u.points) + ' ' + CUR() + ')' : '')); return; }
   const l = lvOf(u.xp), xp = u.xp || 0, pct = l < 99 ? Math.floor((xp - LV_XP[l]) / (LV_XP[l + 1] - LV_XP[l]) * 100) : 100;
@@ -4696,7 +4697,7 @@ const countPlayers = data => { let n = 0; Object.keys(data).filter(isPlayerKey).
 /* ================= GAME UPDATES (desktop app only, like Gielinor Casino) =================
    GAME_VERSION goes up by 0.1 every time MAKE-UPDATE.bat publishes an update (1.0, 1.1, 1.2 ...). The app compares it
    with version.json at the update address and downloads the newer game file. */
-const GAME_VERSION = '1.8';
+const GAME_VERSION = '1.9';
 (function(){
   const N = window.EmoteNative, U = N && N.update, btn = $('#updBtn'), msg = $('#updMsg');
   const nice = v => 'V' + v;
@@ -4809,7 +4810,7 @@ async function glbSend(force){
   let sent = {}; try { sent = JSON.parse(localStorage.getItem('emoteslots:gsent') || '{}'); } catch(e){}
   const list = Object.entries(S.users).filter(([k, u]) => /^(tw|kk):\d+$/.test(k) && (u.spins || 0) > 0 && sent[k] !== glbSig(u)).slice(0, 300);
   let odone = []; try { odone = JSON.parse(localStorage.getItem('emoteslots:odone') || '[]'); } catch(e){}
-  glbLast = Date.now(); if (!list.length && !odone.length) return;
+  glbLast = Date.now();   // sends even with nothing new: it tells yhandor.com this machine is running (for Live Now)
   glbBusy = true;
   try {
     const ct = chatTargets(), body = {mid:glbMid(), ch, tw:(ct.find(t => t.plat === 'twitch') || {}).ch || '', kk:(ct.find(t => t.plat === 'kick') || {}).ch || '', ver:GAME_VERSION, ordersDone:odone, players:list.map(([k, u]) => ({pid:k, name:u.name, plat:k.startsWith('kk:') ? 'kick' : 'twitch', xp:u.xp || 0, spins:u.cspins == null ? u.spins || 0 : u.cspins, tspins:u.spins || 0, bigx:u.bigX || 0, badges:(u.badges || []).filter(id => BADGES[id])}))};   // spins = on this channel, tspins = everywhere
