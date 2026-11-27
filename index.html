@@ -118,6 +118,183 @@ body.no-flicker #machine.idle #dmd canvas.pix{animation:none}
 @keyframes jpAlert{50%{box-shadow:inset 0 0 0 2px #ffcc33,inset 0 0 0 4px #000,inset 0 0 0 5px #ffcc33,0 0 22px #ffcc33}}
 body.no-flash #jpbox.alert,body.no-flash #jpbox.alert2{animation:none}
 
+/* MULTIPLIER ACTIVATION: a full-machine takeover when a boost starts (people paid for it, so everyone should see it) */
+#boostFx{position:absolute;inset:0;z-index:40;container-type:size;pointer-events:none;display:none;overflow:hidden;border-radius:19px;--mc:#ffcc33;--pc:#9146ff;text-align:center}
+#boostFx.on{display:block}
+#boostFx .bfDim{position:absolute;inset:0;animation:bfIn .3s ease-out both;
+  background:radial-gradient(ellipse at 50% 50%,color-mix(in srgb,var(--mc) 22%,rgba(6,2,14,.7)) 0%,rgba(6,2,14,.93) 70%),
+  repeating-linear-gradient(-45deg,color-mix(in srgb,var(--mc) 14%,transparent) 0 3cqw,transparent 3cqw 6cqw)}
+#boostFx .bfStripes{position:absolute;inset:-20%;opacity:.35;background:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--mc) 30%,transparent) 0 2.2cqw,transparent 2.2cqw 4.4cqw);animation:bfSlide 1.2s linear infinite}
+#boostFx.land .bfStripes{opacity:0;transition:opacity .3s}
+#boostFx .bfRays{position:absolute;left:50%;top:46%;width:300cqw;height:300cqw;margin:-150cqw 0 0 -150cqw;opacity:0;transition:opacity .35s;
+  background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--mc) 55%,transparent) 0deg 6deg,transparent 6deg 15deg);
+  -webkit-mask:radial-gradient(circle,#000 4%,transparent 30%);mask:radial-gradient(circle,#000 4%,transparent 30%);animation:bfSpin 9s linear infinite}
+#boostFx.land .bfRays{opacity:.9}
+#boostFx .bfFlash{position:absolute;inset:0;background:#fff;opacity:0}
+#boostFx.flash .bfFlash{animation:bfFlash .5s ease-out}
+#boostFx.flashc .bfFlash{background:radial-gradient(circle,#fff 0%,var(--mc) 60%);animation:bfFlash .7s ease-out}
+/* phase 1: a neon sign with chasing bulbs */
+#boostFx .bfSign{position:absolute;left:50%;top:47%;width:76cqw;padding:3cqw 0 3.6cqw;transform:translate(-50%,-50%);border-radius:3cqw;
+  background:linear-gradient(180deg,rgba(30,10,50,.92),rgba(10,4,20,.95));
+  box-shadow:0 0 0 .5cqw var(--mc),0 0 0 1.1cqw #0b0612,0 0 0 1.5cqw color-mix(in srgb,var(--mc) 55%,#fff),0 0 4cqw var(--mc),inset 0 0 4cqw color-mix(in srgb,var(--mc) 35%,transparent);
+  animation:bfSignIn .5s cubic-bezier(.2,1.5,.4,1) both}
+#boostFx .bfSign::before{content:"";position:absolute;inset:-2.6cqw;border-radius:4.5cqw;padding:.9cqw;
+  background:repeating-conic-gradient(from var(--ca),#fff6b0 0 2deg,transparent 2deg 4deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+  filter:drop-shadow(0 0 .6cqw #fff27a);animation:bfChase .5s steps(2) infinite}
+#boostFx.land .bfSign{animation:bfSignOut .25s ease-in forwards}
+#boostFx .bfScript{display:block;font-family:'Yellowtail',cursive;font-size:12cqw;line-height:.9;color:#fff;transform:rotate(-5deg);margin:-1cqw 0 .4cqw;
+  text-shadow:0 0 .3cqw #fff,0 0 1.2cqw var(--mc),0 0 2.6cqw var(--mc),0 0 5cqw var(--mc);animation:bfNeonOn .9s steps(1) both}
+#boostFx .bfWord{display:block;font-family:'Tilt Neon',sans-serif;font-size:8.2cqw;line-height:1;letter-spacing:.9cqw;margin-right:-.9cqw;white-space:nowrap}
+#boostFx .bfWord i{font-style:normal;display:inline-block;color:#fff6c8;opacity:0;
+  text-shadow:0 0 .3cqw #fff,0 0 1cqw #ffcc33,0 0 2.4cqw #ff9a1a,0 .5cqw 0 #3a1400;animation:bfLetter .35s cubic-bezier(.2,1.8,.4,1) forwards,bfGlow .5s ease-in-out infinite alternate}
+#boostFx .bfBy{display:inline-flex;align-items:center;gap:1cqw;margin-top:2.2cqw;padding:.7cqw 2.6cqw;border-radius:99px;font-family:'Tilt Neon',sans-serif;font-size:3.3cqw;letter-spacing:.3cqw;color:#fff;text-transform:uppercase;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 85%,#fff),var(--pc));box-shadow:0 0 0 .3cqw #fff,0 0 2.4cqw var(--pc);text-shadow:0 .25cqw 0 rgba(0,0,0,.45);animation:bfPop .45s cubic-bezier(.2,1.8,.4,1) .75s both}
+#boostFx .bfBy:empty{display:none}
+/* phase 2: the multiplier SLAMS in */
+#boostFx .bfMid{position:absolute;left:0;right:0;top:44%;transform:translateY(-50%);opacity:0}
+#boostFx.land .bfMid{opacity:1}
+#boostFx .bfTag{display:block;font-family:'Yellowtail',cursive;font-size:7.5cqw;line-height:1;color:#fff;margin-bottom:-3.5cqw;position:relative;z-index:2;transform:rotate(-6deg);
+  text-shadow:0 0 .3cqw #fff,0 0 1.2cqw var(--mc),0 0 3cqw var(--mc),0 .4cqw 0 #000;opacity:0}
+#boostFx.land .bfTag{animation:bfPop .4s cubic-bezier(.2,1.8,.4,1) .35s both}
+#boostFx .bfBig{display:inline-block;font-family:Impact,"Arial Black","Segoe UI Black",sans-serif;font-weight:900;font-size:min(33cqw,58cqh);line-height:1;letter-spacing:-.4cqw;padding:0 1.5cqw;
+  color:transparent;background:linear-gradient(180deg,#ffffff 0%,#ffffff 22%,color-mix(in srgb,var(--mc) 45%,#fff) 40%,var(--mc) 62%,color-mix(in srgb,var(--mc) 55%,#000) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-stroke:.55cqw #10061c;paint-order:stroke fill;
+  filter:drop-shadow(0 .5cqw 0 #10061c) drop-shadow(0 .9cqw 0 color-mix(in srgb,var(--mc) 40%,#000)) drop-shadow(0 0 2.5cqw var(--mc));transform:scale(4) rotate(-14deg)}
+#boostFx.land .bfBig{animation:bfBig .55s cubic-bezier(.25,1.7,.45,1) forwards,bfPulse .7s ease-in-out .55s infinite alternate}
+#boostFx .bfRing{position:absolute;left:50%;top:44%;width:20cqw;height:20cqw;margin:-10cqw 0 0 -10cqw;border-radius:50%;border:1.4cqw solid var(--mc);opacity:0;box-shadow:0 0 3cqw var(--mc),inset 0 0 3cqw var(--mc)}
+#boostFx.land .bfRing{animation:bfRing .8s ease-out .08s}
+#boostFx .bfStar{position:absolute;width:5cqw;height:5cqw;opacity:0;background:#fff;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);filter:drop-shadow(0 0 1cqw var(--mc))}
+#boostFx.land .bfStar{animation:bfTwinkle 1s ease-in-out infinite}
+#boostFx .bfSub{position:absolute;left:50%;bottom:6.5%;display:flex;align-items:stretch;transform:translateX(-50%);opacity:0;white-space:nowrap;font-family:'Tilt Neon',sans-serif}
+#boostFx.land .bfSub{animation:bfRibbon .45s cubic-bezier(.2,1.6,.4,1) .4s forwards}
+#boostFx .bfSub b{font-weight:400;font-size:4.6cqw;letter-spacing:.35cqw;padding:.9cqw 3cqw;color:#10061c;transform:skewX(-12deg);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--mc) 35%,#fff),var(--mc));box-shadow:0 0 0 .35cqw #fff,0 0 3cqw var(--mc)}
+#boostFx .bfSub b > span{display:inline-block;transform:skewX(12deg)}
+#boostFx .bfSub em{font-style:normal;font-size:4.6cqw;letter-spacing:.3cqw;padding:.9cqw 2.4cqw;margin-left:1.6cqw;color:#fff;transform:skewX(-12deg);background:#10061c;
+  box-shadow:0 0 0 .35cqw var(--mc),0 0 2.4cqw var(--mc);text-shadow:0 0 1cqw var(--mc)}
+#boostFx .bfSub em > span{display:inline-block;transform:skewX(12deg)}
+#boostFx.out{animation:bfOut .6s ease-in forwards}
+@keyframes bfIn{from{opacity:0}to{opacity:1}}
+@keyframes bfOut{to{opacity:0}}
+@keyframes bfSpin{to{transform:rotate(360deg)}}
+@keyframes bfSlide{to{transform:translateX(6.2cqw)}}
+@property --ca{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes bfChase{to{--ca:4deg}}
+@keyframes bfFlash{0%{opacity:.95}100%{opacity:0}}
+@keyframes bfSignIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-8deg)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes bfSignOut{to{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
+@keyframes bfNeonOn{0%{opacity:0}12%{opacity:1}18%{opacity:.15}26%{opacity:1}34%{opacity:.3}40%,100%{opacity:1}}
+@keyframes bfLetter{0%{opacity:0;transform:translateY(-6cqw) scale(2.2)}100%{opacity:1;transform:none}}
+@keyframes bfGlow{to{text-shadow:0 0 .4cqw #fff,0 0 1.6cqw #ffcc33,0 0 3.6cqw #ff9a1a,0 .5cqw 0 #3a1400}}
+@keyframes bfPop{0%{opacity:0;transform:scale(.2)}100%{opacity:1;transform:scale(1)}}
+@keyframes bfBig{0%{opacity:0;transform:scale(4) rotate(-14deg)}55%{opacity:1}100%{opacity:1;transform:scale(1) rotate(-5deg)}}
+@keyframes bfPulse{from{transform:scale(1) rotate(-5deg)}to{transform:scale(1.08) rotate(2deg)}}
+@keyframes bfRing{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(6)}}
+@keyframes bfTwinkle{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:1;transform:scale(1) rotate(90deg)}}
+@keyframes bfRibbon{0%{opacity:0;transform:translateX(-50%) scale(.3,1.6)}100%{opacity:1;transform:translateX(-50%) scale(1)}}
+/* FEATURE FANFARE: three bonus symbols landed. The reels pop one by one, then throb together with a fanfare before the feature starts */
+/* UPDATE GATE (desktop app): covers everything until the game is on the newest version */
+#updGate{--a:#ff3fd1;--b:#22e6ff;--c:#ffd24a;position:fixed;inset:0;z-index:100000;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#2a0e44 0%,#0b0612 70%);font-family:'Tilt Neon',sans-serif;color:#fff;transition:opacity .35s}
+#updGate.bye{opacity:0;pointer-events:none}
+#updGate .ugBox{width:min(560px,90vw);text-align:center;padding:34px 30px;border-radius:22px;border:3px solid #ff3fd1;background:#0b0612;box-shadow:0 0 30px #ff3fd1,inset 0 0 24px rgba(255,63,209,.3)}
+#updGate .ugBox.fit{position:fixed;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 40px;border-color:var(--a);box-shadow:0 0 0 2px #0b0612,0 0 24px var(--a),inset 0 0 24px color-mix(in srgb,var(--a) 35%,transparent)}
+#updGate .ugBox.fit .ugSub{max-width:560px;margin-left:auto;margin-right:auto}
+#updGate .ugBox .tube{display:none}
+#updGate .ugBox.fit .tube{display:block}
+#updGate .ugIn{text-align:center}
+#updGate .ugSign{margin:-4px 0 22px}
+#updGate .ugSign .s1,#updGate .ugSign .s2{font-size:50px}
+#updGate .ugSign .s4{font-size:48px;margin-top:-12px}
+#updGate .ugSpin{width:46px;height:46px;margin:6px auto 16px;border-radius:50%;border:5px solid rgba(34,230,255,.2);border-top-color:#22e6ff;animation:ugSpin .8s linear infinite;box-shadow:0 0 16px rgba(34,230,255,.5)}
+#updGate .ugSpin[hidden]{display:none}
+@keyframes ugSpin{to{transform:rotate(360deg)}}
+#updGate .ugMsg{font-size:24px;letter-spacing:1px;color:#22e6ff;text-shadow:0 0 10px rgba(34,230,255,.7)}
+#updGate .ugSub{margin-top:10px;font-size:15px;line-height:1.45;color:#c3b6dd}
+#updGate .ugBtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+#updGate .ugBtns:empty{display:none}
+#updGate button{font:inherit;font-size:16px;letter-spacing:1px;padding:10px 18px;border-radius:10px;cursor:pointer;color:#fff;background:#1a0f2a;border:2px solid #22e6ff;box-shadow:0 0 12px rgba(34,230,255,.5)}
+#updGate button:first-child{border-color:#ff3fd1;box-shadow:0 0 14px rgba(255,63,209,.6)}
+/* HOT MACHINE: a random hot streak. The machine turns orange, flames lick up behind the symbols, embers float up */
+#machine.hot{--a:#ff7a1a!important;--b:#ff3a1a!important;border-color:#ff7a1a;animation:hotBorder .5s ease-in-out infinite alternate}
+#machine.hot::before{box-shadow:0 0 50px #ff6a1a,0 0 110px rgba(255,60,20,.55);animation-duration:.9s}
+@keyframes hotBorder{from{box-shadow:0 0 0 2px #0b0612,0 0 26px #ff7a1a,0 0 60px rgba(255,80,20,.45),inset 0 0 22px rgba(255,120,30,.35)}to{box-shadow:0 0 0 2px #0b0612,0 0 40px #ffb020,0 0 90px rgba(255,60,20,.6),inset 0 0 34px rgba(255,150,40,.5)}}
+.hotFlame{position:absolute;left:-12%;right:-12%;bottom:-6%;height:78%;z-index:0;pointer-events:none;opacity:0;transition:opacity .8s;transform-origin:50% 100%;
+  background:radial-gradient(14% 62% at 12% 100%,rgba(255,236,140,.95),rgba(255,140,30,.7) 40%,rgba(255,40,20,.25) 70%,transparent 80%),
+    radial-gradient(15% 80% at 34% 100%,rgba(255,236,140,.95),rgba(255,140,30,.7) 40%,rgba(255,40,20,.25) 70%,transparent 80%),
+    radial-gradient(17% 66% at 57% 100%,rgba(255,236,140,.95),rgba(255,140,30,.7) 40%,rgba(255,40,20,.25) 70%,transparent 80%),
+    radial-gradient(14% 86% at 80% 100%,rgba(255,236,140,.95),rgba(255,140,30,.7) 40%,rgba(255,40,20,.25) 70%,transparent 80%),
+    radial-gradient(12% 58% at 98% 100%,rgba(255,236,140,.9),rgba(255,140,30,.6) 40%,transparent 75%);
+  filter:blur(3px);animation:hotFlick .32s ease-in-out infinite alternate}
+.hotFlame::after{content:"";position:absolute;inset:0;transform-origin:50% 100%;
+  background:radial-gradient(10% 50% at 24% 100%,rgba(255,250,210,.9),rgba(255,170,40,.5) 50%,transparent 75%),radial-gradient(11% 62% at 46% 100%,rgba(255,250,210,.9),rgba(255,170,40,.5) 50%,transparent 75%),
+    radial-gradient(10% 54% at 69% 100%,rgba(255,250,210,.9),rgba(255,170,40,.5) 50%,transparent 75%),radial-gradient(9% 46% at 90% 100%,rgba(255,250,210,.9),rgba(255,170,40,.5) 50%,transparent 75%);
+  animation:hotFlick2 .23s ease-in-out infinite alternate}
+#machine.hot .hotFlame{opacity:.85}
+#machine.hotIgnite .hotFlame{opacity:1;animation:hotIgnite 1.3s cubic-bezier(.2,1.4,.4,1)}
+@keyframes hotFlick{0%{transform:scale(1,.88) translateX(0)}50%{transform:scale(.97,1.08) translateX(3px)}100%{transform:scale(1.02,.95) translateX(-3px)}}
+@keyframes hotFlick2{0%{transform:scale(1,.9) translateX(-2px)}100%{transform:scale(.96,1.12) translateX(2px)}}
+@keyframes hotIgnite{0%{transform:scale(1,0)}35%{transform:scale(1.1,1.9)}100%{transform:scale(1,1)}}
+#machine.hotOut .hotFlame{opacity:0;transition:opacity 1.2s}
+#machine.hotWin .reel{animation:hotWinR .5s ease-out}
+@keyframes hotWinR{0%{box-shadow:inset 0 0 0 4px #ffd24a,0 0 40px #ff7a1a,0 0 80px #ff3a1a}100%{box-shadow:inset 0 0 0 2px var(--a),0 0 0 transparent}}
+body.no-flash #machine.hot,body.no-flash .hotFlame,body.no-flash .hotFlame::after{animation:none}
+/* each feature has its own celebration on the reels (layers added inside each reel for a moment) */
+.ffLayer{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;border-radius:inherit}
+.ffLayer.top{z-index:5}
+.reel.ffOn img{transform-origin:50% 50%}
+/* BONUS WHEEL: a gold sunburst spins behind each symbol, the symbols spin like little wheels, chasing gold lights round the reels */
+.reel.ff-wheel .ffLayer.bg{inset:-45%;background:repeating-conic-gradient(from 0deg,rgba(255,210,74,.75) 0deg 12deg,rgba(255,150,20,.15) 12deg 24deg);animation:ffSpinBg 1.4s linear infinite,bfIn .3s var(--d) both}
+.reel.ff-wheel img{animation:ffWheelSpin .75s cubic-bezier(.25,.1,.25,1) var(--d) both,ffBob .42s ease-in-out calc(var(--d) + .75s) infinite alternate}
+.reel.ff-wheel{animation:ffGoldChase .18s steps(2) infinite}
+@keyframes ffSpinBg{to{rotate:360deg}}
+@keyframes ffWheelSpin{0%{rotate:0deg;scale:1}45%{scale:1.22}100%{rotate:720deg;scale:1.08}}
+@keyframes ffBob{from{scale:1.05;translate:0 2px}to{scale:1.14;translate:0 -3px}}
+@keyframes ffGoldChase{0%{box-shadow:inset 0 0 0 4px #ffd24a,0 0 18px #ffd24a,0 0 40px #ff9a1a}50%{box-shadow:inset 0 0 0 4px #fff6c8,0 0 26px #fff27a,0 0 54px #ffd24a}}
+/* BADGE BONUS: frosty crystal glow, the symbols float, glints sweep across and sparkles twinkle */
+.reel.ff-badge .ffLayer.bg{background:radial-gradient(circle at 50% 50%,rgba(127,244,255,.65),rgba(40,120,255,.18) 55%,transparent 75%);animation:ffBreath .5s ease-in-out infinite alternate,bfIn .3s var(--d) both}
+.reel.ff-badge .ffLayer.top{background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.85) 48%,rgba(160,250,255,.5) 52%,transparent 62%) no-repeat;background-size:300% 100%;animation:ffGlint .9s ease-in-out var(--d) infinite}
+.reel.ff-badge img{animation:ffFloat .7s ease-in-out var(--d) infinite alternate;filter:drop-shadow(0 0 8px #7ff4ff) drop-shadow(0 0 18px #2a9dff)}
+.reel.ff-badge{box-shadow:inset 0 0 0 3px #bff9ff,0 0 22px #7ff4ff,0 0 48px rgba(42,157,255,.7)}
+.ffSpk{position:absolute;width:14px;height:14px;background:#fff;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);filter:drop-shadow(0 0 4px #7ff4ff);opacity:0;animation:ffTwinkle .8s ease-in-out infinite}
+@keyframes ffBreath{to{opacity:.6;scale:1.08}}
+@keyframes ffGlint{0%{background-position:140% 0}60%,100%{background-position:-140% 0}}
+@keyframes ffFloat{from{translate:0 4px;scale:1.02}to{translate:0 -6px;scale:1.12}}
+@keyframes ffTwinkle{0%,100%{opacity:0;scale:.2;rotate:0deg}50%{opacity:1;scale:1;rotate:90deg}}
+/* MINIGAME: an arcade glitch: scanlines, RGB split, the reels flicker and the symbols bounce in 8-bit steps */
+.reel.ff-minigame .ffLayer.bg{background:repeating-linear-gradient(45deg,rgba(255,58,216,.35) 0 8px,rgba(120,0,255,.2) 8px 16px);animation:ffSlideBg .5s linear infinite,bfIn .2s var(--d) both}
+.reel.ff-minigame .ffLayer.top{background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 2px,transparent 2px 4px);animation:ffScan .12s steps(2) infinite}
+.reel.ff-minigame img{animation:ff8bit .5s steps(4) var(--d) infinite,ffRgb .24s steps(1) infinite}
+.reel.ff-minigame{animation:ffGlitch .2s steps(1) infinite}
+@keyframes ffSlideBg{to{background-position:22.6px 0}}
+@keyframes ffScan{50%{opacity:.4}}
+@keyframes ff8bit{0%,100%{translate:0 0;scale:1}25%{translate:0 -10px;scale:1.1}50%{translate:0 -14px;scale:1.16}75%{translate:0 -6px;scale:1.06}}
+@keyframes ffRgb{0%{filter:drop-shadow(3px 0 0 #ff00ea) drop-shadow(-3px 0 0 #00f0ff)}50%{filter:drop-shadow(-4px 1px 0 #ff00ea) drop-shadow(4px -1px 0 #00f0ff)}}
+@keyframes ffGlitch{0%{box-shadow:inset 0 0 0 3px #ff3ad8,0 0 22px #ff3ad8;translate:0 0}33%{box-shadow:inset 0 0 0 3px #00f0ff,0 0 22px #00f0ff;translate:-2px 1px}66%{box-shadow:inset 0 0 0 3px #fff,0 0 30px #ff3ad8;translate:2px -1px;filter:hue-rotate(40deg)}}
+/* EMOTE RUSH: race start lights (red, red, GO green), then racing speed streaks and the symbols rev and zoom */
+.reel.ff-rush .ffLayer.bg{transition:background .08s}
+.reel.ff-rush[data-light="red"] .ffLayer.bg{background:radial-gradient(circle,rgba(255,42,61,.85),rgba(255,42,61,.15) 60%,transparent 75%)}
+.reel.ff-rush[data-light="red"]{box-shadow:inset 0 0 0 4px #ff2a3d,0 0 26px #ff2a3d}
+.reel.ff-rush[data-light="go"] .ffLayer.bg{background:radial-gradient(circle,rgba(80,255,120,.6),transparent 70%)}
+.reel.ff-rush[data-light="go"]{box-shadow:inset 0 0 0 4px #5dff8a,0 0 30px #5dff8a,0 0 60px #ffb020;animation:ffShake .09s linear infinite}
+.reel.ff-rush[data-light="go"] .ffLayer.top{background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(255,176,32,.0) 14px 15px),repeating-linear-gradient(0deg,transparent 0 9px,rgba(255,200,80,.75) 9px 11px,transparent 11px 23px);background-size:100% 100%,60px 100%;animation:ffStreak .18s linear infinite}
+.reel.ff-rush[data-light="go"] img{animation:ffRev .3s ease-in-out infinite alternate}
+@keyframes ffShake{0%,100%{translate:0 0}25%{translate:-2px 1px}50%{translate:2px -1px}75%{translate:-1px -1px}}
+@keyframes ffStreak{from{background-position:0 0,0 0}to{background-position:0 0,-60px 0}}
+@keyframes ffRev{from{scale:1;translate:2px 0}to{scale:1.2;translate:-3px 0}}
+body.no-flash .reel.ffOn,body.no-flash .reel.ffOn img,body.no-flash .reel.ffOn .ffLayer{animation:none!important}
+#machine.bfShake{animation:bfShake .5s linear}
+@keyframes bfShake{0%,100%{translate:0 0}10%{translate:-9px 4px}20%{translate:8px -5px}30%{translate:-7px -3px}40%{translate:6px 5px}50%{translate:-5px 2px}60%{translate:4px -3px}70%{translate:-3px 2px}80%{translate:2px -1px}}
+/* while a boost runs the whole machine glows in the multiplier's colour */
+#machine.boosted{border-color:var(--mc,#ffcc33);box-shadow:0 0 0 2px #0b0612,0 0 30px var(--mc,#ffcc33),0 0 60px color-mix(in srgb,var(--mc,#ffcc33) 45%,transparent),inset 0 0 26px color-mix(in srgb,var(--mc,#ffcc33) 35%,transparent)}
+#machine.boosted::before{box-shadow:0 0 50px var(--mc,#ffcc33),0 0 100px color-mix(in srgb,var(--mc,#ffcc33) 50%,transparent);animation-duration:1.4s}
+/* time added to a running boost: a big "+3 MIN" pops over the BONUS box */
+.bfAdd{position:absolute;z-index:41;pointer-events:none;font:900 58px Impact,"Arial Black",sans-serif;white-space:nowrap;transform:translate(-50%,-50%);
+  color:transparent;background:linear-gradient(180deg,#fff 0 30%,var(--mc,#ffcc33));-webkit-background-clip:text;background-clip:text;-webkit-text-stroke:5px #10061c;paint-order:stroke fill;
+  filter:drop-shadow(0 4px 0 #10061c) drop-shadow(0 0 14px var(--mc,#ffcc33));animation:bfAddUp 2.2s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes bfAddUp{0%{opacity:0;transform:translate(-50%,-50%) scale(2.6) rotate(-10deg)}15%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-4deg)}75%{opacity:1;transform:translate(-50%,-110%) scale(1) rotate(-4deg)}100%{opacity:0;transform:translate(-50%,-160%) scale(.9)}}
+body.no-flash #boostFx *,body.no-flash #machine.bfShake{animation-duration:.01s!important;animation-iteration-count:1!important}
+body.no-flash #boostFx .bfFlash,body.no-flash #boostFx .bfStar,body.no-flash #boostFx .bfStripes{display:none}
 @property --c{syntax:'<color>';inherits:true;initial-value:#fff27a}
 .mreel{transition:--c .5s ease}
 /* BONUS box in the last minute of a boost */
@@ -430,7 +607,7 @@ body.no-flash .reel.gemhype,body.no-flash .reel.gemcrazy,body.no-flash .reel.gem
 #machine.frenzy .tube.bot{animation-direction:reverse}
 body.no-flash .reel.hype,body.no-flash .reel.crazy,body.no-flash .reel.crazy2,body.no-flash #machine.frenzy,body.no-flash .reel.hype .cell img{animation:none!important}
 /* main display */
-#dmd{position:relative;z-index:2;height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden;background:#05030a;border-radius:12px;border:2px solid var(--a);box-shadow:0 0 16px var(--a);padding:0 14px}
+#dmd{position:relative;z-index:2;height:112px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden;background:#05030a;border-radius:12px;border:2px solid var(--a);box-shadow:0 0 16px var(--a);padding:0 14px}
 .nl{line-height:1;white-space:nowrap;text-transform:uppercase;transform-origin:center}
 .nl span{color:var(--sc);text-shadow:0 0 6px var(--sc),0 0 16px var(--sc)}
 .nl .picon{display:inline-block;width:.95em;height:.95em;margin-right:.3em;vertical-align:-.12em}
@@ -500,6 +677,20 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#9a97a8}
 .tile:focus-visible{outline:2px solid #22e6ff;outline-offset:1px}
 .tile .nm{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tile .tg{font-size:11px;color:#9a97a8}
+/* EMOTE TIER PICKER: pick a tier, then click emotes to put them in it */
+.tierbar{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tierbar button{--tc:#22e6ff;border:2px solid color-mix(in srgb,var(--tc) 55%,#2a2833);background:#0e0d13;color:#fff;border-radius:8px;padding:5px 10px;font:inherit;font-size:13px;cursor:pointer;line-height:1.15}
+.tierbar button small{display:block;font-size:10px;color:var(--tc);opacity:.9}
+.tierbar button.sel{background:color-mix(in srgb,var(--tc) 28%,#0e0d13);border-color:var(--tc);box-shadow:0 0 10px color-mix(in srgb,var(--tc) 60%,transparent)}
+.tiermode{margin-top:8px;font-size:13px;padding:7px 10px;border-radius:8px;background:#0e0d13;border:1px dashed #3a3646;color:#c3b6dd}
+.tiermode.paint{border-style:solid;border-color:var(--tc);color:#fff;background:color-mix(in srgb,var(--tc) 16%,#0e0d13)}
+.tiermode button{margin-left:8px;font:inherit;font-size:12px;padding:2px 8px;border-radius:6px;background:#1a0f2a;color:#fff;border:1px solid #4a2f6a;cursor:pointer}
+#grid.paint .tile{cursor:copy}
+.tile .tchip{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);font-size:10px;line-height:1;padding:3px 6px;border-radius:99px;white-space:nowrap;letter-spacing:.5px;
+  background:var(--tc);color:#0b0612;font-weight:700;box-shadow:0 0 6px var(--tc)}
+.tile .tchip.auto{background:#0e0d13;color:var(--tc);border:1px solid var(--tc);box-shadow:none;font-weight:400}
+.vbody .tile.on[data-tier]{border-color:var(--tc);box-shadow:0 0 8px color-mix(in srgb,var(--tc) 45%,transparent)}
+#grid{padding-bottom:10px;row-gap:14px}
 table.pay{width:100%;border-collapse:collapse;font-size:14px}
 table.pay td{padding:5px 6px;border-bottom:1px solid #2a2833}
 table.pay td:last-child{text-align:right;color:#fff27a}
@@ -762,8 +953,9 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
         </div>
       </div>
     </div>
-    <div id="dmd"><div class="nl nl1" id="dl1"></div><div class="nl nl2" id="dl2"></div></div>
+    <div id="dmd"><div class="nl nl1" id="dl1"></div><div class="nl nl2" id="dl2"></div><div class="nl nl2" id="dl3"></div></div>
     <div class="sparks" id="sparks"></div><div id="jpglow" aria-hidden="true"></div>
+    <div id="boostFx" aria-hidden="true"><div class="bfDim"></div><div class="bfStripes"></div><div class="bfRays"></div><div class="bfRing"></div><div class="bfSign"><span class="bfScript">Multiplier</span><span class="bfWord"></span><span class="bfBy"></span></div><div class="bfMid"><span class="bfTag">Multiplier</span><span class="bfBig"></span></div><i class="bfStar" style="left:20%;top:22%"></i><i class="bfStar" style="left:76%;top:16%;animation-delay:.3s"></i><i class="bfStar" style="left:16%;top:62%;animation-delay:.6s"></i><i class="bfStar" style="left:80%;top:58%;animation-delay:.15s"></i><i class="bfStar" style="left:62%;top:8%;animation-delay:.8s"></i><div class="bfSub"><b><span></span></b><em><span></span></em></div><div class="bfFlash"></div></div>
     <div class="hoverbar">
       <button class="hovermenu" id="toMenu" aria-label="Back to main menu">MENU</button>
       <button class="hovermenu hmute" id="muteBtn" aria-label="Mute sound" aria-pressed="false">
@@ -896,7 +1088,12 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
         <button id="addAll">Add all</button>
         <button id="rand8">Random 8</button>
         <button id="clearSel">Clear</button>
+        <button id="tierAuto">Auto tiers</button>
       </div>
+      <h3 style="margin-top:14px">TIERS</h3>
+      <div class="small">Want an emote in a certain tier? Click a tier, then click the emotes you want in it. Click the tier again when you're done. A filled tier tag means you picked it, an outlined one means the machine did. The odds of each tier never change, only which emotes show up in it.</div>
+      <div class="tierbar" id="tierBar" aria-label="Tiers"></div>
+      <div class="tiermode" id="tierMode" role="status"></div>
       <div class="grid" id="grid"></div>
 </div><div>
       <h3>PAYTABLE</h3>
@@ -936,9 +1133,12 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
         <button id="testSnd" style="align-self:flex-end">Test sound</button>
       </div>
       <h3 style="margin-top:12px">TIMED CHAT MESSAGES</h3>
-      <div class="tmrow"><label class="chk"><input type="checkbox" id="tBoardOn"> Post the top 10 leaderboard</label><label class="tmsl">every <b id="tBoardN"></b><input type="range" id="tBoard" min="10" max="180" step="5"></label></div>
+      <div class="tmrow"><label class="chk"><input type="checkbox" id="tBoardOn"> Post the global Sparks top 10</label><label class="tmsl">every <b id="tBoardN"></b><input type="range" id="tBoard" min="10" max="180" step="5"></label></div>
       <div class="tmrow"><label class="chk"><input type="checkbox" id="tCmdsOn"> Post the list of commands</label><label class="tmsl">every <b id="tCmdsN"></b><input type="range" id="tCmds" min="10" max="180" step="5"></label></div>
       <div class="small">They go to every chat you're connected to, from your own account. A post is skipped if the chat has been quiet since the last one, so nobody gets spammed.</div>
+      <h3 style="margin-top:12px">HOT MACHINE</h3>
+      <div class="tmrow"><label class="chk"><input type="checkbox" id="hotOnC"> Random hot streaks</label><label class="tmsl">about every <b id="hotN"></b><input type="range" id="hotEvery" min="30" max="180" step="5"></label></div>
+      <div class="small">Every so often while people are playing, the machine catches fire for 2 to 3 minutes: every win pays X2 (the jackpot isn't doubled). It stacks with a multiplier boost: X3 boost + hot = X6. It's announced in chat.</div>
       <h3 style="margin-top:12px">GLOBAL LEADERBOARD</h3>
       <div class="small" id="glbMsg">Every machine is on the global leaderboard at yhandor.com/leaderboard, and Sparks are shared on every channel.</div>
       <h3 style="margin-top:12px" id="ptsTitle">POINTS</h3>
@@ -1083,7 +1283,7 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
   else { applying = true; own.forEach(k => { if (!(k in data)) remI.call(ls, k); }); Object.keys(data).forEach(k => setI.call(ls, k, data[k])); applying = false; }
   const ES = window.__ES = {on:true, role, lead:!!r.lead, v:r.v || 0};
   // keys the game changes while it runs: only the page running the game may write them
-  const RUNTIME = ['emoteslots:jackpot', 'emoteslots:boost', 'emoteslots:wheelcount', 'emoteslots:badgecount', 'emoteslots:rushcount', 'emoteslots:verified', 'emoteslots:subs', 'emoteslots:theme'];
+  const RUNTIME = ['emoteslots:jackpot', 'emoteslots:boost', 'emoteslots:hot', 'emoteslots:wheelcount', 'emoteslots:badgecount', 'emoteslots:rushcount', 'emoteslots:verified', 'emoteslots:subs', 'emoteslots:theme'];
   const mayWrite = k => role !== 'view' && (ES.force || (role === 'app' || ES.lead) && (ES.lead || RUNTIME.indexOf(k) < 0));   // force: a backup restore may write everything
   let flushT = 0;
   const queue = (k, v) => { if (applying || k.indexOf(PRE) !== 0 || !mayWrite(k)) return; pending[k] = v; if (!flushT) flushT = setTimeout(flush, 250); };
@@ -1288,7 +1488,13 @@ function makeDisplay(lineEls, box){
       drawLine(cs, s, Math.round((Hh - 7 * s) / 2) - Math.round(s / 4), W, W - pad - off);
       ctx.restore(); return;
     }
-    const c1 = cells(lines[0], 0), c2 = mini ? [] : cells(lines[1], 1);
+    const c1 = cells(lines[0], 0), c2 = mini ? [] : cells(lines[1], 1), c3 = mini || !lines[2] ? [] : cells(lines[2], 2);
+    if (c3.length){   /* THREE LINES (during a spin): the player's name and badges on top, the story on the two lines under it */
+      const fit = c => Math.floor(avail / Math.max(1, width(c)));
+      const s1 = Math.max(1, Math.min(Math.floor(Hh * .27 / 7), fit(c1))), s2 = Math.max(1, Math.min(Math.floor(Hh * .2 / 7), fit(c2))), s3 = Math.max(1, Math.min(Math.floor(Hh * .2 / 7), fit(c3)));
+      const g1 = Math.round(s1 * 1.7), g2 = Math.round(s2 * 1.5), total = 7 * (s1 + s2 + s3) + g1 + g2, y1 = Math.round((Hh - total) / 2) - Math.round(s1 / 4);
+      drawLine(c1, s1, y1, W); drawLine(c2, s2, y1 + 7 * s1 + g1, W); drawLine(c3, s3, y1 + 7 * (s1 + s2) + g1 + g2, W); return;
+    }
     if (mini){
       const s = Math.max(1, Math.min(Math.floor(Hh * .66 / 7), Math.floor(avail / Math.max(1, width(c1)))));
       drawLine(c1, s, Math.round((Hh - 7 * s) / 2) - Math.round(s / 4), W); return;
@@ -1317,18 +1523,40 @@ function makeDisplay(lineEls, box){
     lastT = now;
     if (section && !section.classList.contains('on')) return;
     if (now - lastMeasure > 1000) measure();   // catches zoom changes that don't resize the box
-    const lines = typeof src === 'function' ? src(Math.max(0, now - t0)) : src;
+    const lines = withOwner(typeof src === 'function' ? src(Math.max(0, now - t0)) : src);
     let key = JSON.stringify(lines) + '|' + sizeKey;
     if (key.indexOf('"lv":99') >= 0) key += '|' + Math.floor(now / 70);   // a level 99 tag is showing: keep redrawing so its glow breathes
     if (key !== last){ last = key; render(lines || []); lineEls.forEach((el, i) => { const t = lines && lines.scroll ? (i ? '' : plain(lines.scroll)) : plain((lines || [])[i]); if (el.textContent !== t) el.textContent = t; }); }
   }
   requestAnimationFrame(frame);
+  /* OWNER: while someone's spin is playing, their name and badges stay alone on the top line and whatever the display was
+     going to say moves to the two lines under it (their name is taken out of those lines, since it's already on top). */
+  let owner = null;
+  function withOwner(lines){
+    if (!owner || mini || !Array.isArray(lines) || lines.scroll) return lines;
+    const nm = String(owner.name).toLowerCase();
+    const strip = (segs, li) => { const out = []; let cut = false;
+      (segs || []).forEach(sg => {
+        if (sg.who === nm){ cut = true; return; }
+        let x = sg; if (x.t && !x.c) x = {...x, c:defCol[li] || '#ffffff'};
+        if (cut && x.t){ x = {...x, t:x.t.replace(/^\s+/, '')}; cut = false; if (!x.t) return; }
+        if (x.gap && !out.length) return;
+        out.push(x);
+      }); return out; };
+    const has = l => l.some(sg => (sg.t && sg.t.trim()) || sg.img || sg.icon || sg.lv);
+    const rest = [strip(lines[0], 0), strip(lines[1], 1)].filter(has);
+    if (!rest.length) rest.push([{t:' '}]);
+    const out = [who(owner.name, owner.plat, '#fff27a'), rest[0], rest[1] || [{t:' '}]];
+    ['fx', 'fe'].forEach(k => { if (lines[k] !== undefined) out[k] = lines[k]; });
+    return out;
+  }
   return {
     BASE:'', BRIGHT:'#fff27a', WH:'#ffffff', GN:'#5dff8a', RED:'#ff4a5a',
+    owner(o){ owner = o && o.name ? {name:o.name, plat:o.plat} : null; last = ''; },
     show(l, flash){ src = l; t0 = performance.now(); last = ''; if (flash){ box.classList.remove('disp-flash'); void box.offsetWidth; box.classList.add('disp-flash'); } }
   };
 }
-const DMD = makeDisplay([$('#dl1'), $('#dl2')], $('#dmd'));
+const DMD = makeDisplay([$('#dl1'), $('#dl2'), $('#dl3')], $('#dmd'));
 const MDMD = makeDisplay([$('#mdl')], $('.mdmd'));
 setTimeout(() => MDMD.show(timerSrc), 0);
 const JPD = makeDisplay([$('#jpl')], $('#jpbox'));
@@ -2006,21 +2234,44 @@ const isDev = (name, plat) => {
   return ID.map[plat + ':' + String(name).toLowerCase()] === (plat === 'twitch' ? 'tw:' : 'kk:') + want;
 };
 const DEV_IMG = new Image(); DEV_IMG.src = 'data:image/svg+xml;utf8,' + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\" shape-rendering=\"crispEdges\"><rect x=\"0\" y=\"0\" width=\"32\" height=\"32\" fill=\"#000\"/><rect x=\"1\" y=\"1\" width=\"30\" height=\"30\" fill=\"#14061e\"/><rect x=\"1\" y=\"1\" width=\"30\" height=\"1\" fill=\"#ff3ad8\"/><rect x=\"1\" y=\"30\" width=\"30\" height=\"1\" fill=\"#ff3ad8\"/><rect x=\"1\" y=\"1\" width=\"1\" height=\"30\" fill=\"#ff3ad8\"/><rect x=\"30\" y=\"1\" width=\"1\" height=\"30\" fill=\"#ff3ad8\"/><rect x=\"3\" y=\"3\" width=\"26\" height=\"26\" fill=\"#1e0a2e\"/><rect x=\"3\" y=\"3\" width=\"26\" height=\"1\" fill=\"#7a2a8a\"/><rect x=\"3\" y=\"28\" width=\"26\" height=\"1\" fill=\"#7a2a8a\"/><rect x=\"3\" y=\"3\" width=\"1\" height=\"26\" fill=\"#7a2a8a\"/><rect x=\"28\" y=\"3\" width=\"1\" height=\"26\" fill=\"#7a2a8a\"/><rect x=\"6\" y=\"9\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"8\" y=\"9\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"6\" y=\"12\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"10\" y=\"12\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"6\" y=\"15\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"10\" y=\"15\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"6\" y=\"18\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"10\" y=\"18\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"6\" y=\"21\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"8\" y=\"21\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"14\" y=\"9\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"16\" y=\"9\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"18\" y=\"9\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"14\" y=\"12\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"14\" y=\"15\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"16\" y=\"15\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"14\" y=\"18\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"14\" y=\"21\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"16\" y=\"21\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"18\" y=\"21\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"22\" y=\"9\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"26\" y=\"9\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"22\" y=\"12\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"26\" y=\"12\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"22\" y=\"15\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"26\" y=\"15\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"22\" y=\"18\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"26\" y=\"18\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"24\" y=\"21\" width=\"2\" height=\"3\" fill=\"#ff3ad8\"/><rect x=\"5\" y=\"8\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"7\" y=\"8\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"5\" y=\"11\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"9\" y=\"11\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"5\" y=\"14\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"9\" y=\"14\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"5\" y=\"17\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"9\" y=\"17\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"5\" y=\"20\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"7\" y=\"20\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"13\" y=\"8\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"15\" y=\"8\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"17\" y=\"8\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"13\" y=\"11\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"13\" y=\"14\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"15\" y=\"14\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"13\" y=\"17\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"13\" y=\"20\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"15\" y=\"20\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"17\" y=\"20\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"21\" y=\"8\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"25\" y=\"8\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"21\" y=\"11\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"25\" y=\"11\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"21\" y=\"14\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"25\" y=\"14\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"21\" y=\"17\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"25\" y=\"17\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/><rect x=\"23\" y=\"20\" width=\"2\" height=\"3\" fill=\"#3af0ff\"/></svg>");
-const who = (name, plat, c) => (plat === 'twitch' || plat === 'kick') ? [{icon:plat}, ...(isDev(name, plat) ? [{img:DEV_IMG, w:8}] : []), ...(isSub(name, plat) ? [{img:SUB_IMG, w:8}] : []), ...(userBadge(name, plat) ? [{img:userBadge(name, plat), w:badgeW(userBadge(name, plat))}] : []), ...(userRBadge(name, plat) ? [{img:userRBadge(name, plat), w:badgeW(userRBadge(name, plat))}] : []), ...(userLv(name, plat) ? [{lv:userLv(name, plat)}] : []), ...(isVerified(name, plat) ? [{icon:plat + 'v'}] : []), {gap:2}, {t:name, c}] : [...(isDev(name) ? [{img:DEV_IMG, w:8}, {gap:2}] : []), {t:name, c}];
+/* STAFF: the Gielinor Casino staff badge, in its own slot right after the platform icon. Matched by the account's permanent
+   user ID (so it stays after a name change, and copying a staff member's name doesn't get it). A linked Twitch + Kick pair
+   counts as one person. A name is only used until that account's ID has been seen once (it comes with every chat message). */
+const STAFF_IDS = ['tw:114404772', 'kk:54502', 'tw:137001254', 'kk:1100506', 'tw:182871091'];   // Yhandor, iiWolfyyy, MrsYhandor (Twitch + Kick)
+const STAFF_NAMES = ['yhandor', 'iiwolfyyy', 'mrsyhandor'];
+const isStaff = (name, plat) => {
+  const ln = String(name).toLowerCase(), raw = ID.map[plat + ':' + ln];
+  if (!raw) return STAFF_NAMES.includes(ln);
+  return STAFF_IDS.includes(raw) || STAFF_IDS.includes(resolveLink(raw)) || Object.keys(ID.links).some(k => resolveLink(k) === resolveLink(raw) && STAFF_IDS.includes(k));
+};
+const STAFF_IMG = new Image(); STAFF_IMG.src = 'data:image/svg+xml;utf8,' + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"46\" height=\"45.5\" viewBox=\"1 1.500 46 45.500\" preserveAspectRatio=\"xMidYMid meet\" shape-rendering=\"crispEdges\"><g transform=\"translate(3.600 0) scale(.85)\"><path d=\"M7 24V8l8 7 9-12 9 12 8-7v16z\" fill=\"#f0b400\" stroke=\"#000\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M9 24V12l6 5v7z\" fill=\"#ffe27a\" opacity=\"1\"/><path d=\"M24 5l9 12 7-5v12H24z\" fill=\"#b57e00\" opacity=\"1\"/><rect x=\"8\" y=\"22\" width=\"32\" height=\"4\" fill=\"#ffd24a\"/><rect x=\"8\" y=\"24\" width=\"32\" height=\"2\" fill=\"#a06c00\"/><circle cx=\"24\" cy=\"9\" r=\"2\" fill=\"#ff4a4a\"/><circle cx=\"8\" cy=\"11\" r=\"1.5\" fill=\"#4ad8ff\"/><circle cx=\"40\" cy=\"11\" r=\"1.5\" fill=\"#5dff4a\"/><circle cx=\"24\" cy=\"18\" r=\"2.5\" fill=\"#e04040\"/></g><rect x=\"1\" y=\"26\" width=\"46\" height=\"21\" fill=\"#000\"/><rect x=\"2\" y=\"27\" width=\"44\" height=\"19\" fill=\"#2a1800\"/><rect x=\"2\" y=\"27\" width=\"44\" height=\"2\" fill=\"#c8901a\"/><rect x=\"2\" y=\"44\" width=\"44\" height=\"2\" fill=\"#3a2400\"/><rect x=\"3\" y=\"29\" width=\"2\" height=\"2\" fill=\"#c8901a\"/><rect x=\"43\" y=\"29\" width=\"2\" height=\"2\" fill=\"#c8901a\"/><rect x=\"3\" y=\"42\" width=\"2\" height=\"2\" fill=\"#3a2400\"/><rect x=\"43\" y=\"42\" width=\"2\" height=\"2\" fill=\"#3a2400\"/><rect x=\"6\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"8\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"10\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"6\" y=\"34\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"6\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"8\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"10\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"10\" y=\"40\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"6\" y=\"43\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"8\" y=\"43\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"10\" y=\"43\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"14\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"16\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"18\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"16\" y=\"34\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"16\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"16\" y=\"40\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"16\" y=\"43\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"24\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"22\" y=\"34\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"26\" y=\"34\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"22\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"24\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"26\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"22\" y=\"40\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"26\" y=\"40\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"22\" y=\"43\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"26\" y=\"43\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"30\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"32\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"34\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"30\" y=\"34\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"30\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"32\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"30\" y=\"40\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"30\" y=\"43\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"38\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"40\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"42\" y=\"31\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"38\" y=\"34\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"38\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"40\" y=\"37\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"38\" y=\"40\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"38\" y=\"43\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"7\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"9\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"11\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"7\" y=\"35\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"7\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"9\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"11\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"11\" y=\"41\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"7\" y=\"44\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"9\" y=\"44\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"11\" y=\"44\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"15\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"17\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"19\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"17\" y=\"35\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"17\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"17\" y=\"41\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"17\" y=\"44\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"25\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"23\" y=\"35\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"27\" y=\"35\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"23\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"25\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"27\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"23\" y=\"41\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"27\" y=\"41\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"23\" y=\"44\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"27\" y=\"44\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"31\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"33\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"35\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"31\" y=\"35\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"31\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"33\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"31\" y=\"41\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"31\" y=\"44\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"39\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"41\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"43\" y=\"32\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"39\" y=\"35\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"39\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"41\" y=\"38\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"39\" y=\"41\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"39\" y=\"44\" width=\"2\" height=\"3\" fill=\"#000\"/><rect x=\"5\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"7\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"9\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"5\" y=\"33\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"5\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"7\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"9\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"9\" y=\"39\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"5\" y=\"42\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"7\" y=\"42\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"9\" y=\"42\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"13\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"15\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"17\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"15\" y=\"33\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"15\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"15\" y=\"39\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"15\" y=\"42\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"23\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"21\" y=\"33\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"25\" y=\"33\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"21\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"23\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"25\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"21\" y=\"39\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"25\" y=\"39\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"21\" y=\"42\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"25\" y=\"42\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"29\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"31\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"33\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"29\" y=\"33\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"29\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"31\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"29\" y=\"39\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"29\" y=\"42\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"37\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"39\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"41\" y=\"30\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"37\" y=\"33\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"37\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"39\" y=\"36\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"37\" y=\"39\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/><rect x=\"37\" y=\"42\" width=\"2\" height=\"3\" fill=\"#fff2a8\"/></svg>");
+const who = (name, plat, c) => ((plat === 'twitch' || plat === 'kick') ? [{icon:plat}, ...(isStaff(name, plat) ? [{img:STAFF_IMG, w:9}] : []), ...(isDev(name, plat) ? [{img:DEV_IMG, w:8}] : []), ...(isSub(name, plat) ? [{img:SUB_IMG, w:8}] : []), ...(userBadge(name, plat) ? [{img:userBadge(name, plat), w:badgeW(userBadge(name, plat))}] : []), ...(userRBadge(name, plat) ? [{img:userRBadge(name, plat), w:badgeW(userRBadge(name, plat))}] : []), ...(userLv(name, plat) ? [{lv:userLv(name, plat)}] : []), ...(isVerified(name, plat) ? [{icon:plat + 'v'}] : []), {gap:2}, {t:name, c}] : [...(isDev(name) ? [{img:DEV_IMG, w:8}, {gap:2}] : []), {t:name, c}]).map(sg => ({...sg, who:String(name).toLowerCase()}));   // every piece is tagged with whose name it is (the display's top line uses that)
 const PICON = {
   twitch:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2 2.5 6v14h5v3h3l3-3h4l4.5-4.5V2z" fill="#9146ff"/><path d="M6 4h14v10l-3 3h-4.5l-3 3v-3H6z" fill="#fff"/><path d="M11 7.5h2v5h-2zm5 0h2v5h-2z" fill="#9146ff"/></svg>',
   kick:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="1" width="22" height="22" rx="4" fill="#53fc18"/><path d="M6 5h4v4h2V7h2V5h4v5h-2v2h-2v0h2v2h2v5h-4v-2h-2v-2h-2v4H6z" fill="#0b0b0b"/></svg>'
 };
 
-/* top 10 for the idle display: a TOP 10 title, then each player for a moment */
-const top10 = () => Object.values(S.users).filter(u => u.played).sort((a, b) => b.points - a.points).slice(0, 10);
+/* top 10 for the idle display: the GLOBAL leaderboards from yhandor.com (every channel, not just this one). A TOP 10 title,
+   then each player for a moment. It takes turns between the Sparks board and the Level board (a new one every 5 minutes). */
+let GTOP = {by:'sparks', list:[], at:0}, gtopN = 0;
+async function gtopFetch(){
+  const by = ['sparks', 'level'][gtopN++ % 2];
+  try {
+    const r = await (await fetch('https://yhandor.com/api/board?by=' + by, {cache:'no-store'})).json();
+    const list = (r && r.ok && Array.isArray(r.players) ? r.players : []).filter(p => p && p.name).slice(0, 10)
+      .map(p => ({name:String(p.name).slice(0, 25), plat:p.plat === 'kick' ? 'kick' : 'twitch', val:by === 'sparks' ? (+p.sparks || 0) : (+p.lv || 1)}));
+    if (list.length) GTOP = {by, list, at:Date.now()};
+  } catch(e){}
+}
+setTimeout(gtopFetch, 4000); setInterval(gtopFetch, 5 * 60000);
+const top10 = () => GTOP.list;
 const TOP_HEAD = 2200, TOP_EACH = 2000;
 function topLines(t, el){
   const list = top10();
-  if (t < TOP_HEAD) return [[{t:'TOP 10', c:(el % 600) < 300 ? DMD.BRIGHT : DMD.WH}], [{t:'LEADERBOARD', c:DMD.BASE}]];
+  if (t < TOP_HEAD) return [[{t:'GLOBAL TOP 10', c:(el % 600) < 300 ? DMD.BRIGHT : DMD.WH}], [{t:GTOP.by === 'sparks' ? 'MOST SPARKS' : 'HIGHEST LEVEL', c:DMD.BASE}]];
   const r = Math.min(list.length - 1, Math.floor((t - TOP_HEAD) / TOP_EACH)), u = list[r];
   const rc = r === 0 ? '#ffcc33' : r === 1 ? '#e6eef7' : r === 2 ? '#ff9a4a' : DMD.BRIGHT;
-  return [[{t:'#' + (r + 1) + ' ', c:rc}, ...who(u.name, u.plat, DMD.WH)], [{t:u.points.toLocaleString('en-US') + ' ' + CURU(), c:DMD.GN}]];
+  return [[{t:'#' + (r + 1) + ' ', c:rc}, ...who(u.name, u.plat, DMD.WH)], [{t:GTOP.by === 'sparks' ? u.val.toLocaleString('en-US') + ' SPARKS' : 'LEVEL ' + u.val, c:DMD.GN}]];
 }
 const topDur = () => { const n = top10().length; return n ? TOP_HEAD + n * TOP_EACH : 0; };
 function idleDMD(){
@@ -2030,6 +2281,10 @@ function idleDMD(){
     /* one loop: welcome, how to play, then the top 10 (when anyone has played) */
     if (!plan || el - cyc0 >= plan.total){ cyc0 = plan ? cyc0 + plan.total : 0; const td = topDur(); plan = {td, total:12600 + (td || 4200)}; }
     const t = el - cyc0;
+    if (!plan.td && t < 12600){ const td = topDur(); if (td) plan = {td, total:12600 + td}; }   // the global top 10 arrived during this loop
+    if (hotOn()){ const k = Math.floor(el / 2500) % 2, ph = Math.floor(el / 200) % 2;   // a hot streak takes over the idle display
+      return k ? [[{t:'EVERY WIN PAYS X' + boostX() * 2, c:ph ? '#ffd24a' : '#ff7a1a'}], [{t:fmtLeft(HOT.until - Date.now()) + ' LEFT - TYPE !SPIN', c:DMD.BASE}]]
+               : [[{t:'HOT MACHINE!', c:['#ff3a1a', '#ff7a1a', '#ffd24a', '#ffffff'][Math.floor(el / 110) % 4]}], [{t:'THE MACHINE IS ON FIRE', c:DMD.BASE}]]; }
     if (t < 4200) return [[{t:'WELCOME TO', c:DMD.BRIGHT}], [{t:chan, c:DMD.BASE}]];
     if (t < 8400) return [[{t:'TYPE ', c:DMD.BASE}, {t:'!SPIN', c:(el % 600) < 300 ? DMD.BRIGHT : DMD.WH}, {t:' TO PLAY', c:DMD.BASE}], [{t:S.cost + ' ' + CURU() + ' A SPIN', c:DMD.BASE}]];
     if (t < 12600){   // shown in two big halves so the text can be large
@@ -2049,13 +2304,13 @@ const bump = () => { lastActive = Date.now(); };
 function attractDMD(){
   DMD.show(el => {
     const k = Math.floor(el / 3200) % 7, on = (el % 700) < 350;
-    const top = Object.values(S.users).filter(u => u.played).sort((a, b) => b.points - a.points)[0];
+    const top = GTOP.list[0];   // the global #1 (yhandor.com leaderboard)
     if (k === 0) return [[{t:'TYPE ', c:DMD.BASE}, {t:'!SPIN', c:on ? DMD.BRIGHT : DMD.WH}, {t:' TO PLAY', c:DMD.BASE}], [{t:'EMOTE SLOTS DELUXE', c:DMD.BASE}]];
     if (k === 1) return [[{t:'JACKPOT IS AT', c:DMD.BRIGHT}], [{t:jpCatchUp().toLocaleString('en-US') + ' ' + CURU(), c:on ? DMD.GN : DMD.WH}]];
     if (k === 2) return [[{t:'MULTIPLIERS UP TO', c:DMD.BASE}], [{t:'X10', c:on ? '#c46bff' : DMD.WH}]];
     if (k === 3 && TOUR.running) return [[{t:'TOURNAMENT LIVE!', c:on ? DMD.GN : DMD.WH}], [{t:'!TOURNAMENT FOR STANDINGS', c:DMD.BASE}]];
     if (k === 5) return [[{t:'TYPE ', c:DMD.BASE}, {t:'!DAILY', c:on ? DMD.BRIGHT : DMD.WH}, {t:' EVERY DAY', c:DMD.BASE}], [{t:DAILY.toLocaleString('en-US') + ' FREE ' + CURU(), c:on ? DMD.GN : DMD.WH}]];
-    if (k === 4 && top) return [[{t:'HIGH SCORE', c:DMD.BRIGHT}], [...who(top.name, top.plat, DMD.BASE), {t:' ' + top.points.toLocaleString('en-US') + ' ' + CURU(), c:DMD.GN}]];
+    if (k === 4 && top) return [[{t:'GLOBAL #1', c:DMD.BRIGHT}], [...who(top.name, top.plat, DMD.BASE), {t:GTOP.by === 'sparks' ? ' ' + top.val.toLocaleString('en-US') + ' SPARKS' : ' LEVEL ' + top.val, c:DMD.GN}]];
     return [[{t:'!SPARKS', c:DMD.BRIGHT}, {t:' \u00b7 ', c:DMD.BASE}, {t:'!LEADERBOARD', c:DMD.BRIGHT}], [{t:S.cost + ' ' + CURU() + ' A SPIN', c:DMD.BASE}]];
   });
 }
@@ -2276,10 +2531,13 @@ setInterval(() => {
 }, 1000);
 addEventListener('beforeunload', jpSave);
 const LINEUP = 6;   /* regular symbols per spin (plus one legendary and one mythic): wins about 1 in 3.2, pays back about 70% */
+const PICK_TIERS = ['mythic', 'legendary', 'rare', 'uncommon', 'common'];
 function symbols(){
   const act = S.activeNames.map(n => S.all.find(e => e.name === n)).filter(Boolean);
-  const list = act.length >= 2 ? act : DEMO;
+  const all = act.length >= 2 ? act : DEMO, pin = act.length >= 2 ? (S.tiers || {}) : {};
+  const list = all.filter(e => !PICK_TIERS.includes(pin[e.name]));   // emotes the streamer put in a tier keep it; the rest are sorted by the machine
   const out = [{...JACKPOT}, {...WHEEL_SYM}, {...BADGE_SYM}, {...MG_SYM}, {...RUSH_SYM}];
+  all.forEach(e => { if (PICK_TIERS.includes(pin[e.name])) out.push({...e, tier:pin[e.name], pinned:true}); });
   /* the first emotes in the list are the rarest: mythic (250x), then legendary (100x), then rare, uncommon and common */
   const nM = list.length >= 5 ? Math.max(1, Math.round(list.length * 0.05)) : 0, nL = list.length >= 5 ? Math.max(1, Math.round(list.length * 0.1)) : 0;
   const rest = list.slice(nM + nL);
@@ -2593,7 +2851,9 @@ function animate(result, mult, bet){
           jpAlert(0);
           clearInterval(beat); clearTimeout(beat); mach.classList.remove('antic', 'antic-jp', 'antic-gem', 'jp-build');
           if (jpZoomA){ jpZoomA.cancel(); jpZoomA = null; mach.animate([{scale:'1.035'}, {scale:'1'}], {duration:350, easing:'ease-out'}); } reelEls.forEach(r => r.classList.remove('held'));
-          if (willWin && mult.x > 1){ mReel.classList.add('landed'); sndMult(mult.x); setTimeout(() => mReel.classList.remove('landed'), 2800); }
+          if (willWin && mult.hot) hotWinFx();
+          const bxw = mult.hot ? mult.bx : mult.x;
+          if (willWin && bxw > 1){ mReel.classList.add('landed'); sndMult(bxw); setTimeout(() => mReel.classList.remove('landed'), 2800); }
         }
         if (++done === strips.length) resolve();
       }, durs[i] + 40);
@@ -2664,6 +2924,7 @@ function renderQueue(){}
 /* DEV COMMANDS: only the hard-coded dev accounts (DEV_NAMES), and they work on every streamer's machine
    !dev boost [minutes]   start the multiplier (or add time to it), 5 minutes if no number
    !dev endboost          end the multiplier now
+   !dev hot [seconds]     start a HOT MACHINE streak now (or end the one running)
    !dev jackpot <amount>  set the jackpot
    !dev wheel             the next spin lands the bonus wheel
    !dev badge             the next spin lands the badge bonus
@@ -2675,6 +2936,9 @@ function devCommand(cmd, arg, name, plat){
   if (cmd === 'boost'){
     const mins = n > 0 ? Math.min(n, 600) : 5, r = addBoostTime(mins);
     if (r) ok(r.started ? 'multiplier started for ' + minsTxt(mins) : '+' + minsTxt(mins) + ' added to the X' + r.x + ' multiplier');
+  } else if (cmd === 'hot'){
+    if (hotOn()){ HOT.until = Date.now() - 1; saveHot(); return ok('hot streak ended'); }
+    hotSpinAt = Date.now(); hotStart(n > 0 ? Math.min(n, 1800) : 0); hotWas = true; ok('hot streak started');
   } else if (cmd === 'endboost'){
     if (!boostOn()) return ok('the multiplier is not on');
     const x = BOOST.x; endBoost(false); ok('X' + x + ' multiplier ended');
@@ -2796,7 +3060,7 @@ function commandsReply(name, plat){   // every viewer command in one chat messag
 }
 function cmdsText(){
   const cc = '!' + (CUR().toLowerCase().replace(/[^a-z0-9]/g, '') || 'points');
-  return ('COMMANDS: !spin (or !spin ' + Math.max(S.cost, MAX_BET) + ' to bet more) | ' + (cc !== '!points' ? cc + ' or ' : '') + '!points | !daily | !stats | !level | !leaderboard | !badges | !equip <badge> | !unequip | !duel @name <amount> then !accept / !decline | !link (join Twitch + Kick) | !boost | !tournament | !global | !myid');
+  return ('COMMANDS: !spin (or !spin ' + Math.max(S.cost, MAX_BET) + ' to bet more) | ' + (cc !== '!points' ? cc + ' or ' : '') + '!points | !daily | !stats | !level | !leaderboard | !badges | !equip <badge> | !unequip | !duel @name <amount> then !accept / !decline | !link (join Twitch + Kick) | !boost | !tournament | !global | !myid | !version');
 }
 /* ================= DUELS (all in chat) =================
    !duel @name 500   challenges them for 500. They have 60 seconds to !accept or !decline.
@@ -2865,6 +3129,7 @@ function duelFight(d, checked){
 }
 const MAX_BET = 500;   // biggest bet allowed (unless the spin cost itself is set higher)
 /* SPIN EMOTES: a message that starts with the channel's spin emote (yhandoSpin on Twitch, yhandorSpin on Kick) counts as !spin.
+   Bet emotes yhandoSpin50 / yhandoSpin100 / yhandoSpin250 / yhandoSpinmax (yhandor... on Kick too) spin with that bet.
    Only the REAL emote counts (subs), the name typed out as text does not. "yhandoSpin 50" bets 50 like "!spin 50". */
 const SPIN_EMOTES = ['yhandospin', 'yhandorspin'];
 function spinEmoteMsg(msg, plat, emo){
@@ -2878,12 +3143,15 @@ function spinEmoteMsg(msg, plat, emo){
     const real = String(emo || '').split('/').some(part => (part.split(':')[1] || '').split(',').some(r => { const [x, y] = r.split('-').map(Number); return x === x0 && y === x1; }));
     if (!real) return ''; first = end; rest = ch.slice(x1 + 1).join('').trim();
   } else return '';
-  if (!SPIN_EMOTES.includes(first.toLowerCase())) return '';
+  const fl = first.toLowerCase();
+  const bm = fl.match(/^yhandor?spin(50|100|250|max)$/);   // BET EMOTES (any channel): yhandoSpin50 / 100 / 250 / max bet that amount; max = the biggest bet allowed
+  if (bm) return '!spin ' + (bm[1] === 'max' ? Math.max(S.cost, MAX_BET) : bm[1]);
+  if (!SPIN_EMOTES.includes(fl)) return '';
   const n = (rest.match(/^(\d+)\b/) || [])[1];
   return '!spin' + (n ? ' ' + n : '');
 }
 function handleChat(name, msg, plat, uid, emo){
-  if (window.__esLocked) return;   // no valid license: the machine ignores chat
+  if (window.__esLocked || window.__esUpdGate) return;   // no valid license (or an update is installing): the machine ignores chat
   noteId(name, plat, uid);
   if (window.__ES.gone) return;   // desktop app closed: the OBS source takes no more spins
   noteChatter(name, plat); chatSinceCmds++;
@@ -2911,6 +3179,9 @@ function handleChat(name, msg, plat, uid, emo){
   }
   if (/^!(sparks|spark)$/i.test(msg.trim().split(/\s+/)[0])) msg = '!points';
   if (/^!(boost|multiplier|multi)\b/i.test(msg.trim())){ boostStatus(name, plat); return; }
+  if (/^!(version|ver)\b/i.test(msg.trim())){   // !version: which version of the game this streamer is running
+    const now = Date.now(); handleChat.verT = handleChat.verT || {}; if (now - (handleChat.verT[plat] || 0) < 8000) return; handleChat.verT[plat] = now;
+    say(plat, 'always', '@' + name + ' this stream is running Emote Slots Deluxe V' + GAME_VERSION); return; }
   if (/^!stats\b/i.test(msg.trim())){ statsReply(name, plat); return; }
   { const lm = msg.trim().match(/^!link\b\s*(\d{4})?/i); if (lm){ linkCmd(name, plat, uid, lm[1]); return; } }
   if (/^!myid\b/i.test(msg.trim())){   // also shown on the machine, so it works even when replies to that chat aren't signed in
@@ -2921,7 +3192,7 @@ function handleChat(name, msg, plat, uid, emo){
   }
   if (/^!(daily|claim)\b/i.test(msg.trim())){ dailyCmd(name, plat); return; }
   if (/^!(commands|cmds|help)\b/i.test(msg.trim())){ commandsReply(name, plat); return; }
-  if (/^!(global|globallb|glb)\b/i.test(msg.trim())){ const k = plat + '|' + name.toLowerCase(), now = Date.now(); if (now - (cmdsAt['g' + k] || 0) > 15000){ cmdsAt['g' + k] = now; say(plat, 'always', '@' + name + ' the global leaderboard (every channel that plays Emote Slots): yhandor.com/leaderboard'); } return; }
+  if (/^!(global|globallb|glb)\b/i.test(msg.trim())){ const k = plat + '|' + name.toLowerCase(), now = Date.now(); if (now - (cmdsAt['g' + k] || 0) > 15000){ cmdsAt['g' + k] = now; say(plat, 'always', '@' + name + ' the global leaderboard: ' + LB_LINK + ' (every channel that plays Emote Slots Deluxe)'); } return; }
   { const dm = msg.trim().match(/^!(duel|accept|decline|deny)\b\s*(.*)$/i); if (dm){ duelCmd(dm[1].toLowerCase(), dm[2].trim(), name, plat); return; } }
   { const bm = msg.trim().match(/^!(badges|badge|equip|unequip)\b\s*(.*)$/i); if (bm){ badgeCmd(bm[1].toLowerCase() === 'badge' ? 'badges' : bm[1].toLowerCase(), bm[2], name, plat); return; } }
   const m = msg.trim().match(/^!(spin|slots|points|bal|balance|leaderboard|lb|top|level|lvl|xp)\b\s*(\d+)?/i);
@@ -2974,6 +3245,7 @@ function showBoostReel(){
   const on = boostOn(), m = multOf(on ? BOOST.x : 1);
   mStrip.style.transition = 'none'; mStrip.style.transform = 'translateY(0)'; mStrip.innerHTML = ''; mStrip.appendChild(multEl(m));
   setTier(on ? m : null); mReel.classList.toggle('live', on); mReel.classList.remove('dying', 'tease');
+  { const mc = $('#machine'); if (mc){ mc.classList.toggle('boosted', on && !boostBusy); if (on) mc.style.setProperty('--mc', MCOL[m.x]); } }
   const box = $('#multi'); box.classList.toggle('on', on); box.classList.toggle('off', !on && !boostBusy); box.classList.remove('spinup'); box.style.setProperty('--mc', MCOL[m.x]);
 }
 /* when no boost is running and nobody is spinning, the reel rolls through what a sub / bits / Kicks could land: X2 ... X10 */
@@ -3007,6 +3279,46 @@ function mdmdTick(){
   } else if (lbl.textContent !== 'BONUS') lbl.textContent = 'BONUS';
 }
 /* a boost starts: the reel spins with sparks and lands on the multiplier */
+/* MULTIPLIER ACTIVATION TAKEOVER: siren + "MULTIPLIER ACTIVATED!" (and who did it) while the bonus reel spins, then the
+   multiplier SLAMS into the middle of the machine with a flash, shockwave, light rays and a shake, then fades out. */
+let boostBy = null;   // who started it (set by supportEvent just before the boost starts)
+function boostFxStart(m, dur, tok){
+  const fx = $('#boostFx'); if (!fx) return;
+  const col = MCOL[m.x] || '#ffcc33', mins = Math.round((BOOST.ms || 0) / 60000);
+  clearTimeout(boostFxStart.t1); clearTimeout(boostFxStart.t2); clearTimeout(boostFxStart.t3);
+  fx.style.setProperty('--mc', col); $('#machine').style.setProperty('--mc', col);
+  fx.className = 'on'; void fx.offsetWidth; fx.classList.add('flash');
+  const nm = boostBy && boostBy.name && !/^(anonymous|someone)$/i.test(boostBy.name) ? boostBy.name : '';
+  fx.querySelector('.bfBy').textContent = nm ? '\u26a1 thanks to ' + nm + ' \u26a1' : (boostBy ? '\u26a1 thanks for the support \u26a1' : '');
+  fx.style.setProperty('--pc', boostBy && boostBy.plat === 'kick' ? '#2fb40e' : '#9146ff');
+  const wd = fx.querySelector('.bfWord'); wd.innerHTML = '';
+  Array.from('ACTIVATED!').forEach((ch, k) => { const e = document.createElement('i'); e.textContent = ch; e.style.animationDelay = (.25 + k * .05) + 's, ' + (.8 + k * .05) + 's'; wd.appendChild(e); });
+  fx.querySelector('.bfBig').textContent = 'X' + m.x;
+  fx.querySelector('.bfSub b span').textContent = 'EVERY WIN PAYS X' + m.x;
+  const em = fx.querySelector('.bfSub em'); em.style.display = mins > 0 ? '' : 'none';
+  em.querySelector('span').textContent = mins >= 60 && mins % 60 === 0 ? (mins / 60) + ' HR' : mins + ' MIN';
+  boostBy = null;
+  try { for (let k = 0; k < 6; k++){ tone(700, k * .32, .16, 'square', .05, 1300); tone(1300, k * .32 + .16, .16, 'square', .05, 700); } } catch(e){}   // siren
+  boostFxStart.t1 = setTimeout(() => {
+    if (tok !== boostTok) return;
+    fx.classList.remove('flash'); void fx.offsetWidth; fx.classList.add('land', 'flashc');
+    const mc = $('#machine'); mc.classList.remove('bfShake'); void mc.offsetWidth; mc.classList.add('bfShake'); setTimeout(() => mc.classList.remove('bfShake'), 600);
+    try { tone(90, 0, .5, 'sawtooth', .09, 40); noise(0, .45, .14, 3000, 200); for (let k = 0; k < 5; k++) tone(520 * Math.pow(1.26, k), .12 + k * .07, .2, 'square', .05); } catch(e){}
+    burst(90, [col, '#ffffff', '#fff27a']); setTimeout(() => burst(60, [col, '#ffffff']), 450);
+  }, dur + 40);
+  boostFxStart.t2 = setTimeout(() => { if (tok === boostTok) fx.classList.add('out'); }, dur + 3900);
+  boostFxStart.t3 = setTimeout(() => { if (tok === boostTok) fx.className = ''; }, dur + 4550);
+}
+function boostAddFx(ms){   // "+3 MIN" pops over the BONUS box when someone adds time
+  const box = $('#multi'), mc = $('#machine'); if (!box || !mc) return;
+  const mins = Math.round(ms / 60000), e = document.createElement('div'); e.className = 'bfAdd';
+  e.textContent = '+' + (mins >= 1 ? mins + ' MIN' : Math.round(ms / 1000) + ' SEC');
+  const r = box.getBoundingClientRect(), q = mc.getBoundingClientRect(), z = q.width / mc.offsetWidth || 1;
+  e.style.left = Math.min((r.left + r.width / 2 - q.left) / z, mc.offsetWidth - 140) + 'px'; e.style.top = ((r.top + r.height / 2 - q.top) / z) + 'px';
+  mc.appendChild(e); setTimeout(() => e.remove(), 2300);
+  try { for (let k = 0; k < 4; k++) tone(880 * Math.pow(1.19, k), k * .06, .12, 'square', .05); } catch(e2){}
+  burst(30, [MCOL[BOOST.x] || '#ffcc33', '#ffffff']);
+}
 function spinBoost(){
   const tok = ++boostTok, m = multOf(BOOST.x), dur = 3200;
   boostBusy = true; $('#multi').classList.remove('on', 'off'); $('#multi').classList.add('spinup'); mReel.classList.remove('live', 'dying', 'landed'); setTier(null);
@@ -3017,6 +3329,7 @@ function spinBoost(){
   st.classList.add('blur'); st.style.transition = `transform ${dur}ms cubic-bezier(.1,.7,.2,1.04)`;
   st.style.transform = `translateY(${-(st.children.length - 1) * mReel.clientHeight}px)`;
   try { sndSpin(); } catch(e){}
+  boostFxStart(m, dur, tok);
   const tk = setInterval(() => { try { sndTick(); } catch(e){} }, 85);
   setTimeout(() => st.classList.remove('blur'), dur * .6);
   setTimeout(() => {
@@ -3073,7 +3386,7 @@ function boostWays(){   // e.g. "100 bits = 3 min, sub = 8 min" from the Bits/Ki
 function addBoostTime(mins){
   if (!(mins > 0)) return null;
   const ms = Math.round(mins * 60000);
-  if (boostOn()){ BOOST.until += ms; saveBoost(); timerAdd(ms); announceBoostAdd(ms); return {x:BOOST.x, started:false, mins}; }
+  if (boostOn()){ BOOST.until += ms; saveBoost(); timerAdd(ms); announceBoostAdd(ms); if (!boostBusy) boostAddFx(ms); return {x:BOOST.x, started:false, mins}; }
   BOOST = {x:pickMult().x, until:Date.now() + ms, ms}; saveBoost();
   const wait = spinBoost();
   if (boostAnnounce()){ const x = BOOST.x; setTimeout(() => { if (boostOn() && BOOST.x === x) sayBoost('THE MULTIPLIER IS ON! Every win pays X' + x + ' for the next ' + minsTxt(mins) + '. Type !spin now!'); }, wait + 400); }
@@ -3110,16 +3423,17 @@ function supportEvent(kind, amount, name, plat, test){
   const anon = /^(anonymous|someone)$/i.test(name);
   const u = (anon || test) ? null : user(name, plat);
   if (u){ if (bonus){ spAdd(u, bonus); u.played = true; } if (plat) u.plat = plat; saveUsers(); }
-  const b = addBoostTime((c.time || 0) * per100);
+  boostBy = {name, plat};
+  const b = addBoostTime((c.time || 0) * per100); boostBy = null;
   const parts = [];
   if (b) parts.push(b.started ? 'X' + b.x + ' BOOST' : '+' + minsTxt(b.mins) + ' BOOST');
   if (u && bonus) parts.push('+' + bonus.toLocaleString('en-US') + ' ' + CURU());
   if (u && spins) parts.push(spins + ' FREE SPIN' + (spins > 1 ? 'S' : ''));
   const t = {name, plat, line:parts.join(' \u00b7 ') || 'THANKS FOR THE SUPPORT', big:!!(b && b.started) || kind === 'gift' && units >= 5};
   const go = () => { if (S.spinning) thanksQ.push(t); else showThanks(t); };
-  if (b && b.started) setTimeout(go, b.wait + 200); else go();   // a new boost: thank them once the reel has landed
+  if (b && b.started) setTimeout(go, b.wait + 4600); else go();   // a new boost: thank them once the takeover is over   // a new boost: thank them once the reel has landed
   if (u && spins) for (let i = 0; i < spins; i++) S.queue.push({key:name.toLowerCase() + '#free' + Date.now() + i, name, bet:S.cost, plat, free:true});
-  if (u && spins){ renderQueue(); setTimeout(processQueue, (b && b.started ? b.wait : 0) + 3500); }
+  if (u && spins){ renderQueue(); setTimeout(processQueue, (b && b.started ? b.wait + 4600 : 0) + 3500); }
   if (!test && SUP.thank){
     const what = kind === 'gift' ? 'gifting ' + units + ' sub' + (units > 1 ? 's' : '') : kind === 'bits' ? 'the ' + amount + ' bits' : kind === 'kicks' ? 'the ' + amount + ' Kicks' : 'the sub';
     const gets = [];
@@ -3248,10 +3562,11 @@ setTheme(themeCur, true);
 /* x = prize times the bet for the spinner; all = everyone who chatted in the last 10 minutes gets that many times the bet; jp = the progressive jackpot.
    w = how likely the wheel is to stop there (1 = normal) */
 const WHEEL_SEGS = [
-  /* personal spaces (points and XP) add up to 15.25 and the ALL spaces to 15.25, so it's a 50/50 between a personal prize and an everyone prize (plus the tiny jackpot chance).
-     XP spaces give the spinner XP (never more than 10,000). */
-  {x:10, w:1}, {xp:1000, w:1}, {x:25, w:1}, {all:5, w:4.8}, {x:15, w:1}, {x:50, w:.8}, {xp:5000, w:.5}, {x:20, w:1}, {x:100, w:.45}, {all:10, w:3.72}, {x:15, w:1}, {xp:2500, w:.8},
-  {jp:true, w:.12}, {x:30, w:1}, {x:10, w:1}, {all:5, w:4.8}, {x:75, w:.6}, {xp:10000, w:.25}, {x:20, w:1}, {x:40, w:.9}, {x:250, w:.15}, {all:25, w:1.93}, {x:25, w:1}, {x:50, w:.8}
+  /* 12 wide spaces (was 24 thin ones). Same odds as before: personal spaces (points and XP) add up to 15.25 and the ALL spaces
+     to 15.25, so it's a 50/50 between a personal prize and an everyone prize (plus the tiny jackpot chance), and the
+     average prize for the spinner is unchanged. XP spaces give the spinner XP (never more than 10,000). */
+  {x:10, w:2.8}, {all:5, w:4.8}, {x:20, w:5.65}, {xp:2500, w:2.33}, {x:50, w:3.5}, {all:10, w:3.72},
+  {jp:true, w:.12}, {x:100, w:.6}, {all:5, w:4.8}, {xp:10000, w:.22}, {x:250, w:.15}, {all:25, w:1.93}
 ];
 const WHEEL_COLS = ['#ff2a3d', '#ffd21a', '#1ad6c0', '#a23cff', '#ff4fb0', '#22c55e', '#2a7dff', '#ff8a1a'];
 const wheelEV = () => { const tw = WHEEL_SEGS.reduce((a, g) => a + g.w, 0); return WHEEL_SEGS.reduce((a, g) => a + g.w / tw * (g.x || g.all || 0), 0); };   // average prize for the spinner
@@ -3670,8 +3985,16 @@ function emoteRushRun(job, plat, pool){
         burst(30); try { [0, 4, 7, 12].forEach((n, k) => tone(hz(n + 19 + got.length * 2), k * .05, .18, 'square', .05)); } catch(e){}
         if (got.length >= RUSH_WINNERS) T.push(setTimeout(finish, 1200));
       }};
+      let paused = 0, wasDown = false;
       const tick = () => {
         if (closed) return;
+        /* the chat this rush is played in dropped: the clock stops until it's back (up to 90 seconds), then everyone gets 10 more seconds */
+        if (S.wantChat && !chatLive(plat) && paused < 90){
+          paused++; wasDown = true; nEl.textContent = left; ring.classList.remove('low');
+          DMD.show([[{icon:plat}, {t:' CHAT RECONNECTING...', c:'#ff3a5a'}], [{t:'TIMER PAUSED - DON\'T WORRY!', c:DMD.BASE}]]);
+          T.push(setTimeout(tick, 1000)); return;
+        }
+        if (wasDown){ wasDown = false; left += 10; try { tone(880, 0, .1, 'square', .05); tone(1320, .1, .15, 'square', .05); } catch(e){} }
         nEl.textContent = left > 0 ? left : '0'; ring.classList.toggle('low', left <= 5);
         if (left > 0 && left <= 5) try { tone(left === 1 ? 1400 : 1000, 0, .08, 'square', .05); } catch(e){}
         if (!got.length) DMD.show([[{icon:plat}, {t:' EMOTE ' + code.toUpperCase() + ' IN CHAT!', c:'#ffd23a'}], [{t:left > 0 ? 'FIRST ' + RUSH_WINNERS + ' WIN! ' + left + 'S LEFT' : "TIME'S UP!", c:left <= 5 ? '#ff3a5a' : DMD.BASE}]]);
@@ -3718,6 +4041,26 @@ function wheelBonus(job, mult){
     let ang = Math.random() * Math.PI * 2, prevAng = ang, speed = 0, win = -1, bulbT = 0, hot = 0, live = false;
     const sparks = [];
     const underPointer = () => (((Math.round(-ang / seg) % N) + N) % N);
+    /* LABEL LAYOUT: every label (and the jackpot logo) is made as big as its space allows. It sits in the band of the wheel
+       that can be seen (above the jackpot counter, inside the light ring), and each line is checked against the space's
+       width at its own distance from the middle, so nothing touches the edges. Worked out once per space. */
+    const WFONT = '"Arial Black","Segoe UI Black",Impact,sans-serif', WLH = 1.02, layC = {};
+    const rOut = R - 12, rIn = Math.min(rOut - 30, Math.max(R * .45, (R - (Hh - 10 - 30)) / Math.cos(seg))),   // the spaces either side of the pointer must fit above the jackpot counter too
+      band = rOut - rIn, r0 = (rOut + rIn) / 2, tanH = Math.tan(seg / 2);
+    function wLay(i, sg){
+      if (layC[i]) return layC[i];
+      if (sg.jp){ const sz = Math.min(band * .95 / .78, 2 * (r0 - band * .4) * tanH * .9); return layC[i] = {r0, sz}; }
+      const lines = sg.all ? ['ALL', sg.all + 'X'] : sg.xp ? [(sg.xp >= 1000 ? (sg.xp / 1000) + 'K' : String(sg.xp)), 'XP'] : [sg.x + 'X'];
+      g.font = '900 100px ' + WFONT; const wr = lines.map(t => g.measureText(t).width / 100), n = lines.length;
+      let fs = band * .9 / (n * WLH);
+      for (let k = 0; k < 60; k++){
+        const lw = Math.max(3, fs * .14); let ok = true;
+        for (let q = 0; q < n; q++){ const rq = r0 - (q - (n - 1) / 2) * fs * WLH - fs * .45;   // the inner edge of this line (narrowest)
+          if (wr[q] * fs + lw > 2 * rq * tanH * .84){ ok = false; break; } }
+        if (ok) break; fs *= .96;
+      }
+      return layC[i] = {r0, lines, fs:Math.floor(fs), lw:Math.max(3, Math.round(fs * .14))};
+    }
     const draw = () => {
       speed = Math.abs(ang - prevAng); prevAng = ang;
       g.clearRect(0, 0, W, Hh);
@@ -3732,13 +4075,15 @@ function wheelBonus(job, mult){
         if (i === up && speed < .05){ g.fillStyle = 'rgba(255,255,255,.28)'; g.fill(); }
         if (i === win && Math.floor(performance.now() / 140) % 2){ g.fillStyle = 'rgba(255,255,255,.6)'; g.fill(); }
         g.lineWidth = 3; g.strokeStyle = '#120818'; g.stroke();
-        g.save(); g.rotate(a0 + seg / 2); g.translate(R * .8, 0); g.rotate(Math.PI / 2);
-        if (i === win){ const k = 1 + .12 * Math.abs(Math.sin(performance.now() / 160)); g.scale(k, k); }
-        if (sg.jp){ const sz = R * .2; if (JPI.complete){ g.imageSmoothingEnabled = false; g.drawImage(JPI, -sz / 2, -sz * .42, sz, sz * .78); } }
+        const L = wLay(i, sg);
+        g.save(); g.rotate(a0 + seg / 2); g.translate(L.r0, 0); g.rotate(Math.PI / 2);
+        if (i === win){ const k = 1 + .1 * Math.abs(Math.sin(performance.now() / 160)); g.scale(k, k); }
+        if (sg.jp){ if (JPI.complete){ g.imageSmoothingEnabled = false; g.drawImage(JPI, -L.sz / 2, -L.sz * .39, L.sz, L.sz * .78); } }
         else {
-          const fs = Math.round(R * (sg.all || sg.xp ? .062 : .1)); g.font = '900 ' + fs + 'px "Arial Black",Impact,sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
-          const lines = sg.all ? ['ALL', sg.all + 'X'] : sg.xp ? [(sg.xp >= 1000 ? (sg.xp / 1000) + 'K' : sg.xp), 'XP'] : [sg.x + 'X'];
-          lines.forEach((t, k) => { const y = (k - (lines.length - 1) / 2) * fs * 1.05; g.lineWidth = 6; g.strokeStyle = sg.all ? '#2a7dff' : sg.xp ? '#000a3a' : '#3a0010'; g.strokeText(t, 0, y); g.fillStyle = sg.xp ? '#7ff4ff' : '#fff'; g.fillText(t, 0, y); });
+          g.font = '900 ' + L.fs + 'px ' + WFONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+          L.lines.forEach((t, k) => { const y = (k - (L.lines.length - 1) / 2) * L.fs * WLH;
+            g.lineWidth = L.lw; g.strokeStyle = sg.all ? '#071a5e' : sg.xp ? '#000a3a' : '#2a0010'; g.strokeText(t, 0, y);
+            g.fillStyle = sg.all ? '#1f52ff' : sg.xp ? '#7ff4ff' : '#fff'; g.fillText(t, 0, y); });
         }
         g.restore();
       }
@@ -3835,7 +4180,7 @@ function wheelBonus(job, mult){
       if (VS.flash) mach.animate([{translate:'0 0'}, {translate:'-6px 2px'}, {translate:'6px -2px'}, {translate:'-3px 1px'}, {translate:'0 0'}], {duration:380});
       let res;
       if (SG.jp){
-        const pool = jpPay(), amount = pool * mult.x;
+        const pool = jpPay(), amount = pool * (mult.hot ? mult.bx : mult.x);   // the jackpot: the boost counts, a hot streak doesn't
         res = {jp:true, prize:'JACKPOT', amount};
         slam('JACKPOT!!!', '#ffd24a', true);
         DMD.show(el => [[{t:'JACKPOT ON THE WHEEL!', c:(el % 200) < 100 ? '#ffd24a' : DMD.WH}], [...who(job.name, job.plat, DMD.BASE), {t:' +' + amount.toLocaleString('en-US') + ' ' + CURU(), c:DMD.GN}]], true);
@@ -4018,26 +4363,95 @@ function renderTour(){
 }
 setInterval(() => { if (TOUR.running && TOUR.endsAt && Date.now() >= TOUR.endsAt && !S.spinning) endTournament(); else if (TOUR.running) renderTour(); }, 5000);
 
-/* ================= leaderboard: !leaderboard posts the top 10 in chat (always on) ================= */
-let boardLast = {twitch:0, kick:0};
-function rankList(){ return Object.values(S.users).filter(u => u.played).sort((a, b) => b.points - a.points); }
-function showBoard(name, plat){
+/* ================= HOT MACHINE: random hot streaks =================
+   About every RP.hotEvery minutes (60 by default, give or take 40%) while people are playing, the machine catches fire for
+   2-3 minutes and every win pays X2 (not the jackpot), on top of any multiplier boost. Never while nobody is playing.
+   Only the window running the game starts one; the state is saved so every window shows it. */
+const HOT_KEY = 'emoteslots:hot';
+let HOT = {until:0, next:0}, hotSpinAt = 0, hotEmb = 0, hotWas = false;
+try { const h = JSON.parse(localStorage.getItem(HOT_KEY) || 'null'); if (h) HOT = {until:+h.until || 0, next:+h.next || 0}; } catch(e){}
+const hotOn = () => HOT.until > Date.now();
+const saveHot = () => { try { localStorage.setItem(HOT_KEY, JSON.stringify(HOT)); } catch(e){} };
+const hotGap = () => { const m = RP.hotEvery || 60; return Math.round((m * .6 + Math.random() * m * .8) * 60000); };
+if (!HOT.next || HOT.next < Date.now() - 3600000) HOT.next = Date.now() + Math.round((36 + Math.random() * 48) * 60000);   // (the settings aren't loaded yet here: about an hour)
+function hotFlames(){ reelEls.forEach(r => { if (!r.querySelector('.hotFlame')){ const fl = document.createElement('div'); fl.className = 'hotFlame'; r.prepend(fl); } }); }
+function hotStart(secs){
+  const dur = (secs || 120 + Math.floor(Math.random() * 61)) * 1000;
+  HOT.until = Date.now() + dur; HOT.next = HOT.until + hotGap(); saveHot();
+  hotShow(true);
+  ['twitch', 'kick'].forEach(pl => { if (S.socks[pl]) say(pl, 'always', '\ud83d\udd25 HOT MACHINE! \ud83d\udd25 The machine is on fire: every win pays X2 for the next ' + fmtLeft(dur) + (boostOn() ? ', on top of the X' + BOOST.x + ' multiplier (X' + BOOST.x * 2 + ')' : '') + '. Type !spin now!'); });
+}
+function hotEnd(){
+  const m = $('#machine'); m.classList.add('hotOut');
+  setTimeout(() => { m.classList.remove('hot', 'hotOut'); }, 1300);
+  try { noise(0, 1.4, .14, 3500, 250); tone(520, 0, 1.1, 'sine', .05, 70); } catch(e){}
+  if (!S.spinning){ DMD.show(el => [[{t:'MACHINE COOLED DOWN', c:Math.floor(el / 300) % 2 ? '#7fdcff' : DMD.WH}], [{t:'THE NEXT HOT STREAK COULD BE ANY TIME', c:DMD.BASE}]], true); setTimeout(() => { if (!S.spinning && !hotOn()) idleDMD(); }, 3500); }
+  clearInterval(hotEmb); hotEmb = 0;
+}
+function hotShow(fresh){   // flames on; fresh = it just ignited (big whoosh)
+  hotFlames(); const m = $('#machine'); m.classList.remove('hotOut'); m.classList.add('hot');
+  clearInterval(hotEmb); hotEmb = setInterval(() => { if (!hotOn()) return; if (VS.sparks && !document.hidden) burst(3, ['#ff7a1a', '#ffd24a', '#ff3a1a']); }, 450);
+  if (!fresh) return;
+  m.classList.remove('hotIgnite'); void m.offsetWidth; m.classList.add('hotIgnite'); setTimeout(() => m.classList.remove('hotIgnite'), 1400);
+  try {   // WHOOSH, crackle, a deep boom and a rising fanfare
+    noise(0, 1.1, .28, 180, 3500); tone(55, 0, 1.3, 'sawtooth', .09, 260);
+    for (let k = 0; k < 22; k++){ const t = Math.random() * 1.8; noise(t, .03, .06 + Math.random() * .06, 2500 + Math.random() * 3000); }
+    tone(98, .85, .9, 'square', .1, 49); noise(.85, .6, .2, 120, 60);
+    [392, 494, 587, 784, 988].forEach((fq, k) => { tone(fq, 1.05 + k * .08, .3, 'square', .055); tone(fq * 1.5, 1.05 + k * .08, .25, 'triangle', .025); });
+    tone(1175, 1.5, .8, 'sawtooth', .03);
+  } catch(e){}
+  burst(70, ['#ff3a1a', '#ff7a1a', '#ffd24a', '#ffffff']); setTimeout(() => burst(40, ['#ff7a1a', '#ffd24a']), 700);
+  if (!S.spinning){ DMD.show(el => [[{t:'HOT MACHINE!', c:['#ff3a1a', '#ff7a1a', '#ffd24a', '#ffffff'][Math.floor(el / 90) % 4]}], [{t:'EVERY WIN PAYS X' + boostX() * 2 + ' FOR ' + fmtLeft(HOT.until - Date.now()), c:Math.floor(el / 300) % 2 ? '#ffd24a' : DMD.WH}]], true); setTimeout(() => { if (!S.spinning && hotOn()) idleDMD(); }, 4000); }
+}
+function hotWinFx(){   // a win while it's hot: a sizzle and a flare of flames
+  const m = $('#machine'); m.classList.remove('hotWin'); void m.offsetWidth; m.classList.add('hotWin'); setTimeout(() => m.classList.remove('hotWin'), 600);
+  try { noise(0, .55, .12, 7000, 1800); tone(196, 0, .35, 'sawtooth', .05, 392); } catch(e){}
+  burst(40, ['#ff3a1a', '#ff7a1a', '#ffd24a']);
+}
+setInterval(() => {
+  if (window.__ES.gone) return;
+  const now = Date.now(), on = hotOn();
+  if (on && !hotWas) hotShow(false);   // a reload or another window started it
+  if (!on && hotWas){ hotEnd(); if (window.__ES.lead) ['twitch', 'kick'].forEach(pl => { if (S.socks[pl]) say(pl, 'always', 'The machine cooled down. Another hot streak could start any time, keep spinning!'); }); }
+  hotWas = on;
+  if (!window.__ES.lead || RP.hotOn === false || FIRE_ON || on || now < HOT.next) return;
+  if (now - hotSpinAt > 5 * 60000){ HOT.next = now + 60000; return; }   // nobody is playing: wait for someone to spin
+  if (boostBusy || S.spinning){ HOT.next = now + 20000; return; }   // the bonus reel is spinning up (or a spin is on): try again shortly
+  hotStart(); hotWas = true;
+}, 1000);
+
+/* ================= leaderboard: !leaderboard posts the GLOBAL Sparks top 10 (yhandor.com) in chat (always on) =================
+   Sparks are shared on every channel, so the board is the global one: the same on every stream. Fetched from the site
+   (kept for a minute so a burst of !leaderboard doesn't ask again). */
+let boardLast = {twitch:0, kick:0}, GSP = {list:[], at:0};
+const LB_LINK = 'https://yhandor.com/leaderboard';
+async function gspGet(){
+  if (GSP.list.length && Date.now() - GSP.at < 60000) return GSP.list;
+  try {
+    const r = await (await fetch('https://yhandor.com/api/board?by=sparks', {cache:'no-store'})).json();
+    if (r && r.ok && Array.isArray(r.players)) GSP = {list:r.players.filter(p => p && p.name), at:Date.now()};
+  } catch(e){}
+  return GSP.list;
+}
+const gspTop = list => list.slice(0, 10).map((p, i) => (i + 1) + '. ' + p.name + ' ' + (+p.sparks || 0).toLocaleString('en-US')).join(' \u2022 ');
+async function showBoard(name, plat){
   if (!(plat === 'twitch' || plat === 'kick')) plat = (S.socks.twitch && 'twitch') || (S.socks.kick && 'kick') || plat;
   if (Date.now() - (boardLast[plat] || 0) < 8000) return;   // one board every 8s per chat, so a flood of !leaderboard can't spam
   boardLast[plat] = Date.now();
-  const list = rankList(), key = String(name || '').toLowerCase(), idx = list.findIndex(u => u.name.toLowerCase() === key);
-  if (!list.length){ say(plat, 'always', 'Leaderboard is empty. Type !spin to get on it!'); return; }
-  const top = list.slice(0, 10).map((u, i) => (i + 1) + '. ' + u.name + ' ' + u.points.toLocaleString('en-US') + ' ' + CUR()).join(' \u2022 ');
-  const me = idx >= 10 ? ' | @' + name + ' you are #' + (idx + 1) + ' (' + list[idx].points.toLocaleString('en-US') + ' ' + CUR() + ')' : idx < 0 && name ? ' | @' + name + ' type !spin to get on the board' : '';
-  say(plat, 'always', CURU() + ' LEADERBOARD TOP 10: ' + top + me);
+  const list = await gspGet();
+  if (!list.length){ say(plat, 'always', 'The global leaderboard is at ' + LB_LINK); return; }
+  const key = String(name || '').toLowerCase(), idx = list.findIndex(p => String(p.name).toLowerCase() === key);
+  const me = idx >= 10 ? ' | @' + name + ' you are #' + (idx + 1) + ' (' + (+list[idx].sparks || 0).toLocaleString('en-US') + ')' : idx < 0 && name ? ' | @' + name + ' type !spin to get on it' : '';
+  say(plat, 'always', 'GLOBAL SPARKS TOP 10: ' + gspTop(list) + me);
 }
 
 /* the top 10 goes to chat every RP.board minutes (default 30) from the page running the game, if anyone has spun since the last one */
 let autoBoardLast = Date.now(), spinsSinceBoard = 0;
-function autoBoard(){
-  const list = rankList(); if (!list.length) return;
-  const top = list.slice(0, 10).map((u, i) => (i + 1) + '. ' + u.name + ' ' + u.points.toLocaleString('en-US') + ' ' + CUR()).join(' \u2022 ');
-  ['twitch', 'kick'].forEach(pl => { if (S.socks[pl]){ say(pl, 'always', CURU() + ' LEADERBOARD TOP 10: ' + top + ' | !spin to climb it!'); boardLast[pl] = Date.now(); } });
+async function autoBoard(){
+  const list = await gspGet(); if (!list.length) return;
+  const top = gspTop(list);
+  ['twitch', 'kick'].forEach(pl => { if (S.socks[pl]){ say(pl, 'always', 'GLOBAL SPARKS TOP 10: ' + top + ' | !spin to climb it!'); boardLast[pl] = Date.now();
+    setTimeout(() => { if (S.socks[pl]) say(pl, 'always', 'See the full global leaderboard: ' + LB_LINK + ' (every channel that plays Emote Slots Deluxe)'); }, 2000); } });   // then the !global link right after
 }
 const tmTxt = m => m < 60 ? m + ' min' : Math.floor(m / 60) + ' hr' + (m % 60 ? ' ' + (m % 60) + ' min' : '');
 /* the list of commands goes to chat every RP.cmds minutes (default 60), if anyone has chatted since the last one */
@@ -4055,6 +4469,50 @@ setInterval(() => {
   autoBoardLast = Date.now(); if (!spinsSinceBoard) return;   // nobody played: skip this one
   spinsSinceBoard = 0; autoBoard();
 }, 20000);
+/* FEATURE FANFARE (about 2.7s): the three symbols pop one by one with rising notes, then the feature's banner slams in
+   with a flash, light rays, a shockwave, sparks and a trumpet-style fanfare. Then the feature itself starts. */
+const FEAT = {wheel:{tag:'Spin to Win', big:'BONUS WHEEL!', c:'#ffd24a'}, badge:{tag:"Collect 'em", big:'BADGE BONUS!', c:'#7ff4ff'},
+  minigame:{tag:'Wild spin', big:'MINIGAME!', c:'#ff3ad8'}, rush:{tag:'Chat race', big:'EMOTE RUSH!', c:'#ffb020'}};
+async function featFanfare(kind, job){
+  const f = FEAT[kind], wait = ms => new Promise(r => setTimeout(r, ms));
+  if (!f) return wait(1300);
+  const nm = job && job.name ? job.name.toUpperCase() : '', who2 = nm ? 'FOR ' + nm : 'FEATURE UNLOCKED', adds = [];
+  reelEls.forEach((r, i) => {
+    r.style.setProperty('--d', (i * .22) + 's');
+    const bg = document.createElement('div'); bg.className = 'ffLayer bg'; const top = document.createElement('div'); top.className = 'ffLayer top';
+    if (kind === 'badge') for (let k = 0; k < 6; k++){ const sp = document.createElement('i'); sp.className = 'ffSpk'; sp.style.left = (8 + Math.random() * 78) + '%'; sp.style.top = (8 + Math.random() * 78) + '%'; sp.style.animationDelay = (i * .22 + Math.random() * .8) + 's'; const z = .6 + Math.random() * .9; sp.style.width = sp.style.height = (14 * z) + 'px'; top.appendChild(sp); }
+    r.prepend(bg); r.appendChild(top); adds.push(bg, top);
+    r.classList.remove('held'); r.classList.add('ffOn', 'ff-' + kind);
+  });
+  const T = (fn, ms) => setTimeout(() => { try { fn(); } catch(e){} }, ms);
+  if (kind === 'wheel'){   // a prize wheel clicker that winds down, then ding-ding-DING and a casino jingle
+    let t = 0; for (let k = 0; k < 16; k++){ tone(1800, t, .03, 'square', .045); noise(t, .02, .05, 5000); t += .04 + k * .009; }
+    [[1568, .95], [1568, 1.12], [2093, 1.29]].forEach(([fq, at]) => { tone(fq, at, .9, 'sine', .09); tone(fq * 2.01, at, .5, 'sine', .03); });
+    [523, 659, 784, 1047, 1319].forEach((fq, k) => tone(fq, 1.6 + k * .07, .25, 'triangle', .05));
+    burst(30, ['#ffd24a', '#fff6c8', '#ff9a1a']); T(() => burst(45, ['#ffd24a', '#ffffff', '#ff9a1a']), 1300);
+    DMD.show(el => [[{t:'BONUS WHEEL!', c:Math.floor(el / 120) % 2 ? '#ffd24a' : '#ffffff'}], [{t:el < 1300 ? 'SPIN... SPIN... SPIN...' : who2, c:DMD.BASE}]], true);
+  } else if (kind === 'badge'){   // glassy crystal chimes, one per reel, then a shimmering "shing"
+    [[1047, 0], [1319, .22], [1568, .44]].forEach(([fq, at]) => { tone(fq, at, .6, 'triangle', .07); tone(fq * 2, at, .4, 'sine', .035); tone(fq * 3.01, at, .25, 'sine', .015); });
+    [2093, 2637, 3136, 4186].forEach((fq, k) => tone(fq, .85 + k * .06, .7, 'sine', .04));
+    noise(.85, 1.1, .05, 9000, 12000); tone(2400, 1.4, .5, 'sine', .04, 5200);
+    T(() => burst(40, ['#7ff4ff', '#ffffff', '#bff9ff']), 850);
+    DMD.show(el => [[{t:'BADGE BONUS!', c:['#7ff4ff', '#ffffff', '#bff9ff'][Math.floor(el / 160) % 3]}], [{t:el < 1200 ? 'SOMETHING SHINY...' : who2, c:DMD.BASE}]], true);
+  } else if (kind === 'minigame'){   // 8-bit power-up: three blips, a fast rising arpeggio and a coin "ba-ding"
+    [0, .22, .44].forEach((at, k) => { tone(660 + k * 220, at, .07, 'square', .06); tone(1320 + k * 440, at + .07, .06, 'square', .04); });
+    for (let k = 0; k < 14; k++) tone(262 * Math.pow(2, k / 6), .75 + k * .045, .06, 'square', .05);
+    tone(988, 1.45, .1, 'square', .06); tone(1319, 1.55, .5, 'square', .06);
+    noise(.7, .25, .06, 1500, 6000);
+    T(() => burst(40, ['#ff3ad8', '#00f0ff', '#ffffff']), 750);
+    DMD.show(el => [[{t:'MINIGAME!', c:['#ff3ad8', '#00f0ff', '#ffffff', '#7a5cff'][Math.floor(el / 90) % 4]}], [{t:el < 1400 ? 'PRESS START' : who2, c:Math.floor(el / 300) % 2 ? DMD.BASE : DMD.WH}]], true);
+  } else if (kind === 'rush'){   // race start: three start lights (beep, beep, GO!), an engine revs and chat gets ready to race
+    reelEls.forEach((r, i) => T(() => { r.dataset.light = 'red'; tone(440, 0, .18, 'square', .07); }, i * 380));
+    T(() => { reelEls.forEach(r => r.dataset.light = 'go'); tone(880, 0, .5, 'square', .08); tone(1760, 0, .35, 'square', .03); tone(70, .05, 1.2, 'sawtooth', .07, 420); noise(.05, .9, .1, 400, 4000); burst(50, ['#ffb020', '#5dff8a', '#ffffff']); }, 3 * 380);
+    DMD.show(el => { const k = Math.floor(el / 380); return [[{t:k < 3 ? 'READY... ' + (3 - k) : 'GO! EMOTE RUSH!', c:k < 3 ? '#ff2a3d' : (Math.floor(el / 120) % 2 ? '#ffb020' : '#5dff8a')}], [{t:k < 3 ? 'CHAT, GET READY TO RACE' : who2, c:DMD.BASE}]]; }, true);
+  }
+  await wait(kind === 'rush' ? 2700 : 2500);
+  reelEls.forEach(r => { r.classList.remove('ffOn', 'ff-' + kind); delete r.dataset.light; r.style.removeProperty('--d'); });
+  adds.forEach(x => x.remove());
+}
 async function processQueue(){
   if (S.spinning || !S.queue.length || FIRE_ON) return;   // the fireplace is lit: spins wait
   S.spinning = true; clearTimeout(hideT); bump(); spinsSinceBoard++;
@@ -4064,9 +4522,10 @@ async function processQueue(){
   const mach = $('#machine'), reelsBox = $('#reels');
   mach.classList.remove('idle', 'win', 'jackpot'); reelsBox.classList.remove('win'); reelEls.forEach(r => r.classList.remove('hit'));
   mach.classList.add('spinning');
-  const job = S.queue.shift(); renderQueue();
+  const job = S.queue.shift(); renderQueue(); DMD.owner(job);   // their name and badges hold the top line until the spin is over
   DMD.show(el => [[...who(job.name, job.plat, DMD.BRIGHT), {t:job.free ? ' FREE SPIN' : '', c:'#ffcc33'}, {t:S.queue.length ? '  +' + S.queue.length + ' WAITING' : '', c:DMD.BASE}], [{t:'SPINNING FOR ' + job.bet + ' ' + CURU() + '.'.repeat(1 + Math.floor(el / 300) % 3), c:DMD.BASE}]]);
-  const result = devForce ? devForce() : spinResult(job), mult = multOf(boostX()); devForce = null;
+  const result = devForce ? devForce() : spinResult(job), mult = hotOn() ? {...multOf(boostX()), x:boostX() * 2, hot:true, bx:boostX()} : multOf(boostX()); devForce = null;   // a HOT MACHINE doubles wins, on top of any multiplier boost (X3 boost + hot = X6)
+  hotSpinAt = Date.now();
   const wild = result.every(r => r.tier === 'minigame') || result.every(r => r.tier === 'rush');
   let wildIv = 0, wildSp = 0;
   if (wild){   /* the machine goes insanely wild: strobing, every reel shaking and spinning like crazy, sirens */
@@ -4082,28 +4541,28 @@ async function processQueue(){
   let wheel = null;
   if (ev.kind === 'wheel'){   /* three SPIN TO WIN: the reels light up, then the bonus wheel takes over the reels box */
     reelEls.forEach(r => r.classList.add('held')); mach.classList.add('win'); document.documentElement.style.setProperty('--glow', '#ffd24a');
-    await new Promise(r => setTimeout(r, 1300)); reelEls.forEach(r => r.classList.remove('held')); mach.classList.remove('win');
+    await featFanfare('wheel', job); reelEls.forEach(r => r.classList.remove('held')); mach.classList.remove('win');
     wheel = await wheelBonus(job, mult);
   }
   let bres = null;
   if (ev.kind === 'badge'){   /* three BADGE: the reels light up, then the badge carousel takes over the reels box */
     reelEls.forEach(r => r.classList.add('held')); mach.classList.add('win'); document.documentElement.style.setProperty('--glow', '#7ff4ff');
-    await new Promise(r => setTimeout(r, 1300)); reelEls.forEach(r => r.classList.remove('held')); mach.classList.remove('win');
+    await featFanfare('badge', job); reelEls.forEach(r => r.classList.remove('held')); mach.classList.remove('win');
     bres = await badgeBonus(job);
   }
   let mres = null;
   if (ev.kind === 'minigame'){   /* three MINIGAME after the wild spin: a pick-a-prize game takes over the reels box */
     reelEls.forEach(r => r.classList.add('held')); mach.classList.add('win'); document.documentElement.style.setProperty('--glow', '#ff3ad8');
-    await new Promise(r => setTimeout(r, 1300)); reelEls.forEach(r => r.classList.remove('held')); mach.classList.remove('win');
+    await featFanfare('minigame', job); reelEls.forEach(r => r.classList.remove('held')); mach.classList.remove('win');
     mres = await miniGame(job, mult);
   }
   let rres = null;
   if (ev.kind === 'rush'){   /* three EMOTE RUSH after the wild spin: the emote carousel, then chat races to type it */
     reelEls.forEach(r => r.classList.add('held')); mach.classList.add('win'); document.documentElement.style.setProperty('--glow', '#ffd23a');
-    await new Promise(r => setTimeout(r, 1300)); reelEls.forEach(r => r.classList.remove('held')); mach.classList.remove('win');
+    await featFanfare('rush', job); reelEls.forEach(r => r.classList.remove('held')); mach.classList.remove('win');
     rres = await emoteRush(job);
   }
-  const jpWon = ev.kind === 'jack' ? jpPay() : 0, win = ev.kind === 'jack' ? jpWon * mult.x : wheel ? wheel.amount : bres ? bres.amount : mres ? mres.amount : rres ? job.bet : Math.round(job.bet * ev.mult * mult.x), u = user(job.name, job.plat);
+  const jpWon = ev.kind === 'jack' ? jpPay() : 0, win = ev.kind === 'jack' ? jpWon * (mult.hot ? mult.bx : mult.x) : wheel ? wheel.amount : bres ? bres.amount : mres ? mres.amount : rres ? job.bet : Math.round(job.bet * ev.mult * mult.x), u = user(job.name, job.plat);
   if (wheel && wheel.jp){ sndJackpotWin(); jackpotCelebrate(job.name, job.plat, win, mult.x); mach.classList.add('jackpot'); }
   tScore(job, rres ? 0 : win);   // an emote rush only hands the bet back: not a tournament win
   if (!u.first) u.first = Date.now(); u.spins = (u.spins || 0) + 1; u.cspins = (u.cspins || 0) + 1;   // spins on THIS channel if (win > 0){ u.won = (u.won || 0) + win; const bx = Math.floor(win / Math.max(1, job.bet)); if (bx > (u.bigX || 0)) u.bigX = bx; if (win > (u.bigW || 0)) u.bigW = win; } else u.lost = (u.lost || 0) + job.bet;   // !stats (bigX = biggest win as a multiple of the bet, for the global leaderboard)
@@ -4122,8 +4581,8 @@ async function processQueue(){
       const where = (wheel.plats || [job.plat]).length > 1 ? 'Twitch and Kick' : (wheel.plats || [job.plat])[0] === 'kick' ? 'Kick' : 'Twitch';
       (wheel.plats && wheel.plats.length ? wheel.plats : [job.plat]).forEach(pl => sayResult(pl, 'always', (pl === job.plat ? '@' + job.name : job.name) + ' spun the BONUS WHEEL and hit EVERYONE WINS! ' + wheel.count + ' people in ' + where + ' chat get +' + wheel.each.toLocaleString('en-US') + ' ' + CUR() + ' each!'));
     }
-    else if (wheel) sayResult(job.plat, 'wins', '@' + job.name + ' hit the BONUS WHEEL! It landed on ' + wheel.prize + 'x' + (mult.x > 1 ? ' with the X' + mult.x + ' boost' : '') + ' = +' + win.toLocaleString('en-US') + ' ' + CUR() + ' (' + u.points.toLocaleString('en-US') + ' total)' + ' | +' + xpGain.toLocaleString('en-US') + ' XP');
-    else if (ev.mult) sayResult(job.plat, 'wins', '@' + job.name + ' ' + (ev.kind === 'jack' ? 'JACKPOT! Won the ' + jpWon.toLocaleString('en-US') + ' ' + CUR() + ' jackpot' : (ev.top === 'mythic' ? '*** MYTHIC *** 3 in a row! ' : ev.top === 'legendary' ? '** LEGENDARY ** 3 in a row! ' : ev.label.startsWith('3') ? '3 in a row! ' : 'Pair! ') + ev.mult + 'x') + (mult.x > 1 ? ' with the X' + mult.x + ' boost' : '') + ' = +' + win.toLocaleString('en-US') + ' ' + CUR() + ' (' + u.points.toLocaleString('en-US') + ' total)' + ' | +' + xpGain.toLocaleString('en-US') + ' XP');
+    else if (wheel) sayResult(job.plat, 'wins', '@' + job.name + ' hit the BONUS WHEEL! It landed on ' + wheel.prize + 'x' + (mult.x > 1 ? (mult.hot ? (mult.bx > 1 ? ' with the X' + mult.bx + ' boost + HOT MACHINE X2 (X' + mult.x + ')' : ' with the HOT MACHINE X2') : ' with the X' + mult.x + ' boost') : '') + ' = +' + win.toLocaleString('en-US') + ' ' + CUR() + ' (' + u.points.toLocaleString('en-US') + ' total)' + ' | +' + xpGain.toLocaleString('en-US') + ' XP');
+    else if (ev.mult) sayResult(job.plat, 'wins', '@' + job.name + ' ' + (ev.kind === 'jack' ? 'JACKPOT! Won the ' + jpWon.toLocaleString('en-US') + ' ' + CUR() + ' jackpot' : (ev.top === 'mythic' ? '*** MYTHIC *** 3 in a row! ' : ev.top === 'legendary' ? '** LEGENDARY ** 3 in a row! ' : ev.label.startsWith('3') ? '3 in a row! ' : 'Pair! ') + ev.mult + 'x') + (mult.x > 1 ? (mult.hot ? (mult.bx > 1 ? ' with the X' + mult.bx + ' boost + HOT MACHINE X2 (X' + mult.x + ')' : ' with the HOT MACHINE X2') : ' with the X' + mult.x + ' boost') : '') + ' = +' + win.toLocaleString('en-US') + ' ' + CUR() + ' (' + u.points.toLocaleString('en-US') + ' total)' + ' | +' + xpGain.toLocaleString('en-US') + ' XP');
     else sayResult(job.plat, 'losses', '@' + job.name + ' no luck this time (' + u.points.toLocaleString('en-US') + ' ' + CUR() + ' left)' + ' | +' + xpGain.toLocaleString('en-US') + ' XP'); }
   if (wheel || bres || mres || rres){ /* the wheel / carousel / minigame / emote rush already showed its result */ }
   else if (ev.mult){
@@ -4149,12 +4608,13 @@ async function processQueue(){
     S.spinning = false;
     reelsBox.classList.remove('win'); mach.classList.remove('win', 'jackpot'); reelEls.forEach(r => r.classList.remove('hit'));
     bump();
-    if (thanksQ.length){ const t = thanksQ.shift(); S.spinning = true; showThanks(t); setTimeout(() => { S.spinning = false; afterSpin(); }, 3500); return; }
+    if (thanksQ.length){ const t = thanksQ.shift(); S.spinning = true; DMD.owner(null); showThanks(t); setTimeout(() => { S.spinning = false; afterSpin(); }, 3500); return; }
     afterSpin();
   }
 }
 function afterSpin(){
   const mach = $('#machine');
+  DMD.owner(null);
   { if (S.queue.length) processQueue(); else { armHide(); mach.classList.add('idle'); idleDMD(); if (!boostBusy) showBoostReel(); mdmdIdle(); } }
 }
 
@@ -4247,6 +4707,7 @@ function connectTwitch(ch){
     ws.send('JOIN #' + ch);
   };
   ws.onmessage = ev => {
+    ws.__last = Date.now();
     String(ev.data).split('\r\n').forEach(line => {
       if (!line) return;
       if (line.startsWith('PING')){ ws.send('PONG :tmi.twitch.tv'); return; }
@@ -4305,14 +4766,21 @@ function kickSupport(m){
   }
   return false;
 }
+const KROOM = {};   // chatroom IDs already found, so a reconnect never depends on Kick's website answering
 async function connectKick(slug, room0){
   chatState.kick = 'finding chatroom…'; showChat();
-  const room = await kickRoom(slug, room0);
-  if (!room){ chatState.kick = "couldn't find the chatroom (type its ID below)"; showChat(true); $('#kickRow').hidden = false; return; }
+  const room = await kickRoom(slug, room0 || KROOM[slug]);
+  if (!room){
+    chatState.kick = "couldn't find the chatroom (type its ID below)"; showChat(true); $('#kickRow').hidden = false;
+    if (S.wantChat){ const mark = S.socks.kick = {readyState:3, __retry:true}; setTimeout(() => { if (S.socks.kick !== mark) return; const t = chatTargets().find(x => x.plat === 'kick'); if (t) connectKick(t.ch, t.room); }, 15000); }   // Kick's site didn't answer: try again
+    return;
+  }
+  KROOM[slug] = room;
   if (S.platform === 'kick'){ S.kroom = room; $('#kroom').value = room; renderObs(); }
   const ws = new WebSocket('wss://ws-us2.pusher.com/app/' + KICK_KEYS[kickKey % KICK_KEYS.length] + '?protocol=7&client=js&version=8.4.0-rc2&flash=false'); S.socks.kick = ws;
   chatState.kick = 'connecting…'; showChat();
   ws.onmessage = e => {
+    ws.__last = Date.now();
     let m; try { m = JSON.parse(e.data); } catch(err){ return; }
     if (m.event === 'pusher:connection_established'){
       const sub = c => { try { ws.send(JSON.stringify({event:'pusher:subscribe', data:{auth:'', channel:c}})); } catch(err){} };
@@ -4323,7 +4791,7 @@ async function connectKick(slug, room0){
     else if (m.event === 'pusher:error'){
       let code = 0; try { code = (typeof m.data === 'string' ? JSON.parse(m.data) : m.data).code; } catch(err){}
       if (code === 4001 && kickKey < KICK_KEYS.length - 1){ kickKey++; ws.onclose = null; ws.close(); connectKick(slug, room); }
-      else { chatState.kick = 'refused the connection' + (code ? ' (code ' + code + ')' : ''); showChat(true); }
+      else { chatState.kick = 'refused the connection' + (code ? ' (code ' + code + ')' : ''); showChat(true); setTimeout(() => { if (S.socks.kick === ws) try { ws.close(); } catch(err){} }, 8000); }   // closing it reconnects
     }
     else if (m.event === 'pusher_internal:subscription_succeeded'){ chatState.kick = '#' + slug; showChat(); }
     else if (kickSupport(m)){}
@@ -4332,11 +4800,27 @@ async function connectKick(slug, room0){
     }
   };
   ws.onclose = () => retry('kick', ws, slug, room);
+  ws.onerror = () => { try { ws.close(); } catch(err){} };
 }
+/* CHAT WATCHDOG: a connection can die without closing (Wi-Fi blip, sleep, the server dropping it quietly). Every 15 seconds
+   each chat is checked: quiet for a while = ask the server for a ping; still nothing = close it, which reconnects. */
+setInterval(() => {
+  if (!S.wantChat) return;
+  const now = Date.now();
+  [['kick', 60000, 130000], ['twitch', 240000, 330000]].forEach(([pl, askAt, deadAt]) => {
+    const ws = S.socks[pl]; if (!ws || ws.readyState !== 1) return;
+    const q = now - (ws.__last || ws.__open || now);
+    if (!ws.__open) ws.__open = now;
+    if (q > deadAt){ chatState[pl] = 'reconnecting…'; showChat(true); try { ws.close(); } catch(e){} return; }
+    if (q > askAt && now - (ws.__asked || 0) > 30000){ ws.__asked = now; try { ws.send(pl === 'kick' ? JSON.stringify({event:'pusher:ping', data:{}}) : 'PING :tmi.twitch.tv'); } catch(e){} }
+  });
+}, 15000);
+const chatLive = plat => { const ws = S.socks[plat]; return !!(ws && ws.readyState === 1 && String(chatState[plat] || '').startsWith('#')); };
 function retry(plat, ws, slug, room){
   if (S.socks[plat] !== ws) return;
   chatState[plat] = 'reconnecting…'; showChat(true);
-  if (S.wantChat) setTimeout(() => { if (S.socks[plat] !== ws) return; const t = chatTargets().find(x => x.plat === plat); if (t) (plat === 'twitch' ? connectTwitch(t.ch) : connectKick(t.ch, t.room)); }, 3000);
+  retry.n = retry.n || {}; const n = retry.n[plat] = (retry.n[plat] || 0) + 1; setTimeout(() => { retry.n[plat] = 0; }, 120000);
+  if (S.wantChat) setTimeout(() => { if (S.socks[plat] !== ws) return; const t = chatTargets().find(x => x.plat === plat); if (t) (plat === 'twitch' ? connectTwitch(t.ch) : connectKick(t.ch, t.room)); }, Math.min(20000, 2000 * n));
 }
 function showChat(bad){
   const parts = Object.entries(chatState).filter(([k]) => S.socks[k] || chatState[k]).map(([k, v]) => (k === 'twitch' ? 'Twitch ' : 'Kick ') + v);
@@ -4360,6 +4844,8 @@ if (typeof RP.boardOn !== 'boolean') RP.boardOn = true;   // both timed posts st
 if (typeof RP.cmdsOn !== 'boolean') RP.cmdsOn = true;
 const tmClamp = (v, d) => Math.max(10, Math.min(180, Math.round((+v || d) / 5) * 5));
 RP.board = tmClamp(RP.board, 30); RP.cmds = tmClamp(RP.cmds, 60);
+if (typeof RP.hotOn !== 'boolean') RP.hotOn = true;   // hot streaks start ON, about once an hour
+RP.hotEvery = Math.max(30, Math.min(180, Math.round((+RP.hotEvery || 60) / 5) * 5));
 const saveRP = () => { try { localStorage.setItem(REPLY_KEY, JSON.stringify(RP)); } catch(e){} };
 const sayQ = {twitch:[], kick:[]}, sayBusy = {twitch:false, kick:false};
 async function refreshTwitch(){
@@ -4405,8 +4891,26 @@ async function pumpSay(plat){
 }
 /* spin results wait for the stream to catch up (RP.delay seconds) so chat doesn't spoil what viewers are about to see */
 function sayResult(plat, kind, text){ const d = Math.max(0, +RP.delay || 0) * 1000; if (d) setTimeout(() => say(plat, kind, text), d); else say(plat, kind, text); }
+/* CHAT RELAY: in the desktop app only ONE window holds the Twitch chat connection (the OBS source when it's on). A message
+   started from the other window (e.g. starting a tournament from the app's menu) is handed to that window to post. Kick posts
+   go straight to Kick's website, so they work from any window. */
+const RELAY_KEY = 'emoteslots:relay', relayDone = new Set();
+function relaySay(plat, kind, text){
+  let q = []; try { q = JSON.parse(localStorage.getItem(RELAY_KEY) || '[]') || []; } catch(e){}
+  const now = Date.now(); q = q.filter(x => now - x.at < 60000).slice(-9);
+  q.push({id:now.toString(36) + Math.random().toString(36).slice(2, 7), plat, kind, text, at:now});
+  try { localStorage.setItem(RELAY_KEY, JSON.stringify(q)); } catch(e){}
+}
+function relayTake(){
+  if (!window.__ES.lead) return;
+  let q = []; try { q = JSON.parse(localStorage.getItem(RELAY_KEY) || '[]') || []; } catch(e){}
+  const now = Date.now();
+  q.forEach(x => { if (relayDone.has(x.id) || now - x.at > 60000) return; relayDone.add(x.id); say(x.plat, x.kind, x.text); });
+}
+try { (JSON.parse(localStorage.getItem(RELAY_KEY) || '[]') || []).forEach(x => relayDone.add(x.id)); } catch(e){}   // already handled before this window (re)loaded
 function say(plat, kind, text){
-  if ((kind !== 'always' && (!RP.on || !RP[kind])) || !(plat === 'twitch' || plat === 'kick') || !canSay(plat)) return;
+  if ((kind !== 'always' && (!RP.on || !RP[kind])) || !(plat === 'twitch' || plat === 'kick')) return;
+  if (!canSay(plat)){ if (plat === 'twitch' && window.__ES.on && !window.__ES.lead && AUTH.tw && AUTH.tw.token) relaySay(plat, kind, text); return; }
   if (sayQ[plat].length > 8) sayQ[plat].shift();   // during a flood, drop the oldest instead of falling minutes behind
   sayQ[plat].push(text.slice(0, 480)); pumpSay(plat);
 }
@@ -4489,7 +4993,9 @@ async function loadChannel(login){
   const fromUrl = (P.get('emotes') || '').split(',').map(x => x.trim()).filter(n => seen.has(n));
   let saved = [];
   try { saved = JSON.parse(localStorage.getItem(key() + ':sel') || '[]').filter(n => seen.has(n)); } catch(e){}
-  if (fromUrl.length) S.activeNames = fromUrl;
+  S.tiers = {}; try { const t = JSON.parse(localStorage.getItem(key() + ':tiers') || '{}') || {}; Object.keys(t).forEach(n => { if (seen.has(n) && PICK_TIERS.includes(t[n])) S.tiers[n] = t[n]; }); } catch(e){}
+  if (fromUrl.length){ S.activeNames = fromUrl;   // an OBS link: its tier picks come with it (et=name:m,name:l ... first letter of the tier)
+    if (P.get('et') != null){ S.tiers = {}; (P.get('et') || '').split(',').forEach(x => { const i = x.lastIndexOf(':'), n = x.slice(0, i), t = PICK_TIERS.find(z => z[0] === x.slice(i + 1)); if (t && seen.has(n)) S.tiers[n] = t; }); } }
   else if (saved.length) S.activeNames = saved;
   else randomPick(8);
   refresh();
@@ -4503,24 +5009,54 @@ function randomPick(n){
 
 /* ================= picker, paytable, OBS link ================= */
 function refresh(){
-  try { localStorage.setItem(key() + ':sel', JSON.stringify(S.activeNames)); } catch(e){}
+  try { localStorage.setItem(key() + ':sel', JSON.stringify(S.activeNames)); localStorage.setItem(key() + ':tiers', JSON.stringify(S.tiers || {})); } catch(e){}
   SYMS = symbols(); if (!S.spinning) idleReels(); renderGrid(); renderPay(); renderObs();
 }
 function renderGrid(){
   const g = $('#grid'); g.innerHTML = '';
   $('#pickCount').textContent = S.all.length ? `(${S.activeNames.length} on reels of ${S.all.length})` : '';
+  renderTierBar(); g.classList.toggle('paint', tierBrush !== 'toggle');
   if (!S.all.length){ g.innerHTML = '<div class="small" style="grid-column:1/-1">Load a channel to pick its emotes.</div>'; return; }
-  const sorted = [...S.all].sort((a, b) => (S.activeNames.includes(b.name) - S.activeNames.includes(a.name)));
+  const tierOf = n => { const s = SYMS.find(x => x.name === n && PICK_TIERS.includes(x.tier)); return s ? s.tier : ''; };
+  const rank = n => S.activeNames.includes(n) ? PICK_TIERS.indexOf(tierOf(n)) : 99;
+  const sorted = [...S.all].sort((a, b) => rank(a.name) - rank(b.name));
   sorted.slice(0, 400).forEach(e => {
-    const on = S.activeNames.includes(e.name);
+    const on = S.activeNames.includes(e.name), tr = on ? tierOf(e.name) : '', pinned = !!(S.tiers || {})[e.name];
     const t = document.createElement('div'); t.className = 'tile' + (on ? ' on' : '');
     const img = document.createElement('img'); img.src = e.url; img.loading = 'lazy'; img.alt = e.name;
-    t.title = e.name + (on ? ' (on the reels)' : '');
-    t.setAttribute('role', 'button'); t.tabIndex = 0; t.setAttribute('aria-pressed', on); t.setAttribute('aria-label', e.name);
+    t.title = e.name + (on ? ' (on the reels' + (tr ? ', ' + TIERS[tr].label + (pinned ? '' : ', picked by the machine') : '') + ')' : '');
+    t.setAttribute('role', 'button'); t.tabIndex = 0; t.setAttribute('aria-pressed', on); t.setAttribute('aria-label', e.name + (tr ? ', ' + TIERS[tr].label : ''));
     t.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); t.click(); } };
-    t.onclick = () => { if (on) S.activeNames = S.activeNames.filter(n => n !== e.name); else S.activeNames.push(e.name); refresh(); };
-    t.append(img); g.appendChild(t);
+    t.onclick = () => {
+      S.tiers = S.tiers || {};
+      if (tierBrush === 'toggle'){ if (on){ S.activeNames = S.activeNames.filter(n => n !== e.name); delete S.tiers[e.name]; } else S.activeNames.push(e.name); }
+      else { if (!on) S.activeNames.push(e.name); if (tierBrush === 'auto') delete S.tiers[e.name]; else S.tiers[e.name] = tierBrush; }
+      refresh();
+    };
+    t.append(img);
+    if (tr){ t.dataset.tier = tr; t.style.setProperty('--tc', TIER_COL[tr]); const c = document.createElement('span'); c.className = 'tchip' + (pinned ? '' : ' auto'); c.textContent = TIERS[tr].label.toUpperCase(); t.appendChild(c); }
+    g.appendChild(t);
   });
+}
+/* the tier picker's buttons: what clicking an emote does */
+const TIER_COL = {mythic:'#ff3fd1', legendary:'#ffb020', rare:'#c46bff', uncommon:'#22e6ff', common:'#9aa4b0'};
+let tierBrush = 'toggle';   // 'toggle' = clicking an emote adds / removes it; a tier = clicking puts the emote in that tier
+function renderTierBar(){
+  const bar = $('#tierBar'); if (!bar) return; bar.innerHTML = '';
+  const cnt = t => S.all.length ? SYMS.filter(x => x.tier === t).length : 0;
+  [...PICK_TIERS.map(t => [t, TIERS[t].label, TIERS[t].x + 'x \u00b7 ' + cnt(t) + ' emote' + (cnt(t) === 1 ? '' : 's'), TIER_COL[t]]), ['auto', 'Auto', 'let the machine pick', '#e6e1f0']].forEach(([id, lbl, sub, col]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = tierBrush === id ? 'sel' : ''; b.style.setProperty('--tc', col);
+    b.setAttribute('aria-pressed', tierBrush === id);
+    b.innerHTML = lbl + '<small>' + sub + '</small>'; b.onclick = () => { tierBrush = tierBrush === id ? 'toggle' : id; renderTierBar(); $('#grid').classList.toggle('paint', tierBrush !== 'toggle'); };
+    bar.appendChild(b);
+  });
+  const m = $('#tierMode'); if (!m) return;
+  if (tierBrush === 'toggle'){ m.className = 'tiermode'; m.style.removeProperty('--tc'); m.textContent = 'Clicking an emote adds it to the reels or takes it off.'; }
+  else {
+    m.className = 'tiermode paint'; m.style.setProperty('--tc', tierBrush === 'auto' ? '#e6e1f0' : TIER_COL[tierBrush]);
+    m.textContent = tierBrush === 'auto' ? 'Clicking an emote lets the machine pick its tier again.' : 'Clicking an emote puts it in ' + TIERS[tierBrush].label.toUpperCase() + ' (and on the reels).';
+    const d = document.createElement('button'); d.type = 'button'; d.textContent = 'Done'; d.onclick = () => { tierBrush = 'toggle'; renderTierBar(); $('#grid').classList.remove('paint'); }; m.appendChild(d);
+  }
 }
 function renderPay(){
   const tb = $('#paytable'); tb.innerHTML = '';
@@ -4555,7 +5091,8 @@ function renderObs(){
   if (SPIN_PACK !== 'neon') q.set('sp', SPIN_PACK);
   if (JSON.stringify(SUP) !== JSON.stringify(SUP_DEF)) q.set('sup', JSON.stringify(SUP));
   q.set('overlay', '1'); q.set('vol', Math.round(volume * 100)); q.set('cost', S.cost); q.set('cooldown', S.cooldown); 
-  if (S.activeNames.length){ q.set('emotes', S.activeNames.join(',')); }
+  if (S.activeNames.length){ q.set('emotes', S.activeNames.join(','));
+    const tp = Object.entries(S.tiers || {}).filter(([n]) => S.activeNames.includes(n)); if (tp.length) q.set('et', tp.map(([n, t]) => n + ':' + t[0]).join(',')); }
   if (RP.on && RP.delay !== 5) q.set('rd', RP.delay);
   if (!RP.boardOn) q.set('lb', 0); else if (RP.board !== 30) q.set('lb', RP.board);
   if (!RP.cmdsOn) q.set('cm', 0); else if (RP.cmds !== 60) q.set('cm', RP.cmds);
@@ -4607,6 +5144,7 @@ $('#rDelay').onchange = e => { RP.delay = +e.target.value; saveRP(); renderObs()
 (function(){   // Settings > Timed chat messages
   const ui = () => {
     $('#tBoardOn').checked = RP.boardOn; $('#tBoard').value = RP.board; $('#tBoardN').textContent = tmTxt(RP.board); $('#tBoardOn').closest('.tmrow').classList.toggle('off', !RP.boardOn);
+    $('#hotOnC').checked = RP.hotOn !== false; $('#hotEvery').value = RP.hotEvery; $('#hotN').textContent = tmTxt(RP.hotEvery); $('#hotOnC').closest('.tmrow').classList.toggle('off', RP.hotOn === false);
     $('#tCmdsOn').checked = RP.cmdsOn; $('#tCmds').value = RP.cmds; $('#tCmdsN').textContent = tmTxt(RP.cmds); $('#tCmdsOn').closest('.tmrow').classList.toggle('off', !RP.cmdsOn);
   };
   const ch = () => { saveRP(); try { renderObs(); } catch(e){} ui(); };
@@ -4615,6 +5153,9 @@ $('#rDelay').onchange = e => { RP.delay = +e.target.value; saveRP(); renderObs()
   $('#tBoard').oninput = e => { RP.board = +e.target.value; $('#tBoardN').textContent = tmTxt(RP.board); };
   $('#tCmds').oninput = e => { RP.cmds = +e.target.value; $('#tCmdsN').textContent = tmTxt(RP.cmds); };
   $('#tBoard').onchange = () => { autoBoardLast = Date.now(); ch(); };
+  $('#hotOnC').onchange = e => { RP.hotOn = e.target.checked; ch(); };
+  $('#hotEvery').oninput = e => { RP.hotEvery = +e.target.value; $('#hotN').textContent = tmTxt(RP.hotEvery); };
+  $('#hotEvery').onchange = () => { HOT.next = Date.now() + hotGap(); saveHot(); ch(); };
   $('#tCmds').onchange = () => { autoCmdsLast = Date.now(); ch(); };
   ui(); window.__tmUI = ui;
 })();
@@ -4688,7 +5229,8 @@ $('#tClear').onclick = () => {
 };
 $('#rand8').onclick = () => { randomPick(8); refresh(); };
 $('#addAll').onclick = () => { if (!S.all.length) return; const keep = S.activeNames.filter(n => S.all.some(e => e.name === n)); S.activeNames = keep.concat(S.all.map(e => e.name).filter(n => !keep.includes(n))); refresh(); };
-$('#clearSel').onclick = () => { S.activeNames = []; refresh(); };
+$('#clearSel').onclick = () => { S.activeNames = []; S.tiers = {}; refresh(); };
+$('#tierAuto').onclick = () => { S.tiers = {}; refresh(); };
 const resetLabel = () => { $('#ptsTitle').textContent = CURU(); };   // (the reset-all-points button was removed)
 resetLabel();
 /* BACKUP: export everything the machine has saved (except sign-ins) to a file, and restore it from one */
@@ -4698,7 +5240,7 @@ const countPlayers = data => { let n = 0; Object.keys(data).filter(isPlayerKey).
 /* ================= GAME UPDATES (desktop app only, like Gielinor Casino) =================
    GAME_VERSION goes up by 0.1 every time MAKE-UPDATE.bat publishes an update (1.0, 1.1, 1.2 ...). The app compares it
    with version.json at the update address and downloads the newer game file. */
-const GAME_VERSION = '1.11';
+const GAME_VERSION = '1.12';
 (function(){
   const N = window.EmoteNative, U = N && N.update, btn = $('#updBtn'), msg = $('#updMsg');
   const nice = v => 'V' + v;
@@ -4738,7 +5280,46 @@ const GAME_VERSION = '1.11';
     } catch(e){ say2('Update failed.', '#ff6b6b'); }
     busy = false; btn.disabled = false;
   };
-  setTimeout(() => { U.check().then(r => { if (r && r.ok && r.newer) found(r); }).catch(() => {}); }, 6000);   // quiet check shortly after launch
+  /* UPDATE GATE: when the app opens, the game checks for a new version FIRST. If there is one, a screen covers everything and
+     it installs right away (then restarts). Nothing can be used until it's done. If the update needs a newer app, the screen
+     stays with a button to get the new installer. Offline / the server can't be reached: the game opens as normal. */
+  if (OVERLAY) return;   // the OBS source never shows this: it reloads by itself once the app has installed the update
+  const gate = document.createElement('div'); gate.id = 'updGate'; gate.setAttribute('role', 'alertdialog'); gate.setAttribute('aria-live', 'polite');
+  gate.innerHTML = '<div class="ugBox"><div class="tube"></div><div class="tube bot"></div><div class="ugIn"><div class="sign ugSign" role="img" aria-label="Emote Slots Deluxe"><span class="s1" aria-hidden="true">EMOTE</span><span class="s2" aria-hidden="true">SLOTS</span><span class="s4" aria-hidden="true">Deluxe</span></div><div class="ugSpin" aria-hidden="true"></div><div class="ugMsg">Checking for updates...</div><div class="ugSub"></div><div class="ugBtns"></div></div></div>';
+  try { const cs = getComputedStyle($('#menu')); ['--a', '--b', '--c'].forEach(v => { const x = cs.getPropertyValue(v).trim(); if (x) gate.style.setProperty(v, x); }); } catch(e){}   // the same neon colours as the main menu sign
+  document.body.appendChild(gate);
+  /* the box sits exactly where the main menu is, at the same size, so the window looks the same as always */
+  const ugBox = gate.querySelector('.ugBox');
+  const fitGate = () => { const m = $('#menu'); if (!m || !gate.isConnected) return; const r = m.getBoundingClientRect();
+    if (r.width < 200 || r.height < 150){ ugBox.classList.remove('fit'); return; }
+    ugBox.classList.add('fit'); Object.assign(ugBox.style, {left:r.left + 'px', top:r.top + 'px', width:r.width + 'px', height:r.height + 'px', borderRadius:getComputedStyle(m).borderRadius});
+    const k = r.width / (m.offsetWidth || r.width), inn = ugBox.querySelector('.ugIn'); let z = k > .3 && k < 6 ? k : 1; inn.style.zoom = z;
+    const hh = inn.getBoundingClientRect().height, room = r.height - 50 * z; if (hh > room) inn.style.zoom = z * room / hh; };   // and never taller than the box   // the menu is scaled to the window: scale the same way
+  try { new MutationObserver(() => fitGate()).observe(gate, {subtree:true, childList:true, characterData:true}); } catch(e){}
+  fitGate(); addEventListener('resize', fitGate); [50, 200, 600, 1200].forEach(t => setTimeout(fitGate, t));
+  const gm = gate.querySelector('.ugMsg'), gs = gate.querySelector('.ugSub'), gb = gate.querySelector('.ugBtns'), gsp = gate.querySelector('.ugSpin');
+  const open = () => { gate.classList.add('bye'); setTimeout(() => gate.remove(), 400); window.__esUpdGate = false; };
+  const button = (txt, fn) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = txt; b.onclick = fn; gb.appendChild(b); return b; };
+  window.__esUpdGate = true;
+  async function run(){
+    gb.innerHTML = ''; gs.textContent = ''; gsp.hidden = false; gm.textContent = 'Checking for updates...';
+    let r = null; try { r = await Promise.race([U.check(), new Promise(res => setTimeout(() => res({timeout:true}), 10000))]); } catch(e){}
+    if (!r || r.timeout || !r.ok || !r.newer) return open();   // up to date, or the update server can't be reached: carry on
+    if (r.appTooOld){
+      gsp.hidden = true; gm.textContent = 'Update required: ' + nice(r.latest);
+      gs.textContent = 'This update needs the newest Emote Slots Deluxe app (you have app ' + (r.appVersion || '?') + ', it needs ' + r.minApp + '). Download the new installer from where you bought the game and run it. Your points and settings stay.';
+      button('GET NEW INSTALLER', () => { try { N.license && N.license.openStore(); } catch(e){} });
+      button('CHECK AGAIN', run);
+      return;
+    }
+    gm.textContent = 'Updating to ' + nice(r.latest) + '...'; gs.textContent = 'You have ' + nice(r.current) + '. This only takes a moment.' + (r.notes ? ' What\'s new: ' + r.notes : '');
+    let x = null; try { x = await U.install(); } catch(e){}
+    if (x && x.ok && x.installed){ gm.textContent = 'Updated to ' + nice(r.latest) + '! Starting the game...'; gsp.hidden = true; setTimeout(() => location.reload(), 1200); return; }
+    if (x && !x.ok && x.error === 'app-too-old') return run();
+    gsp.hidden = true; gm.textContent = "The update didn't install"; gs.textContent = (x && ERR[x.error]) || 'Something went wrong while updating.';
+    button('TRY AGAIN', run);
+  }
+  run();
 })();
 /* ================= LICENSE KEY (desktop app) =================
    The release build only runs inside the Emote Slots Deluxe app with an activated Gumroad key. The app checks the key;
@@ -5095,9 +5676,10 @@ function renderCmds(){
     ['!unequip', 'Take your badges off. <b>!unequip normal</b> or <b>!unequip rare</b> takes off just one.'],
     ['!link', 'Joins your Twitch and Kick into one: points, XP, badges and stats add up. Type <b>!link</b> in one chat, then <b>!link 1234</b> (the code it gives you) in the other within 5 minutes.'],
     ['!duel @<i>name</i> <i>500</i>', 'Challenge another player for points. They have 60 seconds to type <b>!accept</b> or <b>!decline</b>. Both put in the same amount and a coin flip decides: the winner takes both. <b>!duel @name all</b> bets everything, <b>!duel cancel</b> takes your challenge back. Duels stay in one chat (Twitch vs Twitch, Kick vs Kick).'],
-    ['!global', 'Posts the link to the global leaderboard (<b>yhandor.com/leaderboard</b>), where players from every channel that plays Emote Slots are ranked by level, badges, biggest win and spins.'],
+    ['!global', 'Posts the link to the global leaderboard (<b>yhandor.com/leaderboard</b>), where players from every channel that plays Emote Slots Deluxe are ranked by level, badges, biggest win and spins.'],
     ['!commands', 'Posts every viewer command in chat. <b>!cmds</b> and <b>!help</b> work too.'],
     ['!boost', 'Shows whether a multiplier is running and how long is left. <b>!multiplier</b> works too.'],
+    ['!version', 'Shows which version of Emote Slots Deluxe this stream is running.'],
     ['!tournament', 'Tournament standings while one is running. <b>!tlb</b> works too.'],
     ['<i>the emote</i>', 'During an <b>EMOTE RUSH</b>, send the emote shown on the machine. It has to be the real emote (typing its name does not count, so non-subs cannot win with sub emotes). Only the chat the spin came from (Twitch or Kick) can play. The first ' + RUSH_WINNERS + ' people win 1,000-5,000 Sparks each. You get 30 seconds.'],
     ['<i>A / B / C or 1 / 2 / 3</i>', 'During your minigame, type the letter or number of the box you want (or <b>!pick B</b>). You get 15 seconds.']
@@ -5284,6 +5866,8 @@ if (window.__ES.on){
       else if (k === idKey()){ loadIds(); }
       else if (k === 'emoteslots:fireplace'){ try { if (localStorage.getItem(k) === '1') startFireplace(true); else stopFireplace(true); } catch(e){ console.error('fireplace', e && e.stack || e); } }
       else if (k === 'emoteslots:attract'){ const v = +localStorage.getItem('emoteslots:attract'); if (!isNaN(v) && (window.__ES.on || !P.get('attract'))){ ATTRACT_AFTER = v; if (!v && attracting) stopAttract(); bump(); } }
+      else if (k === RELAY_KEY){ relayTake(); }   // the other window asked this one to post in Twitch chat
+      else if (k === HOT_KEY){ try { const h = JSON.parse(localStorage.getItem(HOT_KEY) || 'null'); if (h) HOT = {until:+h.until || 0, next:+h.next || 0}; } catch(e){} }   // the other window started / ended a hot streak
       else if (k === JP_KEY){ try { const o = JSON.parse(localStorage.getItem(JP_KEY) || 'null'); if (o && isFinite(o.v)) JP = {v:+o.v, t:+o.t || Date.now()}; } catch(e){} }
       else other = true;
     });
