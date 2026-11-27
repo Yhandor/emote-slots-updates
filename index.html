@@ -548,35 +548,32 @@ body.no-flash #rushbox .rt0{animation:none}
 #badgebox .bfade{position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,#04060e 0,transparent 22%,transparent 78%,#04060e 100%)}
 #badgebox .flash{position:absolute;inset:0;z-index:6;background:#fff;opacity:0}
 #badgebox .flash.go{animation:wFlash .7s ease-out}
-#wheelbox{position:absolute;inset:0;z-index:9;border-radius:inherit;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 50% 120%,#2a0a3a,#07040c 70%)}
-#wheelbox canvas{position:absolute;left:0;top:0;width:100%;height:100%;transform:translateY(105%);transition:transform .8s cubic-bezier(.2,.9,.3,1.05)}
-#wheelbox.up canvas{transform:translateY(0)}
-#wheelbox.down canvas{transform:translateY(105%);transition:transform .6s cubic-bezier(.6,0,.8,.4)}
-#wheelbox .ptr{position:absolute;left:50%;top:-2px;width:34px;height:40px;margin-left:-17px;z-index:3;transform-origin:50% 8px;opacity:0;transition:opacity .3s .5s;
-  background:linear-gradient(#fff6c0,#ffd24a 50%,#c98400);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 2px 3px rgba(0,0,0,.7))}
+#wheelbox{position:absolute;inset:0;z-index:9;border-radius:inherit;overflow:hidden;pointer-events:none;background:#0a0618}
+#wheelbox .wstage{position:absolute;inset:0;transform:translateY(105%);transition:transform .8s cubic-bezier(.2,.9,.3,1.05)}
+#wheelbox.up .wstage{transform:none}
+#wheelbox.down .wstage{transform:translateY(105%);transition:transform .6s cubic-bezier(.6,0,.8,.4)}
+#wheelbox .wdisc{position:absolute;will-change:transform;transform-origin:50% 50%}
+#wheelbox .wstars{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+#wheelbox .wdisc canvas{position:absolute;inset:0;width:100%;height:100%}
+#wheelbox .wdisc .wb{opacity:0;will-change:opacity}
+#wheelbox .wdisc[data-ph="0"] .wb0,#wheelbox .wdisc[data-ph="1"] .wb1,#wheelbox .wdisc[data-ph="2"] .wb2{opacity:1}
+#wheelbox .wdisc .whi{opacity:0;will-change:opacity}
+#wheelbox .wdisc .whi.on{animation:whiPulse .9s steps(1) infinite}
+@keyframes whiPulse{0%,49%{opacity:1}50%,100%{opacity:.15}}
+#wheelbox .wglass{display:none}
+#wheelbox .wfx{position:absolute;left:0;top:0;width:100%;z-index:4;image-rendering:pixelated}
+#wheelbox .ptr{position:absolute;left:50%;top:-3px;width:26px;height:36px;margin-left:-13px;z-index:5;transform-origin:50% 8px;opacity:0;transition:opacity .3s .5s;image-rendering:pixelated;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 18' shape-rendering='crispEdges'><path d='M3 0h7v1h1v1h1v5h-1v2h-1v2h-1v2h-1v2h-1v2h-1v-2h-1v-2h-1v-2h-1v-2h-1v-2h-1v-5h1v-1h1z' fill='%23000'/><path d='M3 1h7v1h1v5h-1v2h-1v2h-1v2h-1v2h-1v-2h-1v-2h-1v-2h-1v-2h-1v-5h1z' fill='%23f8b800'/><path d='M3 1h4v1h-3v1h-1v4h1v2h1v2h1v2h-1v-2h-1v-2h-1v-2h-1v-5h1z' fill='%23fff080'/><path d='M10 2h1v5h-1v2h-1v2h-1v2h-1v-1h1v-2h1v-2h1z' fill='%23a05000'/><rect x='5' y='3' width='3' height='3' fill='%23f81838'/><rect x='5' y='3' width='1' height='1' fill='%23ffc0c8'/><rect x='7' y='5' width='1' height='1' fill='%23900018'/></svg>") center/100% 100% no-repeat;filter:drop-shadow(0 3px 0 rgba(0,0,0,.6))}
 #wheelbox.up .ptr{opacity:1}
 #wheelbox .ptr.flap{animation:ptrFlap .12s ease-out}
-@keyframes ptrFlap{40%{transform:rotate(-14deg)}}
+@keyframes ptrFlap{40%{transform:rotate(-16deg)}}
 #reels.wheeling .reel{opacity:0;transition:opacity .4s}
-/* wheel hype: big slam text, spotlight beams, darkening vignette, machine strobe */
-#wheelbox .wbig{position:absolute;left:50%;top:50%;z-index:5;white-space:nowrap;font:italic 900 46px/1 "Arial Black",Impact,sans-serif;color:#fff;letter-spacing:1px;
-  -webkit-text-stroke:2px #3a0010;paint-order:stroke fill;text-shadow:0 0 8px #fff,0 0 22px var(--wc,#ffd24a),0 0 44px var(--wc,#ffd24a);transform:translate(-50%,-50%) scale(0);opacity:0}
-#wheelbox .wbig.slam{animation:wSlam 1.6s cubic-bezier(.2,1.5,.4,1) forwards}
-@keyframes wSlam{0%{transform:translate(-50%,-50%) scale(3) rotate(-8deg);opacity:0}18%{transform:translate(-50%,-50%) scale(.9) rotate(2deg);opacity:1}30%{transform:translate(-50%,-50%) scale(1.08) rotate(-1deg)}45%,80%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}100%{transform:translate(-50%,-50%) scale(1.4);opacity:0}}
-#wheelbox .wbig.hold{animation:wHold .9s cubic-bezier(.2,1.6,.4,1) forwards}
-@keyframes wHold{0%{transform:translate(-50%,-50%) scale(3);opacity:0}35%{transform:translate(-50%,-50%) scale(.92);opacity:1}55%{transform:translate(-50%,-50%) scale(1.06)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
-#wheelbox .beams{position:absolute;inset:-50%;z-index:1;opacity:0;transition:opacity .4s;background:conic-gradient(from 0deg at 50% 100%,transparent 0 8deg,rgba(255,240,180,.16) 10deg 16deg,transparent 18deg 40deg,rgba(255,180,255,.14) 42deg 48deg,transparent 50deg 80deg,rgba(160,240,255,.15) 82deg 88deg,transparent 90deg 360deg);animation:wBeams 2.4s linear infinite}
-#wheelbox.intro .beams{opacity:1}
-@keyframes wBeams{to{transform:rotate(360deg)}}
-#wheelbox .vig{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity 1.2s;background:radial-gradient(ellipse 34% 70% at 50% 0%,transparent 0 55%,rgba(0,0,0,.78) 100%)}
+#wheelbox .vig{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity 1.2s;background:radial-gradient(ellipse 34% 70% at 50% 0%,transparent 0 55%,rgba(0,0,0,.72) 100%)}
 #wheelbox.tense .vig{opacity:1}
 #wheelbox .flash{position:absolute;inset:0;z-index:6;background:#fff;opacity:0;pointer-events:none}
-#wheelbox .flash.go{animation:wFlash .7s ease-out}
-@keyframes wFlash{0%{opacity:.9}100%{opacity:0}}
-#machine.wstrobe{animation:wStrobe .26s steps(1) infinite}
-@keyframes wStrobe{0%{border-color:var(--a);box-shadow:0 0 40px var(--a)}33%{border-color:var(--b);box-shadow:0 0 40px var(--b)}66%{border-color:#ffd24a;box-shadow:0 0 40px #ffd24a}}
-#machine.wstrobe.slow{animation-duration:.7s}
-body.no-flash #machine.wstrobe,body.no-flash #wheelbox .beams,body.no-flash #wheelbox .flash.go{animation:none}
+#wheelbox .flash.go{animation:wFlash .6s ease-out}
+@keyframes wFlash{0%{opacity:.75}100%{opacity:0}}
+body.no-flash #wheelbox .flash.go,body.no-flash #wheelbox .wdisc .whi.on{animation:none}
+body.no-flash #wheelbox .wdisc .whi.on{opacity:.35}
 #jpbox{z-index:10}   /* stays on top of the bonus wheel */
 /* FRENZY: SPIN TO WIN / JACKPOT build-up on the reels */
 .reel.hype{z-index:3;animation:hypeHop .42s ease-in-out infinite alternate,hypeGlow .3s steps(1) infinite!important}
@@ -902,6 +899,40 @@ body.capview .wrap,body.capview .stage{display:flex;align-items:center;justify-c
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 body.no-flash .mreel.live,body.no-flash .mreel.live .it,body.no-flash .mreel.dying,body.no-flash .mreel.short{animation:none!important}
 .xlist{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 14px}
+.glpwrap{position:absolute;z-index:9999;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 10px 8px;border-radius:18px;background:#08050e;border:1px solid #3a3050;box-shadow:0 12px 40px rgba(0,0,0,.6);pointer-events:none;opacity:0;transform:translateY(6px) scale(.96);transition:opacity .15s,transform .15s}
+.glpwrap.on{opacity:1;transform:none}
+.glprev{--a:#ff3fd1;--b:#22e6ff;position:relative;width:240px;padding:14px 12px 12px;border-radius:16px;background:#0b0612;border:2px solid var(--a);box-shadow:0 0 14px var(--a),0 0 34px color-mix(in srgb,var(--a) 45%,transparent),inset 0 0 14px color-mix(in srgb,var(--a) 35%,transparent);display:flex;flex-direction:column;gap:7px}
+.glprev .gp-tube{height:4px;margin:0 30px;border-radius:4px;background:var(--b);box-shadow:0 0 8px var(--b),0 0 16px var(--b)}
+.glprev .gp-tube.bot{background:var(--a);box-shadow:0 0 8px var(--a),0 0 16px var(--a)}
+.glprev .gp-top{display:flex;gap:7px}
+.glprev .gp-reels{flex:1;display:flex;gap:5px;padding:6px;border-radius:9px;border:2px solid var(--b);box-shadow:0 0 8px var(--b)}
+.glprev .gp-reels i{flex:1;height:46px;border-radius:6px;border:2px solid var(--a);background:radial-gradient(circle,#2a1640,#120a1c);box-shadow:inset 0 0 8px color-mix(in srgb,var(--a) 40%,transparent)}
+.glprev .gp-bonus{width:48px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;border-radius:8px;border:2px solid #3a3050}
+.glprev .gp-bonus b{font:9px 'Tilt Neon',sans-serif;letter-spacing:1px;color:#8a7fa3}
+.glprev .gp-bonus i{flex:1;width:100%;border-radius:5px;background:#1a1226}
+.glprev .gp-jp{align-self:flex-start;margin-left:10px;padding:2px 10px;border-radius:5px;font:9px 'Tilt Neon',sans-serif;letter-spacing:1px;color:#ffcc33;border:1px solid #c47a00;background:#1a0f00}
+.glprev .gp-dmd{display:grid;place-items:center;height:30px;border-radius:6px;background:#000;box-shadow:inset 0 0 0 2px #1c3cff,inset 0 0 0 4px #000,inset 0 0 0 5px #ff2a2a}
+.glprev .gp-dmd span{font:10px 'Tilt Neon',sans-serif;letter-spacing:1.5px;color:#ff8ae6;text-shadow:0 0 6px #ff3fd1}
+.glpname{font:13px 'Tilt Neon',sans-serif;letter-spacing:1.5px;color:#fff;text-shadow:0 0 8px rgba(255,255,255,.4);min-height:16px}
+.glgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;margin-top:8px}
+.glsw{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px 8px;border-radius:12px;border:2px solid #2a2340;background:#0e0b16;color:#c9c2dc;font:12px 'Tilt Neon',sans-serif;letter-spacing:.5px;cursor:pointer;text-align:center;transition:border-color .2s,transform .15s}
+.glsw:hover{transform:translateY(-2px);border-color:#5a4a80}
+.glsw[aria-checked="true"]{border-color:#fff;color:#fff;box-shadow:0 0 14px rgba(255,255,255,.35)}
+.glsw i{display:block;width:100%;height:30px;border-radius:8px;box-shadow:0 0 12px var(--g1),inset 0 0 0 1px rgba(255,255,255,.15)}
+.glsw.pat i{background-size:300% 100%!important;animation:glPrev var(--sp,4s) linear infinite}
+.glsw{position:relative}
+.glsw.lock{cursor:not-allowed}
+.glsw.lock i{filter:saturate(.55) brightness(.7)}
+.glsw.lock span{color:#8c84a3}
+.glsw .gllock{position:absolute;top:5px;right:5px;font:bold 9px 'Tilt Neon',sans-serif;font-style:normal;letter-spacing:1px;padding:2px 5px 2px 14px;border-radius:6px;background:#1a1426 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 12'><rect x='1' y='5' width='8' height='7' rx='1' fill='%23ffcc33'/><path d='M3 5V3.5a2 2 0 0 1 4 0V5' stroke='%23ffcc33' stroke-width='1.4' fill='none'/></svg>") 4px 50%/8px 10px no-repeat;color:#ffcc33;border:1px solid #5a4410}
+.gldlc{display:inline-block;vertical-align:middle;margin-left:8px;font:bold 10px 'Tilt Neon',sans-serif;letter-spacing:1px;padding:3px 8px;border-radius:999px;background:linear-gradient(90deg,#ff3ad8,#ffcc33);color:#14061e}
+.gldlc.own{background:#123b22;color:#39ff14;border:1px solid #1f7a3a}
+.gldlcnote{margin:4px 0 10px;padding:8px 12px;border-radius:10px;background:#1a1426;border:1px solid #5a4410;color:#e8dcb8;font-size:12px}
+.gldlcnote b{color:#ffcc33}
+.gldlcnote.bump{animation:glBump .45s}
+@keyframes glBump{0%,100%{transform:none}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+@keyframes glPrev{from{background-position:0% 0}to{background-position:150% 0}}
+body.no-flash .glsw.pat i{animation:none}
 .xbtn{position:relative;font-size:17px!important;padding:14px 10px!important;font-family:'Tilt Neon',sans-serif!important}
 .xstat{display:block;margin-top:4px;font-size:12px;letter-spacing:1px;color:#a99cbf;text-shadow:none}
 .xstat.live{color:#5dff8a;text-shadow:0 0 6px #5dff8a}
@@ -1152,6 +1183,7 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
         <nav class="xlist" aria-label="Extras">
           <button class="mbtn xbtn" data-go="vTournament">TOURNAMENT LEADERBOARD<span class="xstat" id="xTourStat"></span></button>
           <button class="mbtn xbtn" data-go="vSounds">SPIN SOUNDS<span class="xstat" id="xSndStat"></span></button>
+          <button class="mbtn xbtn" data-go="vGlow">MACHINE GLOW<span class="xstat" id="xGlowStat"></span></button>
           <button class="mbtn xbtn" data-go="vSupport">BITS / KICKS / SUBS<span class="xstat" id="xSupStat"></span></button>
           <button class="mbtn xbtn" data-go="fireplace">FIREPLACE<span class="xstat">click anywhere to leave</span></button>
         </nav>
@@ -1160,6 +1192,24 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
     <div class="view" id="vCmds">
       <div class="vhead"><button class="back" data-go="vMain">&#8249; BACK</button><h2>COMMANDS</h2></div>
       <div class="vbody" id="cmdsBody"></div>
+    </div>
+    <div class="view" id="vGlow">
+      <div class="vhead"><button class="back" data-go="vExtras">&#8249; BACK</button><h2>MACHINE GLOW</h2></div>
+      <div class="vbody">
+        <div class="small">Hover over a glow to see it on a machine, click to use it. It changes right away, on the OBS source too.</div>
+        <div class="glpwrap" id="glPop"><div class="glprev" id="glPrev" aria-hidden="true">
+          <div class="gp-tube"></div>
+          <div class="gp-top"><div class="gp-reels"><i></i><i></i><i></i></div><div class="gp-bonus"><b>BONUS</b><i></i></div></div>
+          <div class="gp-jp">JACKPOT</div>
+          <div class="gp-dmd"><span>TYPE !SPIN TO PLAY</span></div>
+          <div class="gp-tube bot"></div>
+        </div><div class="glpname" id="glPrevName"></div></div>
+        <h3 style="margin-top:12px">COLOURS</h3>
+        <div class="glgrid" id="glSolid" role="radiogroup" aria-label="Glow colours"></div>
+        <h3 style="margin-top:16px">MULTICOLOUR PATTERNS <span class="gldlc" id="glDlcTag">GLOW PACK DLC</span></h3>
+        <div class="gldlcnote" id="glDlcNote">&#128274; These 44 animated patterns are part of the <b>Glow Pack</b> DLC. Hover any of them to preview it on the machine. Visit <b>Yhandor.com</b> to shop!</div>
+        <div class="glgrid" id="glPat" role="radiogroup" aria-label="Multicolour patterns"></div>
+      </div>
     </div>
     <div class="view" id="vSounds">
       <div class="vhead"><button class="back" data-go="vExtras">&#8249; BACK</button><h2>SPIN SOUNDS</h2></div>
@@ -1283,7 +1333,7 @@ body.no-flash #machine.antic .reel.tense{animation:none!important}
   else { applying = true; own.forEach(k => { if (!(k in data)) remI.call(ls, k); }); Object.keys(data).forEach(k => setI.call(ls, k, data[k])); applying = false; }
   const ES = window.__ES = {on:true, role, lead:!!r.lead, v:r.v || 0};
   // keys the game changes while it runs: only the page running the game may write them
-  const RUNTIME = ['emoteslots:jackpot', 'emoteslots:boost', 'emoteslots:hot', 'emoteslots:wheelcount', 'emoteslots:badgecount', 'emoteslots:rushcount', 'emoteslots:verified', 'emoteslots:subs', 'emoteslots:theme'];
+  const RUNTIME = ['emoteslots:jackpot', 'emoteslots:boost', 'emoteslots:hot', 'emoteslots:wheelcount', 'emoteslots:badgecount', 'emoteslots:rushcount', 'emoteslots:verified', 'emoteslots:subs'];   // (the machine's glow is a streamer setting now, so either window may change it)
   const mayWrite = k => role !== 'view' && (ES.force || (role === 'app' || ES.lead) && (ES.lead || RUNTIME.indexOf(k) < 0));   // force: a backup restore may write everything
   let flushT = 0;
   const queue = (k, v) => { if (applying || k.indexOf(PRE) !== 0 || !mayWrite(k)) return; pending[k] = v; if (!flushT) flushT = setTimeout(flush, 250); };
@@ -1583,7 +1633,8 @@ function timerSrc(){
   }
   if (TMR.dark){ if (now < TMR.dark && !boostOn()) return [[]]; TMR.dark = 0; TMR.mq0 = now; }
   if (boostBusy && boostOn()) return [[{t:'0:00', c:'#ffa028'}]];   // the multiplier reel is still spinning
-  const left = BOOST.until - Date.now();
+  const left = BOOST.until - boostNow();
+  if (left > 0 && BOOST.pausedAt && !TMR.add){ TMR.mq0 = now; return [[{t:fmtHMS(left), c:'#7fc8ff'}]]; }   // paused for a feature: frozen, in blue
   if (left > 0){
     TMR.mq0 = now;
     const a = TMR.add && now - TMR.add.t < TMR.add.d ? TMR.add : null; if (!a) TMR.add = null;
@@ -3236,7 +3287,12 @@ let devForce = null;   // testing only (?dev=1)
 let BOOST = {x:1, until:0};
 try { const b = JSON.parse(localStorage.getItem(BOOST_KEY) || 'null'); if (b && b.until > Date.now() && multOf(+b.x).x > 1) BOOST = {x:+b.x, until:+b.until}; } catch(e){}
 const saveBoost = () => { try { localStorage.setItem(BOOST_KEY, JSON.stringify(BOOST)); } catch(e){} };
-const boostOn = () => BOOST.until > Date.now();
+/* PAUSE: while a feature (bonus wheel, badge bonus, minigame, emote rush) is playing, the multiplier clock stands still, so the
+   feature doesn't eat paid boost time. pausedAt is when it stopped; resuming pushes the end back by the time it was paused. */
+const boostNow = () => BOOST.pausedAt || Date.now();
+const boostPause = () => { if (BOOST.until > Date.now() && !BOOST.pausedAt){ BOOST.pausedAt = Date.now(); saveBoost(); } };
+const boostResume = () => { if (BOOST.pausedAt){ BOOST.until += Date.now() - BOOST.pausedAt; delete BOOST.pausedAt; saveBoost(); } };
+const boostOn = () => BOOST.until > boostNow();
 const boostX = () => (boostOn() && !boostBusy ? BOOST.x : 1);
 let boostBusy = false, boostTok = 0;
 const fmtLeft = ms => { const t = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), sec = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(sec).padStart(2, '0'); };
@@ -3268,7 +3324,7 @@ setInterval(bonusShow, 2200);
 /* last 60 seconds of a boost: the whole BONUS box pleads for more time, faster and redder as it runs out */
 function mdmdTick(){
   const box = $('#multi'), lbl = box.querySelector('.blbl');
-  const left = BOOST.until - Date.now(), dying = !boostBusy && left > 0 && left < 60000;
+  const left = BOOST.until - boostNow(), dying = !boostBusy && left > 0 && left < 60000;
   mReel.classList.toggle('dying', dying);
   box.classList.toggle('dying', dying); box.classList.toggle('panic', dying && left < 10000);
   if (dying){
@@ -3334,7 +3390,7 @@ function spinBoost(){
   setTimeout(() => st.classList.remove('blur'), dur * .6);
   setTimeout(() => {
     clearInterval(tk); if (tok !== boostTok) return;
-    boostBusy = false; BOOST.until = Date.now() + (BOOST.ms || 0) + 2400; saveBoost();   // the clock starts at exactly the set time once the reel has landed and the timer has counted up
+    boostBusy = false; BOOST.until = Date.now() + (BOOST.ms || 0) + 2400; if (BOOST.pausedAt) BOOST.pausedAt = Date.now(); saveBoost();   // the clock starts at exactly the set time once the reel has landed and the timer has counted up
     showBoostReel(); mReel.classList.add('landed'); setTimeout(() => mReel.classList.remove('landed'), 2800);
     try { sndStop(2); sndMult(m.x); } catch(e){}
     burst(m.x >= 5 ? 70 : m.x >= 3 ? 40 : 24);
@@ -3366,12 +3422,12 @@ function announceBoostAdd(ms){   // support during a boost: added time is gather
   if (!boostAnnounce()) return;
   boostAddMs += ms; clearTimeout(boostAddT);
   boostAddT = setTimeout(() => { const m = boostAddMs / 60000; boostAddMs = 0; if (!boostOn()) return;
-    sayBoost('+' + minsTxt(m) + ' added to the X' + BOOST.x + ' MULTIPLIER! Every win pays X' + BOOST.x + ' for ' + fmtLeft(BOOST.until - Date.now()) + '. Type !spin'); }, 4000);
+    sayBoost('+' + minsTxt(m) + ' added to the X' + BOOST.x + ' MULTIPLIER! Every win pays X' + BOOST.x + ' for ' + fmtLeft(BOOST.until - boostNow()) + '. Type !spin'); }, 4000);
 }
 function boostStatus(name, plat){   // !boost / !multiplier
   const now = Date.now(); boostStatus.t = boostStatus.t || {};
   if (now - (boostStatus.t[plat] || 0) < 8000) return; boostStatus.t[plat] = now;
-  say(plat, 'always', boostOn() && !boostBusy ? '@' + name + ' the X' + BOOST.x + ' MULTIPLIER is ON: every win pays X' + BOOST.x + ' for ' + fmtLeft(BOOST.until - now) + '. Bits, Kicks, subs and gift subs add more time!'
+  say(plat, 'always', boostOn() && !boostBusy ? '@' + name + ' the X' + BOOST.x + ' MULTIPLIER is ON: every win pays X' + BOOST.x + ' for ' + fmtLeft(BOOST.until - boostNow()) + '. Bits, Kicks, subs and gift subs add more time!'
     : '@' + name + ' the multiplier is off. ' + (boostWays() ? boostWays() + ' turn it on' : 'It turns on with support') + ': every win pays X2 to X10!');
 }
 function boostWays(){   // e.g. "100 bits = 3 min, sub = 8 min" from the Bits/Kicks/Subs settings
@@ -3393,12 +3449,12 @@ function addBoostTime(mins){
   return {x:BOOST.x, started:true, mins, wait};
 }
 setInterval(() => {
-  if (BOOST.x > 1 && BOOST.until && Date.now() >= BOOST.until && !boostBusy){ const x = BOOST.x; endBoost(false); if (boostAnnounce()) sayBoost('The X' + x + ' multiplier has ended. Bits, Kicks, subs and gift subs turn it back on!'); }
-  if (boostOn() && !boostBusy){ const left = BOOST.until - Date.now();   // last-minute call, once (again if more time pushed it back over)
+  if (BOOST.x > 1 && BOOST.until && boostNow() >= BOOST.until && !boostBusy){ const x = BOOST.x; endBoost(false); if (boostAnnounce()) sayBoost('The X' + x + ' multiplier has ended. Bits, Kicks, subs and gift subs turn it back on!'); }
+  if (boostOn() && !boostBusy){ const left = BOOST.until - boostNow();   // last-minute call, once (again if more time pushed it back over)
     if (left > 75000) boostStatus.warned = false;
     else if (left <= 60000 && left > 5000 && !boostStatus.warned){ boostStatus.warned = true; if (boostAnnounce()) sayBoost('LAST MINUTE of the X' + BOOST.x + ' MULTIPLIER! Type !spin now, or add time with bits, Kicks or subs!'); } }
   mdmdTick();
-  const st = document.getElementById('supBoost'), sbT = boostBusy && boostOn() ? 'Boost starting...' : boostOn() ? 'Boost running: X' + BOOST.x + ', ' + fmtLeft(BOOST.until - Date.now()) + ' left' : 'No boost running'; if (st && st.textContent !== sbT) st.textContent = sbT;
+  const st = document.getElementById('supBoost'), sbT = boostBusy && boostOn() ? 'Boost starting...' : boostOn() ? 'Boost running: X' + BOOST.x + ', ' + fmtLeft(BOOST.until - boostNow()) + ' left' : 'No boost running'; if (st && st.textContent !== sbT) st.textContent = sbT;
 }, 250);
 let thanksQ = [];
 function showThanks(t){
@@ -3411,7 +3467,7 @@ const KIND_WORD = {sub:'the sub', gift:'gifting', bits:'the bits', kicks:'the Ki
 function supportEvent(kind, amount, name, plat, test){
   if (window.__ES.gone) return;
   if ((kind === 'sub') && name && !test) try { markSub(name, plat, true); } catch(e){}   // a new sub gets the SUB badge right away
-  if ((kind === 'sub' || kind === 'gift') && Date.now() - lastThemeAt > 4000){ lastThemeAt = Date.now(); randomTheme(); }   // like Gielinor Casino: a sub or gifted sub re-skins the machine (a burst of gifts changes it once)
+  // (subs no longer change the machine's colours: the streamer picks them in EXTRAS > MACHINE GLOW)   // like Gielinor Casino: a sub or gifted sub re-skins the machine (a burst of gifts changes it once)
   const c = SUP[kind]; if (!c || !c.on) return;
   name = name || 'someone'; amount = Math.floor(+amount) || 0;
   const isB = kind === 'bits' || kind === 'kicks';
@@ -3440,7 +3496,7 @@ function supportEvent(kind, amount, name, plat, test){
     if (u && bonus) gets.push('+' + bonus.toLocaleString('en-US') + ' ' + CUR());
     if (u && spins) gets.push(spins + ' free spin' + (spins > 1 ? 's' : ''));
     let msg = 'Thank you ' + (anon ? 'anonymous gifter' : '@' + name) + ' for ' + what + '!' + (gets.length ? ' ' + gets.join(' and ') + '.' : '');
-    if (b && !boostAnnounce()) msg += b.started ? ' The multiplier landed on X' + b.x + ': every win pays X' + b.x + ' for ' + minsTxt(b.mins) + '!' : ' +' + minsTxt(b.mins) + ' on the X' + b.x + ' boost (' + fmtLeft(BOOST.until - Date.now()) + ' left).';
+    if (b && !boostAnnounce()) msg += b.started ? ' The multiplier landed on X' + b.x + ': every win pays X' + b.x + ' for ' + minsTxt(b.mins) + '!' : ' +' + minsTxt(b.mins) + ' on the X' + b.x + ' boost (' + fmtLeft(BOOST.until - boostNow()) + ' left).';
     const send = () => say(plat === 'kick' ? 'kick' : 'twitch', 'always', msg);
     if (b && b.started) setTimeout(send, b.wait + 200); else send();
   }
@@ -3515,7 +3571,7 @@ function applyVideo(){
   $('#stack').style.zoom = fitZoom();
   try { localStorage.setItem(VS_KEY, JSON.stringify(VS)); } catch(e){}
 }
-/* ================= MACHINE THEMES (like Gielinor Casino): a sub or gifted sub switches to a random different scheme ================= */
+/* ================= MACHINE THEMES: the streamer picks the glow in EXTRAS > MACHINE GLOW (a two-colour scheme or a moving pattern) ================= */
 const THEMES = [
   ['NEON NIGHTS', '#ff3fd1', '#22e6ff'], ['MIAMI VICE', '#ff6ec7', '#00e5d4'], ['TOXIC', '#39ff14', '#00ffa3'], ['LAVA', '#ff4d00', '#ffb020'],
   ['ICE AGE', '#5ad8ff', '#d4f6ff'], ['PURPLE RAIN', '#b04dff', '#ff4df0'], ['VAPORWAVE', '#ff71ce', '#01cdfe'], ['MATRIX', '#00ff41', '#0aa830'],
@@ -3552,11 +3608,103 @@ function randomTheme(){
   const cur = THEMES[themeCur], far = THEMES.map((t, k) => k).filter(k => k !== themeCur && Math.min(dist(THEMES[k][1], cur[1]) + dist(THEMES[k][2], cur[2]), dist(THEMES[k][1], cur[2]) + dist(THEMES[k][2], cur[1])) > 160);
   const pool = far.length ? far : THEMES.map((t, k) => k).filter(k => k !== themeCur);
   const i = pool[Math.floor(Math.random() * pool.length)];
-  const n = setTheme(i); themeSweep(); themeChime();
+  setGlowPat(-1); const n = setTheme(i); themeSweep(); themeChime(); try { renderGlow(); } catch(e){}
   themeMsg = {name:n, until:Date.now() + 5000};   // the jackpot counter announces it
   return n;
 }
 setTheme(themeCur, true);
+/* MULTICOLOUR PATTERNS: the machine's two neon colours move through a list of colours on a loop.
+   PHOTOSENSITIVE SAFETY: smooth blends only, no strobes or flashes; every loop takes at least 5 seconds.
+   [name, colours, seconds for one loop, 'step' = snaps colour to colour (strobe) instead of blending] */
+const GLOW_PATS = [
+  ['RAINBOW', ['#ff2a2a', '#ff9a1a', '#ffe94a', '#39ff14', '#22e6ff', '#3d5afe', '#c46bff'], 9],
+  ['INFERNO', ['#ff2a00', '#ff7a00', '#ffcc33', '#ff4d00'], 3],
+  ['OCEAN WAVES', ['#00b4ff', '#00ffd5', '#3d5afe', '#5ad8ff'], 8],
+  ['NORTHERN LIGHTS', ['#3dffb8', '#6a8cff', '#c46bff', '#00ffa3'], 10],
+  ['MOONLIGHT', ['#c1d4ff', '#6a8cff', '#e0e8ff', '#8a7bff'], 10],
+  ['CANDY SHOP', ['#ff9ad5', '#9ad5ff', '#fff27a', '#b5ff9a'], 6],
+  ['TOXIC PULSE', ['#39ff14', '#00ff41', '#b2ff00', '#00ffa3'], 2.5],
+  ['SUNSET FADE', ['#ff5e62', '#ff9966', '#ff3fd1', '#7c4dff'], 9],
+  ['GALAXY SWIRL', ['#c46bff', '#3d5afe', '#ff4df0', '#00e5ff'], 7],
+  ['VAPORWAVE DREAM', ['#ff71ce', '#01cdfe', '#05ffa1', '#b967ff'], 8],
+  ['FIRE & ICE', ['#ff3a1a', '#22e6ff'], 4],
+  ['HOLIDAY GLOW', ['#ff1744', '#00e676', '#ffcc33'], 8],
+  ['SPOOKY', ['#ff7a00', '#9b30ff', '#39ff14'], 5],
+  ['TWILIGHT', ['#ff9a8b', '#a18cd1', '#fbc2eb', '#6a8cff'], 9],
+  ['DIGITAL RAIN', ['#00ff41', '#0aa830', '#b2ff9a'], 3],
+  ['GOLD SHIMMER', ['#ffcc33', '#fff2a8', '#ff8a00'], 3],
+  ['LAVA LAMP', ['#ff2a6a', '#ff7a00', '#c46bff'], 12],
+  ['STORM CLOUDS', ['#2962ff', '#7c4dff', '#00e5ff', '#5a6bff'], 8],
+  ['CYBERPUNK', ['#fcee0a', '#00f0ff', '#ff003c'], 4],
+  ['PASTEL DREAMS', ['#ffd1dc', '#c1f0ff', '#e0c3ff', '#c8ffd4'], 10],
+  ['MIDNIGHT NEON', ['#ff00ff', '#00ffff', '#7c4dff'], 6],
+  ['TROPICAL PUNCH', ['#ff4f81', '#ffb347', '#00e5a0', '#ffe94a'], 6],
+  ['ARCADE GLOW', ['#ff1744', '#ffe94a', '#2962ff', '#39ff14'], 8],
+  ['PLASMA', ['#ff00c8', '#7c00ff', '#00c8ff'], 2],
+  ['COTTON CANDY', ['#ffb3e6', '#b3e0ff'], 5],
+  ['DRAGON BREATH', ['#ff2a00', '#ffcc33', '#39ff14', '#ff7a00'], 4],
+  ['DEEP SEA', ['#001aff', '#00ffd5', '#0b3d91', '#00b4ff'], 11],
+  ['ROYAL FLUSH', ['#ffcc33', '#c46bff', '#ff1744'], 5],
+  ['HIGH ROLLER', ['#ffcc33', '#ff8a00', '#fff2a8', '#ff3ad8'], 7],
+  ['EMERALD CITY', ['#00e676', '#b2ff59', '#1de9b6'], 6],
+  ['BLOOD MOON', ['#ff1744', '#8b0000', '#ff5252', '#ff7a00'], 7],
+  ['ARCTIC AURORA', ['#e0f7ff', '#22e6ff', '#3dffb8', '#b388ff'], 9],
+  ['RETRO 8-BIT', ['#ff004d', '#ffa300', '#00e436', '#29adff', '#ff77a8'], 7],
+  ['SYNTHWAVE', ['#ff2a6a', '#ff8c00', '#7c4dff', '#00e5ff'], 6],
+  ['ROSE GARDEN', ['#ff4d8d', '#ff80ab', '#c2185b', '#ffb7c5'], 8],
+  ['CHERRY BLOSSOM', ['#ffb7c5', '#ffffff', '#ff69b4'], 8],
+  ['SOLAR FLARE', ['#ffe94a', '#ff7a00', '#ff2a00', '#fff2a8'], 2],
+  ['MERMAID SCALES', ['#00ffd5', '#c46bff', '#5ad8ff', '#ff9ad5'], 7],
+  ['FOREST CANOPY', ['#1de9b6', '#76ff03', '#00796b', '#b2ff59'], 9],
+  ['PRISM', ['#ff2a2a', '#ffe94a', '#39ff14', '#22e6ff', '#ff00ff'], 4],
+  /* the wild ones: 'counter' = the two neon colours run through the list in opposite directions, so they keep crossing and
+     clashing; 'chase' = the second colour trails one step behind the first, so the colour flows around the machine */
+  ['HYPERSPACE', ['#3d5afe', '#00e5ff', '#e0f7ff', '#7c4dff', '#ff3ad8', '#22e6ff', '#b388ff', '#2962ff'], 7, 'chase'],
+  ['CHAOS THEORY', ['#ff00aa', '#39ff14', '#ffe94a', '#00e5ff', '#ff7a00', '#7c4dff'], 6, 'counter'],
+  ['LIQUID RAINBOW', ['#ff2a2a', '#ff7a00', '#ffcc33', '#b2ff00', '#00ff8a', '#00e5ff', '#2979ff', '#7c4dff', '#d500f9', '#ff2a9a'], 9, 'chase'],
+  ['COSMIC KALEIDOSCOPE', ['#ff3ad8', '#22e6ff', '#ffcc33', '#3d5afe', '#ff5e62', '#00ffa3', '#c46bff', '#fff27a'], 7, 'counter']
+];
+/* DLC: content packs (the multicolour patterns are the GLOW PACK). EVERY pack, now and future, is unlocked when the game is
+   signed in as one of the DLC owners below: matched from the Twitch / Kick sign-in itself (Twitch user ID or login, Kick slug),
+   not from chat. Anyone else needs the pack's saved unlock. Reads the saved sign-in straight from storage, so it works before
+   the sign-in code has loaded. */
+const DLC_KEY = 'emoteslots:dlc';
+const DLC_OWNERS = {tw:['114404772', '137001254'], names:['yhandor', 'iiwolfyyy']};   // Yhandor, iiWolfyyy
+function dlcOwner(){
+  try {
+    const a = JSON.parse(localStorage.getItem('emoteslots:auth') || '{}') || {};
+    if (a.tw && (DLC_OWNERS.tw.includes(String(a.tw.id)) || DLC_OWNERS.names.includes(String(a.tw.login || '').toLowerCase()))) return true;
+    if (a.kk && DLC_OWNERS.names.includes(String(a.kk.slug || '').toLowerCase())) return true;
+  } catch(e){}
+  return false;
+}
+function dlcHas(pack){
+  try {
+    if (dlcOwner()) return true;   // all DLC, including packs added later
+    const own = JSON.parse(localStorage.getItem(DLC_KEY) || '[]');
+    return Array.isArray(own) && own.includes(pack);
+  } catch(e){ return false; }
+}
+const PAT_KEY = 'emoteslots:glowpat';
+let glowPat = -1; try { const v = localStorage.getItem(PAT_KEY); if (v !== null && +v >= 0 && +v < GLOW_PATS.length) glowPat = +v; } catch(e){}
+(function(){   // one @keyframes per pattern: --a runs through the colours, --b half a loop behind it
+  const css = GLOW_PATS.map(([, c, , mode], i) => {
+    const n = c.length, st = k => (k / n * 100).toFixed(2) + '%';
+    const bi = k => mode === 'counter' ? (n - k + Math.ceil(n / 2)) % n : mode === 'chase' ? (k - 1 + n) % n : (k + Math.ceil(n / 2)) % n;   // which colour --b shows while --a shows colour k
+    const fr = c.map((col, k) => st(k) + '{--a:' + col + ';--b:' + c[bi(k)] + '}').join('') + '100%{--a:' + c[0] + ';--b:' + c[bi(0)] + '}';
+    return '@keyframes gp' + i + '{' + fr + '}#machine.gpat.gp' + i + ',.glprev.gpat.gp' + i + '{animation:gp' + i + ' ' + Math.max(5, GLOW_PATS[i][2]) + 's ' + (mode === 'step' ? 'steps(1)' : 'linear') + ' infinite}';
+  }).join('\n');
+  const st = document.createElement('style'); st.textContent = css + '\nbody.no-flash #machine.gpat{animation-duration:30s!important;animation-timing-function:linear!important}'; document.head.appendChild(st);
+})();
+function setGlowPat(i){
+  if (i >= 0 && !dlcHas('glow')) i = -1;   // patterns need the Glow Pack
+  const m = $('#machine'); glowPat = i;
+  [...m.classList].forEach(c => { if (/^gp\d+$/.test(c)) m.classList.remove(c); });
+  m.classList.toggle('gpat', i >= 0); if (i >= 0) m.classList.add('gp' + i);
+  try { localStorage.setItem(PAT_KEY, String(i)); } catch(e){}
+}
+setGlowPat(glowPat);
+const glowName = () => glowPat >= 0 ? GLOW_PATS[glowPat][0] : THEMES[themeCur][0];
 
 /* ================= BONUS WHEEL ================= */
 /* x = prize times the bet for the spinner; all = everyone who chatted in the last 10 minutes gets that many times the bet; jp = the progressive jackpot.
@@ -4020,15 +4168,15 @@ function emoteRushRun(job, plat, pool){
 function wheelBonus(job, mult){
   return new Promise(done => {
     const box = $('#reels'), mach = $('#machine'), wb = document.createElement('div'); wb.id = 'wheelbox';
-    const cv = document.createElement('canvas'), ptr = document.createElement('i'); ptr.className = 'ptr';
-    const big = document.createElement('div'); big.className = 'wbig';
-    const beams = document.createElement('div'); beams.className = 'beams';
+    const stage = document.createElement('div'); stage.className = 'wstage';
+    const disc = document.createElement('div'); disc.className = 'wdisc'; disc.dataset.ph = '0';
+    const glass = document.createElement('div'); glass.className = 'wglass';
+    const fx = document.createElement('canvas'); fx.className = 'wfx';
+    const ptr = document.createElement('i'); ptr.className = 'ptr';
     const vig = document.createElement('div'); vig.className = 'vig';
     const flash = document.createElement('div'); flash.className = 'flash';
-    wb.append(beams, cv, vig, ptr, big, flash); box.appendChild(wb);
-    const W = box.clientWidth, Hh = box.clientHeight, d = Math.min(2.5, Math.max(1, (box.getBoundingClientRect().width / (W || 1)) * (devicePixelRatio || 1)));   // real on-screen resolution, capped
-    cv.width = Math.round(W * d); cv.height = Math.round(Hh * d);
-    const g = cv.getContext('2d'); g.scale(d, d);
+    stage.append(disc, glass); wb.append(stage, vig, fx, ptr, flash); box.appendChild(wb);
+    const W = box.clientWidth, Hh = box.clientHeight, d = Math.min(2, Math.max(1, (box.getBoundingClientRect().width / (W || 1)) * (devicePixelRatio || 1)));   // real on-screen resolution, capped
     const R = Math.max(W * .62, (Hh - 10) / .62), cx = W / 2, cy = 10 + R, N = WHEEL_SEGS.length, seg = Math.PI * 2 / N;
     const tw = WHEEL_SEGS.reduce((a, x) => a + x.w, 0); let rr = Math.random() * tw, pickI = 0;
     for (let i = 0; i < N; i++){ rr -= WHEEL_SEGS[i].w; if (rr <= 0){ pickI = i; break; } }
@@ -4036,93 +4184,129 @@ function wheelBonus(job, mult){
     const label = sg => sg.jp ? 'JACKPOT' : sg.all ? 'ALL ' + sg.all + 'X' : sg.xp ? sg.xp.toLocaleString('en-US') + ' XP' : sg.x + 'X';   // XP spaces have no x
     const T = [], ivs = [];
     const slam = () => {};   // no pop-up text over the wheel: the display tells the story
-    const slamOld = (txt, col, hold) => { big.textContent = txt; big.style.fontSize = Math.min(48, Math.floor(W * 1.45 / Math.max(3, txt.length))) + 'px'; big.style.setProperty('--wc', col || '#ffd24a'); big.className = 'wbig'; void big.offsetWidth; big.className = 'wbig ' + (hold ? 'hold' : 'slam'); };
     const flashGo = () => { flash.className = 'flash'; void flash.offsetWidth; flash.className = 'flash go'; };
-    let ang = Math.random() * Math.PI * 2, prevAng = ang, speed = 0, win = -1, bulbT = 0, hot = 0, live = false;
+    let ang = Math.random() * Math.PI * 2, prevAng = ang, speed = 0, win = -1, hot = 0, live = false;
     const sparks = [];
     const underPointer = () => (((Math.round(-ang / seg) % N) + N) % N);
-    /* LABEL LAYOUT: every label (and the jackpot logo) is made as big as its space allows. It sits in the band of the wheel
-       that can be seen (above the jackpot counter, inside the light ring), and each line is checked against the space's
-       width at its own distance from the middle, so nothing touches the edges. Worked out once per space. */
-    const WFONT = '"Arial Black","Segoe UI Black",Impact,sans-serif', WLH = 1.02, layC = {};
-    const rOut = R - 12, rIn = Math.min(rOut - 30, Math.max(R * .45, (R - (Hh - 10 - 30)) / Math.cos(seg))),   // the spaces either side of the pointer must fit above the jackpot counter too
-      band = rOut - rIn, r0 = (rOut + rIn) / 2, tanH = Math.tan(seg / 2);
-    function wLay(i, sg){
-      if (layC[i]) return layC[i];
-      if (sg.jp){ const sz = Math.min(band * .95 / .78, 2 * (r0 - band * .4) * tanH * .9); return layC[i] = {r0, sz}; }
-      const lines = sg.all ? ['ALL', sg.all + 'X'] : sg.xp ? [(sg.xp >= 1000 ? (sg.xp / 1000) + 'K' : String(sg.xp)), 'XP'] : [sg.x + 'X'];
-      g.font = '900 100px ' + WFONT; const wr = lines.map(t => g.measureText(t).width / 100), n = lines.length;
-      let fs = band * .9 / (n * WLH);
-      for (let k = 0; k < 60; k++){
-        const lw = Math.max(3, fs * .14); let ok = true;
-        for (let q = 0; q < n; q++){ const rq = r0 - (q - (n - 1) / 2) * fs * WLH - fs * .45;   // the inner edge of this line (narrowest)
-          if (wr[q] * fs + lw > 2 * rq * tanH * .84){ ok = false; break; } }
-        if (ok) break; fs *= .96;
-      }
-      return layC[i] = {r0, lines, fs:Math.floor(fs), lw:Math.max(3, Math.round(fs * .14))};
-    }
-    const draw = () => {
-      speed = Math.abs(ang - prevAng); prevAng = ang;
-      g.clearRect(0, 0, W, Hh);
-      g.save(); g.translate(cx, cy); g.rotate(ang);
-      const blur = Math.min(5, speed * 22);
-      const up = live ? underPointer() : -1;
-      for (let i = 0; i < N; i++){
-        const sg = WHEEL_SEGS[i], a0 = -Math.PI / 2 - seg / 2 + i * seg;
-        g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R, a0, a0 + seg); g.closePath();
-        g.fillStyle = sg.jp ? '#140a1e' : sg.all ? '#ffffff' : sg.xp ? '#0a2a7a' : WHEEL_COLS[i % WHEEL_COLS.length]; g.fill();
-        if (sg.jp){ const gr = g.createRadialGradient(0, 0, R * .5, 0, 0, R); gr.addColorStop(0, 'rgba(255,210,74,0)'); gr.addColorStop(1, 'rgba(255,210,74,.6)'); g.fillStyle = gr; g.fill(); }
-        if (i === up && speed < .05){ g.fillStyle = 'rgba(255,255,255,.28)'; g.fill(); }
-        if (i === win && Math.floor(performance.now() / 140) % 2){ g.fillStyle = 'rgba(255,255,255,.6)'; g.fill(); }
-        g.lineWidth = 3; g.strokeStyle = '#120818'; g.stroke();
-        const L = wLay(i, sg);
-        g.save(); g.rotate(a0 + seg / 2); g.translate(L.r0, 0); g.rotate(Math.PI / 2);
-        if (i === win){ const k = 1 + .1 * Math.abs(Math.sin(performance.now() / 160)); g.scale(k, k); }
-        if (sg.jp){ if (JPI.complete){ g.imageSmoothingEnabled = false; g.drawImage(JPI, -L.sz / 2, -L.sz * .39, L.sz, L.sz * .78); } }
-        else {
-          g.font = '900 ' + L.fs + 'px ' + WFONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
-          L.lines.forEach((t, k) => { const y = (k - (L.lines.length - 1) / 2) * L.fs * WLH;
-            g.lineWidth = L.lw; g.strokeStyle = sg.all ? '#071a5e' : sg.xp ? '#000a3a' : '#2a0010'; g.strokeText(t, 0, y);
-            g.fillStyle = sg.all ? '#1f52ff' : sg.xp ? '#7ff4ff' : '#fff'; g.fillText(t, 0, y); });
-        }
-        g.restore();
-      }
-      g.filter = 'none';
-      g.beginPath(); g.arc(0, 0, R, 0, Math.PI * 2); g.lineWidth = 14; g.strokeStyle = '#120818'; g.stroke();
-      for (let i = 0; i < N * 2; i++){
-        const a = -Math.PI / 2 - seg / 2 + i * seg / 2, on = (i + bulbT) % 3 === 0;
-        g.beginPath(); g.arc(Math.cos(a) * R, Math.sin(a) * R, i % 2 ? 4 : 5.5, 0, Math.PI * 2);
-        g.fillStyle = i % 2 ? '#d8d8e0' : (on ? (hot ? '#ffffff' : '#fff6a0') : '#6a4a10'); if (!(i % 2) && on){ g.shadowColor = hot ? '#ff3a2a' : '#ffd24a'; g.shadowBlur = hot ? 18 : 10; } g.fill(); g.shadowBlur = 0;
-      }
-      g.restore();
-      /* speed streaks while it's flying */
-      if (speed > .03){ g.save(); g.globalAlpha = Math.min(.5, speed * 4); g.strokeStyle = '#ffffff'; g.lineWidth = 2;
-        for (let k = 0; k < 6; k++){ const r = R * (.55 + k * .08), a = -Math.PI / 2 + (Math.random() - .5) * 1.2; g.beginPath(); g.arc(cx, cy, r, a, a + speed * 3); g.stroke(); } g.restore(); }
-      /* sparks off the pointer on every peg */
-      g.save(); g.globalCompositeOperation = 'lighter';
-      for (let k = sparks.length - 1; k >= 0; k--){ const p = sparks[k]; p.x += p.vx; p.y += p.vy; p.vy += .25; p.l--; if (p.l <= 0){ sparks.splice(k, 1); continue; }
-        g.globalAlpha = p.l / 22; g.fillStyle = p.c; g.beginPath(); g.arc(p.x, p.y, 2.2, 0, 6.283); g.fill(); }
-      g.restore();
+    /* PERFORMANCE: the wheel (spaces, labels, rim, pegs, bulbs) is painted ONCE into canvases, then the whole disc is turned with a
+       CSS rotation, which the graphics card does for free. The chasing lights are three pre-painted layers that take turns. */
+    /* 16-BIT LOOK, CRISP: the wheel art is worked out pixel by pixel on a low-resolution grid (one art pixel = 2 screen pixels),
+       so every edge is a clean pixel step with no blur, then shown with square pixels. The labels are painted onto their spaces
+       on a separate full-resolution layer, so the pixel lettering stays sharp even at an angle. All of it is painted ONCE, then
+       the whole disc is turned by the graphics card. */
+    const PXA = 2, D = Math.ceil(R * 2 / PXA) * PXA, AP = D / PXA, AR = R / PXA, AC = AP / 2;
+    disc.style.width = disc.style.height = D + 'px'; disc.style.left = (cx - D / 2) + 'px'; disc.style.top = (cy - D / 2) + 'px';
+    const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+    const artLayer = (cls, paint) => {   // paint(x, y) returns a colour (or null) for every art pixel
+      const c = document.createElement('canvas'); c.width = c.height = AP;
+      const x = c.getContext('2d'), im = x.createImageData(AP, AP), dd = im.data, cache = {};
+      for (let py = 0; py < AP; py++) for (let px = 0; px < AP; px++){
+        const h = paint(px + .5 - AC, py + .5 - AC, px, py); if (!h) continue;
+        const v = cache[h] || (cache[h] = hex(h)), i = (py * AP + px) * 4; dd[i] = v[0]; dd[i + 1] = v[1]; dd[i + 2] = v[2]; dd[i + 3] = 255; }
+      x.putImageData(im, 0, 0); return c; };
+    const STYLE = sg => sg.jp ? {hi:'#5a3c8a', mid:'#2c1c4c', lo:'#160c2a', top:'#ffffff', bot:'#f8c000', ol:'#000000', cap:'#f8c000'}
+      : sg.all ? {hi:'#a8fcff', mid:'#18c8f8', lo:'#0060d0', top:'#ffffff', bot:'#b8f8ff', ol:'#001850', cap:'#fff040', capT:'ALL'}
+      : sg.xp ? {hi:'#e4b4ff', mid:'#a050ff', lo:'#5418c0', top:'#ffffff', bot:'#f0d0ff', ol:'#1c0048', cap:'#80f0ff', capT:'XP'}
+      : sg.x >= 100 ? {hi:'#fff8b0', mid:'#f8c400', lo:'#c86400', top:'#ffffff', bot:'#fff490', ol:'#481800', cap:'#ff2048', capT:'BET'}
+      : {hi:'#ffa0b0', mid:'#f42c4c', lo:'#a00828', top:'#ffffff', bot:'#fff040', ol:'#400010', cap:'#fff040', capT:'BET'};
+    const SEGST = WHEEL_SEGS.map(STYLE);
+    const rRim = AR - 9, rIn = AR * .42;   // rim from rRim to AR
+    const segOf = th => { let a = th + Math.PI / 2 + seg / 2; a = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2); return {i:Math.floor(a / seg) % N, f:(a % seg) / seg}; };
+    /* the face: shaded spaces with a checkerboard dither between the bands, black dividers, the rim */
+    const SC = Math.min(3, Math.max(1, (box.getBoundingClientRect().width / (W || 1)) * (devicePixelRatio || 1))), LP = Math.round(D * SC);
+    const hiLayer = cls => { const c = document.createElement('canvas'); c.width = c.height = LP; c.className = cls; disc.appendChild(c); const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return g; };
+    const baseG = hiLayer('wface');
+    const faceArt = artLayer('wface', (x, y, px, py) => {
+      const r = Math.hypot(x, y); if (r > AR) return null;
+      if (r > rRim){ const t = AR - r;   // the rim, outside in
+        return t < 1 ? '#000000' : t < 2 ? '#b8a8ff' : t < 5 ? '#5434cc' : t < 6 ? '#2a1478' : t < 7 ? '#000000' : t < 8 ? '#f8c000' : '#000000'; }
+      const th = Math.atan2(y, x), {i, f} = segOf(th), st = SEGST[i], sg = WHEEL_SEGS[i];
+      const edge = Math.min(f, 1 - f) * seg * r; if (edge < .9 && r > 6) return '#000000';   // black divider lines
+      const chk = (px + py) & 1, d = rRim - r;
+      if (sg.jp && Math.floor(f * 9) % 2 === 0 && d > 1) return d < 4 ? '#fff490' : '#f8b000';   // gold rays on the jackpot
+      if (d < 1) return st.hi;
+      if (d < 3) return st.hi;
+      if (d < 5) return chk ? st.hi : st.mid;          // dither: highlight into the main colour
+      if (r > rIn + (rRim - rIn) * .38) return st.mid;
+      if (r > rIn + (rRim - rIn) * .3) return chk ? st.mid : st.lo;   // dither: main colour into the shadow
+      return st.lo;
+    });
+    /* pegs at every divider and bulbs between, on the rim: unlit on the face, three lit layers that take turns */
+    const rimPos = k => { const a = -Math.PI / 2 - seg / 2 + k * seg / 2; return [Math.round(AC + Math.cos(a) * (AR - 3.5)), Math.round(AC + Math.sin(a) * (AR - 3.5))]; };
+    baseG.drawImage(faceArt, 0, 0, LP, LP);
+    const dots = (g, pick) => { g.save(); g.scale(LP / AP, LP / AP); for (let k = 0; k < N * 2; k++){ const [x, y] = rimPos(k); pick(g, k, x, y); } g.restore(); };
+    dots(baseG, (g, k, x, y) => {
+      if (k % 2 === 0){ g.fillStyle = '#000000'; g.fillRect(x - 2, y - 2, 4, 4); g.fillStyle = '#c8c8e8'; g.fillRect(x - 1, y - 1, 2, 2); g.fillStyle = '#ffffff'; g.fillRect(x - 1, y - 1, 1, 1); }
+      else { g.fillStyle = '#000000'; g.fillRect(x - 2, y - 1, 4, 2); g.fillRect(x - 1, y - 2, 2, 4); g.fillStyle = '#6a3800'; g.fillRect(x - 1, y - 1, 2, 2); } });
+    const bulbG = hiLayer('wbulbs');
+    const paintBulbs = ph => { bulbG.clearRect(0, 0, LP, LP); dots(bulbG, (g, k, x, y) => { if (k % 2 === 0 || ((k - 1) / 2 + ph) % 3) return;
+      g.fillStyle = '#ff9000'; g.fillRect(x - 2, y - 1, 4, 2); g.fillRect(x - 1, y - 2, 2, 4);
+      g.fillStyle = '#fff060'; g.fillRect(x - 1, y - 1, 2, 2); g.fillStyle = '#ffffff'; g.fillRect(x - 1, y - 1, 1, 1); }); };
+    paintBulbs(0);
+    /* the labels: pixel sprites (two-tone lettering, black outline, drop shadow), drawn onto their spaces at full resolution */
+    const sprite = (lines) => {
+      const ws = lines.map(L => ([...L.t].length * 6 - 1) * L.u), w = Math.max(...ws) + 3, h = lines.reduce((a, L) => a + 7 * L.u + 1, 0) + 3;
+      const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d');
+      let y = 1;
+      lines.forEach((L, li) => { const x0 = Math.round((w - 3 - ws[li]) / 2) + 1;
+        const put = (dx, dy, f) => { let xx = x0; for (const ch of L.t){ const gl = pxGlyph(ch.toUpperCase());
+          for (let r = 0; r < 7; r++) for (let k = 0; k < 5; k++) if (gl[r * 5 + k] === '1'){ x.fillStyle = f(r); x.fillRect(xx + k * L.u + dx, y + r * L.u + dy, L.u, L.u); } xx += 6 * L.u; } };
+        [[1, 1], [0, 1], [1, 0], [-1, 0], [0, -1], [-1, -1], [1, -1], [-1, 1], [1, 2], [0, 2]].forEach(([dx, dy]) => put(dx, dy, () => L.ol));
+        put(0, 0, r => r < 4 ? L.top : L.bot);
+        y += 7 * L.u + 1; });
+      return c;
     };
-    let raf = 0; const loop = () => { draw(); raf = requestAnimationFrame(loop); }; loop();
-    let bulbs = 0; const setBulbs = ms => { clearInterval(bulbs); bulbs = setInterval(() => bulbT++, ms); }; setBulbs(200);
-    let zoomA = null, beat = 0, wind = 0;
+    const tanH = Math.tan(seg / 2);
+    const SPR = WHEEL_SEGS.map((sg, i) => { const st = SEGST[i];
+      if (sg.jp){ const c = document.createElement('canvas'), sz = Math.round(AR * .34); c.width = sz; c.height = Math.round(sz * .78); const x = c.getContext('2d'); x.imageSmoothingEnabled = false; try { x.drawImage(JPI, 0, 0, c.width, c.height); } catch(e){} return c; }
+      const num = sg.all ? sg.all + 'X' : sg.xp ? (sg.xp >= 1000 ? (sg.xp / 1000) + 'K' : String(sg.xp)) : sg.x + 'X';
+      return sprite([{t:num, u:2, top:st.top, bot:st.bot, ol:st.ol}, {t:st.capT, u:1, top:st.cap, bot:st.cap, ol:st.ol}]); });
+    const maxH = Math.max(...SPR.map(c => c.height)), labR = rRim - 3 - maxH / 2;   // just inside the rim, so the labels beside the pointer clear the jackpot counter
+    {
+      const g = baseG; g.save(); g.scale(LP / AP, LP / AP); g.translate(AC, AC);
+      WHEEL_SEGS.forEach((sg, i) => { const sp = SPR[i], a = -Math.PI / 2 + i * seg;
+        let k = 1; while (k > .5 && sp.width * k > 2 * (labR - sp.height * k / 2) * tanH * .98) k -= .05;   // a long label shrinks a little to stay inside its space
+        g.save(); g.translate(Math.cos(a) * labR, Math.sin(a) * labR); g.rotate(a + Math.PI / 2); g.drawImage(sp, -sp.width * k / 2, -sp.height * k / 2, sp.width * k, sp.height * k); g.restore(); });
+      g.restore();
+    }
+    /* the winner: a blinking white and gold pixel border round its space */
+    let whiC = null;
+    const showWin = () => { if (!whiC){ const art = artLayer('whi', (x, y) => { const r = Math.hypot(x, y); if (r > rRim || r < rIn * .9) return null;
+      const {i, f} = segOf(Math.atan2(y, x)); if (i !== pickI) return null;
+      const e = Math.min(Math.min(f, 1 - f) * seg * r, rRim - r, r - rIn * .9); return e < 1.5 ? '#ffffff' : e < 3 ? '#f8c000' : null; }); const g = hiLayer('whi'); g.drawImage(art, 0, 0, LP, LP); whiC = g.canvas; }
+      whiC.classList.add('on'); };
+    /* a pixel starfield behind the wheel */
+    { const c = document.createElement('canvas'), sw = Math.ceil(W / PXA), sh = Math.ceil(Hh / PXA); c.width = sw; c.height = sh; c.className = 'wstars'; wb.insertBefore(c, stage);
+      const g = c.getContext('2d'); for (let k = 0; k < 40; k++){ const x = Math.floor(Math.random() * sw), y = Math.floor(Math.random() * sh), b = Math.random();
+        g.fillStyle = b < .2 ? '#ffffff' : b < .5 ? '#6a58d0' : '#2a1a6a'; g.fillRect(x, y, 1, 1); if (b < .08){ g.fillStyle = '#6a58d0'; g.fillRect(x - 1, y, 1, 1); g.fillRect(x + 1, y, 1, 1); g.fillRect(x, y - 1, 1, 1); g.fillRect(x, y + 1, 1, 1); } } }
+    /* sparks off the pointer, as single art pixels */
+    const FXH = 40; fx.width = Math.ceil(W / PXA); fx.height = FXH / PXA; fx.style.height = FXH + 'px'; const fg = fx.getContext('2d'); let fxDirty = false;
+    let bulbT = 0;
+    const frame = () => {
+      speed = Math.abs(ang - prevAng); prevAng = ang;
+      disc.style.transform = 'rotate(' + ang + 'rad)';
+      if (sparks.length || fxDirty){ fg.clearRect(0, 0, fx.width, fx.height); fxDirty = sparks.length > 0;
+        for (let k = sparks.length - 1; k >= 0; k--){ const p = sparks[k]; p.x += p.vx; p.y += p.vy; p.vy += .25; p.l--; if (p.l <= 0){ sparks.splice(k, 1); continue; }
+          fg.fillStyle = p.c; fg.fillRect(Math.round(p.x / PXA), Math.round(p.y / PXA), 1, 1); } }
+    };
+    let raf = 0; const loop = () => { frame(); raf = requestAnimationFrame(loop); }; loop();
+    let bulbs = 0; const setBulbs = ms => { clearInterval(bulbs); bulbs = setInterval(() => { bulbT = (bulbT + 1) % 3; paintBulbs(bulbT); }, ms); }; setBulbs(220);
+    let beat = 0, wind = 0;
     const peg = () => {
       try { tone(1300 + hot * 500, 0, .035, 'square', .04); } catch(e2){}
       ptr.classList.remove('flap'); void ptr.offsetWidth; ptr.classList.add('flap');
-      const n = hot ? 9 : 4; for (let k = 0; k < n; k++) sparks.push({x:cx + (Math.random() - .5) * 6, y:26, vx:(Math.random() - .5) * 5, vy:-Math.random() * 3, l:16 + Math.random() * 8, c:Math.random() < .5 ? '#ffd24a' : '#ffffff'});
-      if (hot && VS.flash) mach.animate([{translate:'0 0'}, {translate:(Math.random() < .5 ? -3 : 3) + 'px 1px'}, {translate:'0 0'}], {duration:110});
+      const n = hot ? 7 : 3; for (let k = 0; k < n; k++) sparks.push({x:cx + (Math.random() - .5) * 6, y:30, vx:(Math.random() - .5) * 4.5, vy:-Math.random() * 2.5, l:14 + Math.random() * 8, c:['#fff8a0', '#ffffff', '#ffc000'][Math.floor(Math.random() * 3)]});
+      if (hot && VS.flash) mach.animate([{translate:'0 0'}, {translate:(Math.random() < .5 ? -2 : 2) + 'px 1px'}, {translate:'0 0'}], {duration:110});
     };
-    /* 1. ENTRANCE: beams, flash, the wheel bounces up, BONUS WHEEL slams in */
-    box.classList.add('wheeling'); wb.classList.add('intro'); void wb.offsetWidth; wb.classList.add('up');
-    flashGo(); mach.classList.add('wstrobe'); slam('BONUS WHEEL!', '#ffd24a');
+    /* 1. ENTRANCE: a flash and the wheel bounces up into the reels box */
+    box.classList.add('wheeling'); void wb.offsetWidth; wb.classList.add('up');
+    flashGo();
     try { [0, 4, 7, 12, 16, 19, 24].forEach((n, k) => { tone(hz(n + 12), k * .09, .5, 'square', .05); tone(hz(n + 24), k * .09, .3, 'triangle', .03); }); noise(0, .5, .2, 300, 6000); } catch(e){}
     burst(50);
     DMD.show(el => [[{t:'BONUS WHEEL!', c:(el % 200) < 100 ? '#ffd24a' : DMD.WH}], [...who(job.name, job.plat, DMD.BASE), {t:' SPINS THE WHEEL', c:DMD.BASE}]], true);
     /* 2. TEASE THE PRIZES: show off the jackpot, then a drumroll and wind-up */
     T.push(setTimeout(() => { slam('JACKPOT IS ON IT!', '#ff3fd1'); }, 1700));
     T.push(setTimeout(() => {
-      mach.classList.remove('wstrobe'); wb.classList.remove('intro');
       DMD.show(el => [[{t:'GET READY...', c:(el % 300) < 150 ? DMD.BRIGHT : DMD.WH}], [{t:'3... 2... 1...', c:'#ffd24a'}]]);
       try { for (let k = 0; k < 24; k++) noise(k * .06, .045, .05 + k * .007, 2600, 900); tone(80, 0, 1.5, 'sine', .3, 160); } catch(e){}
       ['3', '2', '1'].forEach((n, k) => T.push(setTimeout(() => { slam(n, '#22e6ff'); try { tone(440 + k * 220, 0, .15, 'square', .06); } catch(e){} }, k * 520)));
@@ -4133,7 +4317,7 @@ function wheelBonus(job, mult){
     function launch(){
       flashGo(); slam('SPIN!', '#5dff8a'); live = true;
       try { noise(0, .45, .25, 500, 5000); tone(140, 0, .5, 'sawtooth', .09, 1200); } catch(e){}
-      mach.classList.add('wstrobe'); setBulbs(45);
+      setBulbs(60);
       wind = setInterval(() => { try { noise(0, .14, Math.min(.12, speed * 1.4), 200 + speed * 9000, 200 + speed * 6000); } catch(e){} }, 120); ivs.push(wind);
       const nearEdge = Math.random() < .55, side = Math.random() < .5 ? -1 : 1;
       const offset = nearEdge ? side * seg * (.36 + Math.random() * .1) : (Math.random() - .5) * seg * .5;
@@ -4146,15 +4330,14 @@ function wheelBonus(job, mult){
         const f = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - f, 4.2);
         ang = start + (target - start) * e;
         const pg = Math.floor(ang / (seg / 2)); if (pg !== lastPeg){ lastPeg = pg; peg(); }
-        if (stage === 0 && f > .4){ stage = 1; mach.classList.add('slow'); setBulbs(110);
-          if (VS.flash) zoomA = mach.animate([{scale:'1'}, {scale:'1.045'}], {duration:dur * .6, easing:'ease-in', fill:'forwards'});
+        if (stage === 0 && f > .4){ stage = 1; setBulbs(120);
           let gap = 650; const hb = () => { try { sndHeart(); } catch(e3){} gap = Math.max(230, gap * .9); beat = setTimeout(hb, gap); }; hb();
           try { sndRiser(); } catch(e){} }
         /* 4. SLOWING: the display calls out every prize as it passes under the pointer */
         if (stage >= 1){ const u = underPointer(); if (u !== lastShown){ lastShown = u; const sg = WHEEL_SEGS[u], bigOne = sg.jp || sg.x >= 100 || sg.all >= 25;
           DMD.show(el => [[{t:label(sg) + (bigOne ? '!?' : '...'), c:bigOne ? ((el % 160) < 80 ? '#ffd24a' : '#ff4a5a') : DMD.WH}], [{t:stage === 2 ? 'HOLD YOUR BREATH...' : 'SLOWING DOWN...', c:DMD.BASE}]]);
           if (bigOne && stage === 2){ try { tone(1800, 0, .12, 'square', .05); tone(2400, .06, .12, 'square', .05); } catch(e){} } } }
-        if (stage === 1 && f > .78){ stage = 2; hot = 1; wb.classList.add('tense'); mach.classList.remove('wstrobe', 'slow'); setBulbs(160); try { sndRiser(); } catch(e){} }
+        if (stage === 1 && f > .78){ stage = 2; hot = 1; wb.classList.add('tense'); setBulbs(170); try { sndRiser(); } catch(e){} }
         if (f < 1) requestAnimationFrame(step);
         else if (fake){
           try { tone(200, 0, .6, 'sine', .08, 120); } catch(e){}
@@ -4173,9 +4356,8 @@ function wheelBonus(job, mult){
     }
     /* 5. THE PAYOFF: flash, slam the prize, the winning slot pulses */
     function land(){
-      live = false; win = pickI; hot = 0; setBulbs(70); clearTimeout(beat); ivs.forEach(clearInterval);
-      wb.classList.remove('tense'); mach.classList.remove('wstrobe', 'slow');
-      if (zoomA){ zoomA.cancel(); zoomA = null; mach.animate([{scale:'1.045'}, {scale:'1'}], {duration:450, easing:'cubic-bezier(.3,1.6,.5,1)'}); }
+      live = false; win = pickI; hot = 0; setBulbs(90); clearTimeout(beat); ivs.forEach(clearInterval); showWin();
+      wb.classList.remove('tense');
       flashGo(); burst(SG.jp ? 90 : 60);
       if (VS.flash) mach.animate([{translate:'0 0'}, {translate:'-6px 2px'}, {translate:'6px -2px'}, {translate:'-3px 1px'}, {translate:'0 0'}], {duration:380});
       let res;
@@ -4207,7 +4389,7 @@ function wheelBonus(job, mult){
         DMD.show(el => [[{t:'WHEEL: ', c:DMD.BRIGHT}, {t:SG.x + 'X', c:(el % 300) < 150 ? '#ffd24a' : DMD.WH}, {t:mult.x > 1 ? ' ×' + mult.x : '', c:'#7fc8ff'}], [...who(job.name, job.plat, DMD.BASE), {t:' +' + amount.toLocaleString('en-US') + ' ' + CURU(), c:DMD.GN}]], true);
       }
       T.push(setTimeout(() => {
-        wb.classList.add('down'); wb.classList.remove('up'); big.className = 'wbig';
+        wb.classList.add('down'); wb.classList.remove('up');
         T.push(setTimeout(() => { cancelAnimationFrame(raf); clearInterval(bulbs); ivs.forEach(clearInterval); wb.remove(); box.classList.remove('wheeling'); done(res); }, 650));
       }, SG.jp ? 1800 : 3800));
     }
@@ -4538,6 +4720,7 @@ async function processQueue(){
   if (wild){ clearInterval(wildIv); clearInterval(wildSp); mach.classList.remove('mgwild'); }
   mach.classList.remove('spinning');
   const ev = evaluate(result);
+  const feat = ['wheel', 'badge', 'minigame', 'rush'].includes(ev.kind); if (feat) boostPause();   // the multiplier clock stops while the feature plays
   let wheel = null;
   if (ev.kind === 'wheel'){   /* three SPIN TO WIN: the reels light up, then the bonus wheel takes over the reels box */
     reelEls.forEach(r => r.classList.add('held')); mach.classList.add('win'); document.documentElement.style.setProperty('--glow', '#ffd24a');
@@ -4562,6 +4745,7 @@ async function processQueue(){
     await featFanfare('rush', job); reelEls.forEach(r => r.classList.remove('held')); mach.classList.remove('win');
     rres = await emoteRush(job);
   }
+  if (feat) boostResume();   // the feature is over: the multiplier clock runs again
   const jpWon = ev.kind === 'jack' ? jpPay() : 0, win = ev.kind === 'jack' ? jpWon * (mult.hot ? mult.bx : mult.x) : wheel ? wheel.amount : bres ? bres.amount : mres ? mres.amount : rres ? job.bet : Math.round(job.bet * ev.mult * mult.x), u = user(job.name, job.plat);
   if (wheel && wheel.jp){ sndJackpotWin(); jackpotCelebrate(job.name, job.plat, win, mult.x); mach.classList.add('jackpot'); }
   tScore(job, rres ? 0 : win);   // an emote rush only hands the bet back: not a tournament win
@@ -4666,6 +4850,7 @@ function signOut(kind){
   delete chatState[plat]; renderAuth(); setChat(Object.keys(S.socks).length ? 'Still connected to ' + Object.keys(S.socks).join(' and ') : 'Chat not connected', '');
 }
 function renderAuth(){
+  try { if (glowPat >= 0 && !dlcHas('glow')) setGlowPat(-1); if (renderGlow.ok) renderGlow(); } catch(e){}   // signing in or out changes what's unlocked
   if (document.getElementById('twEmo')) try { renderEmoBtns(); } catch(e){}
   if (document.getElementById('rNote') && typeof RP !== 'undefined') try { renderReplyUI(); } catch(e){}
   [['tw', 'Twitch', 'login'], ['kk', 'Kick', 'slug']].forEach(([k, name, f]) => {
@@ -5178,6 +5363,56 @@ function renderPacks(){
 }
 renderPacks();
 renderSupport();
+/* EXTRAS > MACHINE GLOW */
+/* the little machine at the top of the menu shows a glow: the one hovered, or (no hover) the one in use */
+function glPreview(t, p, hover, anchor){
+  const el = $('#glPrev'), nm = $('#glPrevName'), pop = $('#glPop'); if (!el || !pop) return;
+  if (!hover){ pop.classList.remove('on'); return; }   // the preview only shows while a glow is hovered
+  [...el.classList].forEach(c => { if (/^gp\d+$/.test(c)) el.classList.remove(c); });
+  el.classList.toggle('gpat', p >= 0);
+  if (p >= 0){ el.classList.add('gp' + p); el.style.removeProperty('--a'); el.style.removeProperty('--b'); }
+  else { el.style.setProperty('--a', THEMES[t][1]); el.style.setProperty('--b', THEMES[t][2]); }
+  if (nm) nm.textContent = p >= 0 ? GLOW_PATS[p][0] : THEMES[t][0];
+  if (anchor){   // float it just above the hovered glow (below it when there's no room above), inside the menu so it scales with it
+    const host = $('#menu'); if (pop.parentElement !== host) host.appendChild(pop);
+    const hr = host.getBoundingClientRect(), k = hr.width / (host.offsetWidth || hr.width) || 1, r = anchor.getBoundingClientRect();
+    const w = pop.offsetWidth || 262, h = pop.offsetHeight || 200, W = host.offsetWidth, H = host.offsetHeight;
+    const cx = (r.left - hr.left + r.width / 2) / k, cy = (r.top - hr.top + r.height / 2) / k;
+    const x = cx < W / 2 ? Math.min(W - w - 24, cx + r.width / k / 2 + 16) : Math.max(24, cx - r.width / k / 2 - 16 - w);   // beside the hovered glow, on the side with room
+    const y = Math.max(16, Math.min(H - h - 16, cy - h / 2));
+    pop.style.left = x + 'px'; pop.style.top = y + 'px';
+  }
+  pop.classList.add('on');
+}
+function renderGlow(){
+  renderGlow.ok = true;
+  const mk = (box, list, isPat) => { const g = $(box); if (!g) return; g.innerHTML = '';
+    list.forEach((t, i) => {
+      const on = isPat ? glowPat === i : glowPat < 0 && themeCur === i, b = document.createElement('button');
+      b.type = 'button'; b.className = 'glsw' + (isPat ? ' pat' : ''); b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', on);
+      const sw = document.createElement('i');
+      if (isPat){ const c = t[1]; sw.style.background = 'linear-gradient(90deg,' + [...c, ...c, c[0]].join(',') + ')'; sw.style.setProperty('--g1', c[0]); sw.style.setProperty('--sp', Math.max(5, t[2]) + 's'); }
+      else { sw.style.background = 'linear-gradient(90deg,' + t[1] + ',' + t[2] + ')'; sw.style.setProperty('--g1', t[1]); }
+      const nm = document.createElement('span'); nm.textContent = (on ? '\u2713 ' : '') + t[0];
+      b.append(sw, nm);
+      const locked = isPat && !dlcHas('glow');
+      if (locked){ b.classList.add('lock'); b.setAttribute('aria-disabled', 'true'); const lk = document.createElement('em'); lk.className = 'gllock'; lk.textContent = 'DLC'; b.appendChild(lk); }
+      b.onclick = () => {
+        if (locked){ const n = $('#glDlcNote'); if (n){ n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump'); } try { sndLose(); } catch(e){} return; }
+        if (isPat) setGlowPat(i); else { setGlowPat(-1); setTheme(i); } themeSweep(); try { themeChime(); } catch(e){} renderGlow(); };
+      const pv = () => glPreview(isPat ? -1 : i, isPat ? i : -1, true, b);
+      b.onmouseenter = pv; b.onfocus = pv; b.onmouseleave = () => glPreview(); b.onblur = () => glPreview();
+      g.appendChild(b);
+    }); };
+  mk('#glSolid', THEMES, false); mk('#glPat', GLOW_PATS, true);
+  const own = dlcHas('glow'), tag = $('#glDlcTag'), note = $('#glDlcNote');
+  if (tag){ tag.textContent = own ? 'GLOW PACK \u2713 OWNED' : 'GLOW PACK DLC'; tag.classList.toggle('own', own); }
+  if (note) note.hidden = own;
+  glPreview();
+  if (!renderGlow.sc){ renderGlow.sc = true; document.querySelectorAll('#vGlow .vbody').forEach(v => v.addEventListener('scroll', () => glPreview(), {passive:true})); }
+  const xs = $('#xGlowStat'); if (xs) xs.textContent = glowName();
+}
+renderGlow();
 document.querySelectorAll('.suptable tbody tr').forEach(tr => {
   const k = tr.dataset.k;
   tr.querySelectorAll('[data-f]').forEach(el => el.addEventListener(el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input', () => {
@@ -5240,7 +5475,7 @@ const countPlayers = data => { let n = 0; Object.keys(data).filter(isPlayerKey).
 /* ================= GAME UPDATES (desktop app only, like Gielinor Casino) =================
    GAME_VERSION goes up by 0.1 every time MAKE-UPDATE.bat publishes an update (1.0, 1.1, 1.2 ...). The app compares it
    with version.json at the update address and downloads the newer game file. */
-const GAME_VERSION = '1.12';
+const GAME_VERSION = '1.13';
 (function(){
   const N = window.EmoteNative, U = N && N.update, btn = $('#updBtn'), msg = $('#updMsg');
   const nice = v => 'V' + v;
@@ -5866,6 +6101,7 @@ if (window.__ES.on){
       else if (k === idKey()){ loadIds(); }
       else if (k === 'emoteslots:fireplace'){ try { if (localStorage.getItem(k) === '1') startFireplace(true); else stopFireplace(true); } catch(e){ console.error('fireplace', e && e.stack || e); } }
       else if (k === 'emoteslots:attract'){ const v = +localStorage.getItem('emoteslots:attract'); if (!isNaN(v) && (window.__ES.on || !P.get('attract'))){ ATTRACT_AFTER = v; if (!v && attracting) stopAttract(); bump(); } }
+      else if (k === THEME_KEY || k === PAT_KEY){ try { const v = +localStorage.getItem(THEME_KEY); if (v >= 0 && v < THEMES.length && v !== themeCur){ setTheme(v); themeSweep(); } const p = localStorage.getItem(PAT_KEY); setGlowPat(p !== null && +p >= 0 && +p < GLOW_PATS.length ? +p : -1); renderGlow(); } catch(e){} }   // the glow was changed in the other window
       else if (k === RELAY_KEY){ relayTake(); }   // the other window asked this one to post in Twitch chat
       else if (k === HOT_KEY){ try { const h = JSON.parse(localStorage.getItem(HOT_KEY) || 'null'); if (h) HOT = {until:+h.until || 0, next:+h.next || 0}; } catch(e){} }   // the other window started / ended a hot streak
       else if (k === JP_KEY){ try { const o = JSON.parse(localStorage.getItem(JP_KEY) || 'null'); if (o && isFinite(o.v)) JP = {v:+o.v, t:+o.t || Date.now()}; } catch(e){} }

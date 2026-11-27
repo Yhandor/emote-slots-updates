@@ -1,7 +1,7 @@
 {
-  "version": "1.12",
-  "sha256": "017a61b59ffd737a4b274b064fcbb21176354f47ebb8826a93c345faa507e7c6",
-  "notes": "yo mama",
+  "version": "1.13",
+  "sha256": "3451f4429ef74f85d30a25341be686b08a115c41fcf3d14e84354f528d91869d",
+  "notes": "16-bit bonus wheel (smoother, no lag), multiplier pauses during features, Glow Pack DLC (44 safe patterns), glow hover preview, tier picker, hot streaks, bet emotes, staff badges, 3-line display, Kick/Twitch chat fixes, !version",
   "minApp": "1.0.7",
   "appUrl": ""
 }
