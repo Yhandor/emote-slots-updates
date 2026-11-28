@@ -1,7 +1,7 @@
 {
-  "version": "1.14",
-  "sha256": "b089b7653b3005013f2e2ea3439514a9fd437f121eece5773d5f5a3c17f7333e",
-  "notes": "NEW: Secret Word minigame DLC (chat guesses letters, everyone active wins). New Sparks symbol, Stage Clear multiplier hype (machine waits for it), jackpot that builds to a huge peak, DLC Add-ons menu. Chat Commands moved to Settings. Theme colours now switch instantly.",
+  "version": "1.15",
+  "sha256": "af6dc5f397439554dd01cc056c1f97035d857dbebc1bb244b463c6cee133c8b0",
+  "notes": "NEW: Spin Sound packs, tournament leaderboard OBS source (prize + picture), Emote Rush race start, hot streak every hour on the hour, darker shutdown that shorts out. Better OBS setup guide, new Extras menu, readable +MIN pop. Rare badge box is badge only, big X prizes rarer.",
   "minApp": "1.0.7",
   "appUrl": ""
 }
