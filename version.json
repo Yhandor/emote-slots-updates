@@ -1,7 +1,7 @@
 {
-  "version": "1.13",
-  "sha256": "3451f4429ef74f85d30a25341be686b08a115c41fcf3d14e84354f528d91869d",
-  "notes": "16-bit bonus wheel (smoother, no lag), multiplier pauses during features, Glow Pack DLC (44 safe patterns), glow hover preview, tier picker, hot streaks, bet emotes, staff badges, 3-line display, Kick/Twitch chat fixes, !version",
+  "version": "1.14",
+  "sha256": "b089b7653b3005013f2e2ea3439514a9fd437f121eece5773d5f5a3c17f7333e",
+  "notes": "NEW: Secret Word minigame DLC (chat guesses letters, everyone active wins). New Sparks symbol, Stage Clear multiplier hype (machine waits for it), jackpot that builds to a huge peak, DLC Add-ons menu. Chat Commands moved to Settings. Theme colours now switch instantly.",
   "minApp": "1.0.7",
   "appUrl": ""
 }
